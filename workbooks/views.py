@@ -8,8 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 from django.http import StreamingHttpResponse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from models import Cohort, Workbook, Worksheet, Worksheet_comment, Workbook_Perms, Worksheet_variable, Worksheet_gene, Worksheet_cohort
+from sharing.service import create_share
 
 from django.conf import settings
 debug = settings.DEBUG
@@ -20,19 +21,17 @@ if settings.DEBUG :
 def workbook_list(request):
     template  = 'workbooks/workbook_list.html',
 
-    viewable_workbooks_ids = Workbook_Perms.objects.filter(user=request.user).values_list('workbook', flat=True)
-    workbooks = Workbook.objects.filter(id__in=viewable_workbooks_ids).order_by('-last_date_saved')
+    userWorkbooks = request.user.workbook_set.all()
+    sharedWorkbooks = Workbook.objects.filter(shared__matched_user=request.user, shared__active=True, active=True)
 
-    for workbook in workbooks:
-        workbook.owner      = workbook.get_owner()
-        workbook.worksheets = workbook.get_worksheets()
-        workbook.shares     = workbook.get_shares()
+    workbooks = userWorkbooks | sharedWorkbooks
+    workbooks = workbooks.distinct()
 
     return render(request, template, {'workbooks' : workbooks})
 
 def workbook_samples(request):
     template = 'workbooks/workbook_samples.html'
-    return render(request, template, {});
+    return render(request, template, {})
 
 @login_required
 def workbook_create_with_variables(request, variable_list_id=None):
@@ -63,15 +62,13 @@ def workbook_create_with_analysis(request, analysis_type=None):
 @login_required
 def workbook(request, workbook_id=0):
     template = 'workbooks/workbook.html'
-    command  = request.path.rsplit('/',1)[1];
+    command  = request.path.rsplit('/',1)[1]
 
     if request.method == "POST" :
         if command == "create" :
             workbook_model = Workbook.createDefault(name="Untitled Workbook", description="", user=request.user)
         elif command == "edit" :
             workbook_model = Workbook.edit(id=workbook_id, name=request.POST.get('name'), description=request.POST.get('description'))
-        elif command == "share" :
-            workbook_model = Workbook.share(id=workbook_id, user_array=request.POST.get('user_array'))
         elif command == "copy" :
             workbook_model = Workbook.copy(id=workbook_id, user=request.user)
         elif command == "delete" :
@@ -86,7 +83,18 @@ def workbook(request, workbook_id=0):
 
     elif request.method == "GET" :
         if workbook_id:
-            workbook_model = Workbook.deep_get(id=workbook_id)
+            ownedWorkbooks = request.user.workbook_set.all().filter(active=True)
+            sharedWorkbooks = Workbook.objects.filter(shared__matched_user=request.user, shared__active=True, active=True)
+            publicWorkbooks = Workbook.objects.all().filter(is_public=True,active=True)
+
+            workbooks = ownedWorkbooks | sharedWorkbooks | publicWorkbooks
+            workbooks = workbooks.distinct()
+
+            workbook_model = workbooks.get(id=workbook_id)
+
+            shared = None
+            if workbook_model.owner.id != request.user.id and not workbook_model.is_public:
+                shared = request.user.shared_resource_set.get(workbook__id=workbook_id)
 
             plot_types = [{'name' : 'Bar Chart'},
                           {'name' : 'Histogram'},
@@ -96,10 +104,21 @@ def workbook(request, workbook_id=0):
                           {'name' : 'Cubby Hole'},
                           {'name' : 'SeqPeak'}]
             return render(request, template, {'workbook'    : workbook_model,
+                                              'shared'      : shared,
                                               'plot_types'  : plot_types})
         else :
             redirect_url = reverse('workbooks')
             return redirect(redirect_url)
+
+@login_required
+def workbook_share(request, workbook_id=0):
+    emails = re.split('\s*,\s*', request.POST['share_users'].strip())
+    workbook = request.user.workbook_set.get(id=workbook_id, active=True)
+    create_share(request, workbook, emails, 'Workbook')
+
+    return JsonResponse({
+        'status': 'success'
+    })
 
 @login_required
 #used to display a particular worksheet on page load

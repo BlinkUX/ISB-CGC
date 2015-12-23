@@ -20,21 +20,27 @@
     <p>{{ workbook.description }}</p>
     <ul class="page-action-group">
         {% if workbook.owner.id == request.user.id %}
-        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#edit-workbook-details-modal">Edit Details</button></li>
-        <li role="menuiem"><button class="btn btn-info" data-toggle="modal" data-target="#copy-workbook-modal">Duplicate</button></li>
-        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#delete-workbook-modal">Delete</button></li>
+        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#edit-workbook-details-modal-{{ workbook.id }}">Edit Details</button></li>
+        <li role="menuiem"><button class="btn btn-info" data-toggle="modal" data-target="#copy-workbook-modal-{{ workbook.id }}">Duplicate</button></li>
+        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#delete-workbook-modal-{{ workbook.id }}">Delete</button></li>
         <li class="separator"></li>
-        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#share-workbook-modal">Share</button></li>
-        <li role="menuitem"><button class="btn btn-link" data-toggle="modal" data-target="#share-workbook-modal">Shared with ({{ workbook.shares | length }})</button></li>
+        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#share-workbook-modal-{{ workbook.id }}">Share</button></li>
+        <li role="menuitem"><button class="btn btn-link" data-toggle="modal" data-target="#share-workbook-modal-{{ workbook.id }}">Shared with ({{ workbook.shared.count }})</button></li>
         {% else %}
+        {% if not workbook.is_public %}
         <li><h5>Owner: {{ workbook.owner.first_name|title }} {{ workbook.owner.last_name|title }}</h5></li>
         <li class="separator"></li>
-        <li role="menuiem"><button class="btn btn-info" data-toggle="modal" data-target="#copy-workbook-modal">Duplicate</button></li>
-        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#delete-workbook-modal">Remove</button></li>
-        <li class="separator"></li>
-        <li role="menuitem"><button class="btn btn-link" data-toggle="modal" data-target="#share-workbook-modal">Shared with ({{ workbook.shares | length }})</button></li>
         {% endif %}
-
+        <li role="menuiem"><button class="btn btn-info" data-toggle="modal" data-target="#copy-workbook-modal-{{ workbook.id }}">Duplicate</button></li>
+        {% if workbook.is_public %}
+        <li class="separator"></li>
+        <li><em>Public Project</em></li>
+        {% else %}
+        <li role="menuitem"><button class="btn btn-info" data-toggle="modal" data-target="#remove-workbook-modal-{{ workbook.id }}">Remove</button></li>
+        <li class="separator"></li>
+        <li role="menuitem"><button class="btn btn-link" data-toggle="modal" data-target="#share-workbook-modal-{{ workbook.id }}">Shared with ({{ workbook.shared.count }})</button></li>
+        {% endif %}
+        {% endif %}
     </ul>
 </div>
 {% endblock %}
@@ -45,7 +51,7 @@
          <!-- tabs of worksheets -->
         <ul class="nav nav-tabs_excel" id="worksheets-tabs">
             <!-- for each worksheet in workbook -->
-            {% for worksheet in workbook.worksheets %}
+            {% for worksheet in workbook.worksheet_set.all %}
                 {% if forloop.counter < 4 %}
                     <li class="{% if display_worksheet and display_worksheet.id == worksheet.id %} active {% elif not display_worksheet and forloop.counter == 1 %} active {% endif %}">
                          <a href="#{{ worksheet.id }}" data-toggle="tab">{{ worksheet.name }}</a>
@@ -65,11 +71,11 @@
                     </li>
                 {% endif %}
             {% endfor %}
-            {% if workbook.worksheets|length > 3 %}
+            {% if workbook.worksheet_set.all|length > 3 %}
                 <li class="dropdown" id="more-tabs">
                     <button class="btn btn-symbol" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-h"></i></button>
                     <ul class="dropdown-menu" id="worksheets-dropdown-menu">
-                    {% for worksheet in workbook.worksheets  %}
+                    {% for worksheet in workbook.worksheet_set.all  %}
                         {% if forloop.counter >= 4 %}
                         <li class="{% if display_worksheet and display_worksheet.id == worksheet.id %} active {% endif %}">
                             <a href="#{{ worksheet.id }}" data-toggle="tab">{{ worksheet.name }}</a>
@@ -78,7 +84,7 @@
                                 <ul class="dropdown-menu">
                                     <li role="menuitem"><a data-toggle="modal" role="button" data-target="#edit-worksheet-details-modal-{{ worksheet.id }}">Edit details</a></li>
                                     <li role="menuitem"><a data-toggle="modal" role="button" data-target="#copy-worksheet-modal-{{ worksheet.id }}">Duplicate</a></li>
-                                    {% if workbook.worksheets|length > 1 %}
+                                    {% if workbook.worksheet_set.count > 1 %}
                                     <li role="menuitem"><a data-toggle="modal" role="button" data-target="#delete-worksheet-modal-{{ worksheet.id }}">Delete</a></li>
                                     {% endif %}
                                 </ul>
@@ -89,14 +95,15 @@
                     </ul>
                 </li>
             {% endif %}
-
+            {% if workbook.owner.id == request.user.id %}
             <li>
                 <a data-target="#create-worksheet-modal" data-toggle="modal"><i class="fa fa-plus"></i></a>
             </li>
+            {% endif %}
         </ul>
         <div class="tab-content">
              <!-- for each worksheet in workbook -->
-             {% for worksheet in workbook.worksheets %}
+             {% for worksheet in workbook.worksheet_set.all %}
                  <div class="worksheet tab-pane fade {% if not display_worksheet and forloop.counter == 1 %} in active{% elif display_worksheet and display_worksheet.id == worksheet.id %} in active {% endif %}" id="{{ worksheet.id }}" >
                      <!-- worksheet description -->
                      <div class="worksheet-header">
