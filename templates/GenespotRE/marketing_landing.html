@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load custom_tags %}
+{% block title %}$Title$ | ISB-CGC{% endblock %}}
+{% block extra_css_libs %}{% endblock %}
+{% block header %}{% endblock %}
+
+{% block link_page_name %}marketing{% endblock %}
+{% block page_name %}marketing{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>This is the marketing landing page</h1>
+</div>
+{% endblock %}
+
+{% block js_file %}{% static 'js/marketing.js' %}{% endblock %}

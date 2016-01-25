@@ -122,7 +122,7 @@ def landing_page(request):
         except:
             print >> sys.stderr,"Printing os.getenv('BACKEND_ID') Failed"
 
-    return render(request, 'GenespotRE/landing.html',
+    return render(request, 'GenespotRE/marketing_landing.html',
                   {'request': request})
 
 '''
