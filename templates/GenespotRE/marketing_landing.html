@@ -8,24 +8,26 @@
 {% block link_page_name %}marketing{% endblock %}
 {% block page_name %}marketing{% endblock %}
 
-{% block content %}
-<div class="container">
-    <section>
+{% block full_width_content %}
+<section class="page-section">
+    <div class="container">
         <div class="row">
             <div class="col-sm-6">
 
             </div>
-            <div class="col-sm-6">
-                <h1 class="page-hero">Bring your data stories to life</h1>
+            <div class="col-md-4 col-sm-6">
+                <h1 class="hero-title">Bring your data stories to life</h1>
                 <p>Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.</p>
                 <button class="btn btn-info">Sign Up</button>
             </div>
         </div>
-    </section>
-    <section>
+    </div>
+</section>
+<section class="page-section">
+    <div class="container">
         <div class="row">
             <div class="col-sm-6">
-                <h2 class="section-title">
+                <h2 class="marketing-section-title">
                     A faster, more collaborative path from questions to answers.
                 </h2>
                 <p>
@@ -42,66 +44,70 @@
 
             </div>
         </div>
-    </section>
-    <section>
+    </div>
+</section>
+<section class="page-section" id="marketing-features">
+    <div class="container">
         <div class="row">
-            <div class="col-sm-4">
-                <img src="{% static 'img/interface-icon.png' %}" alt="" height="110px">
-                <h5>Simple, Intuitive Interface</h5>
-                <p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/interface-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Simple, Intuitive Interface</h5>
+                <p class="featured-description">
                     Easily upload your own data, select your variables, and interact with your research in a visual format. No coding required.
                 </p>
             </div>
-            <div class="col-sm-4">
-                <img src="{% static 'img/statistical-icon.png' %}" alt="" height="110px">
-                <h5>Multiple Statistical Tests & Visualization Styles</h5>
-                <p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/statistical-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Multiple Statistical Tests & Visualization Styles</h5>
+                <p class="featured-description">
                     Run multiple statistical tests on your data a see it presented through different visualizations with just a few mouse clicks. Easily export compelling visual assets for presentation or publication.
                 </p>
             </div>
-            <div class="col-sm-4">
-                <img src="{% static 'img/workbook-icon.png' %}" alt="" height="110px">
-                <h5>Workbook + Worksheets Model</h5>
-                <p>Create and save multiple analyses of a data set, compare different variables or groups as you build your data story.</p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/workbook-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Workbook + Worksheets Model</h5>
+                <p class="featured-description">Create and save multiple analyses of a data set, compare different variables or groups as you build your data story.</p>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-4">
-                <img src="{% static 'img/real-time-icon.png' %}" alt="" height="110px">
-                <h5>Real-Time Comparisons</h5>
-                <p>View and interact with your data side by side with publically available data or data from other researchers and collaborators.</p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/real-time-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Real-Time Comparisons</h5>
+                <p class="featured-description">View and interact with your data side by side with publically available data or data from other researchers and collaborators.</p>
             </div>
-            <div class="col-sm-4">
-                <img src="{% static 'img/collaboration-icon.png' %}" alt="" height="110px">
-                <h5>Facilitate Collaboration</h5>
-                <p>Enable collaborators near and far to share data and collaborate on analysis in real time.</p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/collaboration-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Facilitate Collaboration</h5>
+                <p class="featured-description">Enable collaborators near and far to share data and collaborate on analysis in real time.</p>
             </div>
-            <div class="col-sm-4">
-                <img src="{% static 'img/infrastructure-icon.png' %}" alt="" height="110px">
-                <h5>Web-Based Infrastructure</h5>
-                <p>All storage, transformation and manipulation of data happens in the cloud, freeing researchers to focus on analysis.</p>
+            <div class="featured-item">
+                <img src="{% static 'img/lsdf/infrastructure-icon.png' %}" alt="" height="80px">
+                <h5 class="featured-title">Web-Based Infrastructure</h5>
+                <p class="featured-description">All storage, transformation and manipulation of data happens in the cloud, freeing researchers to focus on analysis.</p>
             </div>
         </div>
-    </section>
-    <section>
-        <ul>
-            <li>
-                <div class="col-sm-6"></div>
-                <div class="col-sm-6">
-                    <span>01</span>
-                    <h4>CREATE A WORKBOOK</h4>
-                    <p>Easily create and save multiple analyses</p>
-                    <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
-                </div>
-            </li>
-        </ul>
-        <span class="prev"></span>
-        <span class="next"></span>
-    </section>
-    <section>
+    </div>
+</section>
+<section class="page-section">
+    <ul>
+        <li>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <span>01</span>
+                <h4>CREATE A WORKBOOK</h4>
+                <p>Easily create and save multiple analyses</p>
+                <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
+            </div>
+        </li>
+    </ul>
+    <span class="prev"></span>
+    <span class="next"></span>
+</section>
+<section class="page-section">
+    <div class="container">
         <div class="row">
             <div class="col-sm-6">
-                <h2 class="section-title">Signing up is <br> quick and free</h2>
+                <h2 class="marketing-section-title">Signing up is <br> quick and free</h2>
                 <p>Avance is currently in Beta, and is free to all registered users. We invite you tu use these tools and to provide feedback about how we can improve them.</p>
                 <button class="btn btn-info">Sign Up</button>
                 <p class="small">(computing and data storage limits may apply as we scale up our infrastructure)</p>
@@ -110,8 +116,8 @@
                 <img src="" alt="">
             </div>
         </div>
-    </section>
-</div>
+    </div>
+</section>
 {% endblock %}
 
 {% block footer %}
