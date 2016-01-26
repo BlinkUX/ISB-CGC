@@ -11,9 +11,10 @@
             <div class="nav navbar-left">
                  <ul class="">
                      {% if user.is_authenticated %}
-                        <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/isblogo.png' %}" alt="ISB Logo"/><span class="navbar-item">ISB-CGC</span></a></li>
+                     <!-- TODO: hide brand name -->
+                        <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/avance.png' %}" alt="ISB Logo"/><span class="navbar-item">Avance</span></a></li>
                      {% else %}
-                        <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/isblogo.png' %}" alt="ISB Logo"/><span class="navbar-item">ISB-CGC</span></a></li>
+                        <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/avance.png' %}" alt="ISB Logo"/><span class="navbar-item">Avance</span></a></li>
                      {% endif %}
 
                     <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
