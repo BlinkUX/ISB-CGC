@@ -7,8 +7,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{% block title %}ISB-CGC{% endblock %}</title>
-    <meta name="description" content="{% block description %}ISB-CGC project to visualize genome data{% endblock %}">
+    <title>{% block title %}Avance{% endblock %}</title>
+    <meta name="description" content="{% block description %}Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.{% endblock %}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     {% block extra_css_libs %}{% endblock %}
@@ -27,9 +27,8 @@
         ga('send', 'pageview');
     </script>
     -->
-    <!--Typekit-->
-    <script src="https://use.typekit.net/bkz6ame.js"></script>
-    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <!--Load Google fonts-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Montserrat:400,700' rel='stylesheet' type='text/css'>
 </head>
 <body id="body">
     <a href="#{% block link_page_name %}content{% endblock %}" class="skip-nav">Skip to main content</a>
@@ -44,9 +43,9 @@
                     <ul class="">
                         {% if user.is_authenticated %}
                             <!-- TODO: hide brand name -->
-                            <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item">Avance</span></a></li>
+                            <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
                         {% else %}
-                            <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item">Avance</span></a></li>
+                            <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
                         {% endif %}
                         {% if request.get_full_path == "/" %}
                             <li class="navbar-link navbar-item"><a href="">Overview</a></li>
@@ -86,7 +85,7 @@
                     {% else %}
                         <div id="user-login" class="navbar-form inline-block">
                             <!-- same thing as /accounts/login-->
-                            <a class="login-link" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
+                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
                         </div>
                     {% endif %}
                 </div>

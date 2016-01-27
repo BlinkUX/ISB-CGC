@@ -13,12 +13,17 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6">
-
+                <div class="fixed-image-holder skrollable" data-0="background-color:rgb(0,0,255);" data-100="background-color:rgb(255,0,0);">
+                    <img src="{% static 'img/lsdf/cell-gray.png' %}" alt="" width="540px" class="fixed-image-1">
+                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="" width="418px" class="fixed-image-2">
+                    <img src="{% static 'img/lsdf/genes-image.png' %}" alt="" width="385px" class="fixed-image-3">
+                    <img src="{% static 'img/lsdf/rectangle-23.png' %}" alt="" width="385px" class="fixed-image-4">
+                </div>
             </div>
-            <div class="col-md-4 col-sm-6">
+            <div class="col-md-4 col-md-push-1 col-sm-6">
                 <h1 class="hero-title">Bring your data stories to life</h1>
                 <p>Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.</p>
-                <button class="btn btn-info">Sign Up</button>
+                <button class="btn btn-default mod-info">Sign Up</button>
             </div>
         </div>
     </div>
@@ -31,7 +36,7 @@
                     A faster, more collaborative path from questions to answers.
                 </h2>
                 <p>
-                    Avance was created by the Institute for Systems Biology with support from the National Cancer Institute and the Life Sciences Discovery Fund. Our goal is to enable biologists to perform large scale integrative data analysis more efficiently, without requiring coding skills or the resources of a big informatics department
+                    <strong>Avance was created by the Institute for Systems Biology with support from the <a href="">National Cancer Institute</a> and the <a href="">Life Sciences Discovery Fund</a>. Our goal is to enable biologists to perform large scale integrative data analysis more efficiently, without requiring coding skills or the resources of a big informatics department</strong>
                 </p>
                 <p>
                     The easy to use, web-based interface promotes collaboration and helps researchers easily compare their own data to publically available research. All storage, transformation and manipulation of data happens in the cloud, freeing researchers to focus on analysis.
@@ -41,7 +46,7 @@
                 </p>
             </div>
             <div class="col-sm-6">
-
+                <img src="{% static 'img/lsdf/Dashboard_ISB.png' %}" alt="Avence Dashboard" height="450px">
             </div>
         </div>
     </div>
@@ -89,30 +94,71 @@
     </div>
 </section>
 <section class="page-section">
-    <ul>
-        <li>
-            <div class="col-sm-6"></div>
-            <div class="col-sm-6">
-                <span>01</span>
-                <h4>CREATE A WORKBOOK</h4>
-                <p>Easily create and save multiple analyses</p>
-                <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
-            </div>
-        </li>
-    </ul>
+    <div class="carousel slide" data-ride="carousel" id="carousel-instructions">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li class="active" data-target="#carousel-instructions" data-slide-to="0"></li>
+            <li data-target="#carousel-instructions" data-slide-to="1"></li>
+            <li data-target="#carousel-instructions" data-slide-to="2"></li>
+        </ol>
+        <!-- Wrapper for slides -->
+        <ul class="carousel-inner" role="listbox">
+            <li class="item active">
+                <div class="container">
+                    <div class="col-sm-5 col-sm-push-1">
+                        <img src="{% static 'img/lsdf/workbook-graphic.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="col-sm-6 col-sm-push-1">
+                        <span>01</span>
+                        <h4>CREATE A WORKBOOK</h4>
+                        <p>Easily create and save multiple analyses</p>
+                        <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="col-sm-6"></div>
+                <div class="col-sm-6">
+                    <span>01</span>
+                    <h4>CREATE A WORKBOOK</h4>
+                    <p>Easily create and save multiple analyses</p>
+                    <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
+                </div>
+            </li>
+            <li class="item">
+                <div class="col-sm-6"></div>
+                <div class="col-sm-6">
+                    <span>01</span>
+                    <h4>CREATE A WORKBOOK</h4>
+                    <p>Easily create and save multiple analyses</p>
+                    <p>You can easily create an array of visual analyses from a single workbook, facilitating side-by-side comparisons without needing to save and export new files.</p>
+                </div>
+            </li>
+        </ul>
+        <!-- Controls -->
+        <a href="#carousel-instructions" class="left carousel-control" role="button" data-slide="prev">
+            <span class="fa fa-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a href="#carousel-instructions" class="right carousel-control" role="button" data-slide="next">
+            <span class="fa fa-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">next</span>
+        </a>
+    </div>
+
     <span class="prev"></span>
     <span class="next"></span>
 </section>
 <section class="page-section">
     <div class="container">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-4 col-sm-6">
                 <h2 class="marketing-section-title">Signing up is <br> quick and free</h2>
                 <p>Avance is currently in Beta, and is free to all registered users. We invite you tu use these tools and to provide feedback about how we can improve them.</p>
-                <button class="btn btn-info">Sign Up</button>
+                <button class="btn btn-default mod-info">Sign Up</button>
                 <p class="small">(computing and data storage limits may apply as we scale up our infrastructure)</p>
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-6 col-md-push-2 col-sm-6">
                 <img src="" alt="">
             </div>
         </div>

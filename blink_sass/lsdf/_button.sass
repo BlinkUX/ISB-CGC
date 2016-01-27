@@ -1,7 +1,11 @@
 .btn
+  // overwrite default bootstrap style
   text-transform: capitalize
   overflow: hidden
   position: relative
+  font-family: $btn-font-family
+  padding: 5px 15px
+
   i.fa
     padding-right: 5px
     position: relative
@@ -23,10 +27,25 @@
   animation: ripple $transition ease-out
 
 .btn-default
+  //Overwrite bootstrap btn-default style
+  border: 2px solid $btn-default-border
+  &:hover, &:active, &:focus
+      background-color: $btn-default-border !important
+      color: $white !important
+      border: 2px solid $btn-default-border !important
+  &.mod-info
+    border: 2px solid $isb-info
+    color: $isb-info
     &:hover, &:active, &:focus
-        background-color: $isb-warning !important
-        color: $white !important
-        border: 1px solid $isb-warning !important
+      background-color: $isb-info !important
+      border: 2px solid $isb-info !important
+  &.mod-gray
+    border: 2px solid darken($white, 35%)
+    color: darken($white, 35%)
+    &:hover, &:active, &:focus
+      background-color: darken($white, 35%) !important
+      border: 2px solid darken($white, 35%) !important
+
 
 .btn-link
   font-weight: $regular-font-weight

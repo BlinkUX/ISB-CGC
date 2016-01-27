@@ -1,0 +1,31 @@
+$carousel-indicator-size: 11px
+$carousel-indicator-margin: 4px
+
+.carousel-control
+  height: 100px
+  background-color: transparentize($isb-info, 0.9)
+  opacity: 1
+  top: 50%
+  transform: translateY(-50%)
+
+  &:hover
+    background-color: transparentize($isb-info, 0.8)
+
+  .fa
+    position: absolute
+    top: 50%
+    transform: translateY(-50%)
+
+  &.left, &.right
+    background-image: none
+
+.carousel-indicators
+  li
+    width: $carousel-indicator-size
+    height: $carousel-indicator-size
+    background: transparentize($isb-info, 0.9)
+    margin: $carousel-indicator-margin
+  .active
+    width: $carousel-indicator-size
+    height: $carousel-indicator-size
+    margin: $carousel-indicator-margin
