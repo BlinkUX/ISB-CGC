@@ -2,6 +2,7 @@
 @import url("/static/css/vendor.css");
 @import url("/static/css/bootstrap-tokenfield.min.css");
 @import url("/static/css/tokenfield-typeahead.min.css");
+@import url("/static/css/usage_monitoring.css");
 
 /********************************************
  * Generic style resets
@@ -1320,28 +1321,6 @@ a.skip-nav {
   height: 25px;
   border-right: 1px solid #676767;
   vertical-align: middle; }
-
-.usage-container {
-  float: right;
-  margin-top: -45px;
-  width: 260px;
-}
-
-.usage-box {
-  border: solid;
-  border-color:#EAEAEA;
-  border-width: 1px;
-  height: 10px;
-  -webkit-box-shadow: 2px 2px 2px -2px rgba(0,0,0,0.75);
-  -moz-box-shadow: 2px 2px 2px -2px rgba(0,0,0,0.75);
-  box-shadow: 2px 2px 2px -2px rgba(0,0,0,0.75);
-}
-
-.usage-fill {
-  height: 10px;
-  margin-top: -10px;
-  background: #2A537A;
-}
 
 .worksheet {
   position: relative;
