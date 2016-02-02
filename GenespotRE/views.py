@@ -46,13 +46,11 @@ from visualizations.models import SavedViz, Viz_Perms
 from cohorts.models import Cohort, Cohort_Perms
 from projects.models import Project
 from workbooks.models import Workbook
-from accounts.models import NIH_User
+from accounts.models import NIH_User, Usage
 
 from allauth.socialaccount.models import SocialAccount
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-
-debug = settings.DEBUG
 logger = logging.getLogger(__name__)
 
 urlfetch.set_default_fetch_deadline(60)
@@ -379,6 +377,11 @@ def about_page(request):
 
 @login_required
 def dashboard_page(request):
+    # TODO Temporary Solution : This shouldn't be hit on every login, Eventually add to sign up sequence
+    if settings.ENFORCE_USER_STORAGE_SIZE :
+        if not hasattr(request.user, 'usage'):
+            usage_model = Usage(user=request.user, usage_kilobytes_max=settings.USER_STORAGE_LIMIT_KILOBYTES)
+            usage_model.save()
 
     # Cohort List
     isb_superuser = User.objects.get(username='isb')

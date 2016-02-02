@@ -13,6 +13,12 @@
 {% block page_header %}
 <div class="container">
     <h1 class="page-header">Your Dashboard</h1>
+    <div class="usage-container">
+        <div class="usage-text">Data Usage {% widthratio user.usage.usage_kilobytes 1000 1 %} / {% widthratio user.usage.usage_kilobytes_max 1000 1 %}MB</div>
+        <div class="usage-box"></div>
+{#        <div class="usage-fill" style="width: {% widthratio user.usage.usage_kilobytes user.usage.usage_kilobytes_max 1 %}%"></div>#}
+        <div class="usage-fill" style="width: 50%"></div>
+    </div>
 </div>
 {% endblock %}
 {% block content %}

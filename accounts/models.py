@@ -53,3 +53,11 @@ class GoogleProject(models.Model):
 
     def __str__(self):
         return self.project_name
+
+class Usage(models.Model):
+    user  = models.OneToOneField(User, null=False)
+    usage_kilobytes = models.BigIntegerField(null=False, default=0)
+    usage_kilobytes_max = models.BigIntegerField(null=False, default=0)
+
+    def __str__(self):
+        return str(self.usage_kilobytes * 0.001) + " MB"

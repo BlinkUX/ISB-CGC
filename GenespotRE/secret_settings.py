@@ -11,6 +11,9 @@ SETTINGS = {
     'BQ_PROJECT_ID': os.environ.get('BIGQUERY_PROJECT_ID', os.environ.get('GCLOUD_PROJECT_ID')), # Google Cloud Project ID #
     'PROJECT_NAME': os.environ.get('GCLOUD_PROJECT_NAME'),
 
+    'ENFORCE_USER_STORAGE_SIZE' : os.environ.get('ENFORCE_USER_STORAGE_SIZE', False),
+    'USER_STORAGE_LIMIT_KILOBYTES' : os.environ.get('USER_STORAGE_LIMIT_KILOBYTES'),
+
     'REQUEST_PROJECT_EMAIL': os.environ.get('REQUEST_PROJECT_EMAIL', 'request@example.com'),
 
     # TODO: Should be deleted at some point in favor of merged settings
