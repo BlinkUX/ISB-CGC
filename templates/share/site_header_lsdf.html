@@ -42,16 +42,15 @@
                 <div class="nav navbar-left">
                     <ul class="">
                         {% if user.is_authenticated %}
-                            <!-- TODO: hide brand name -->
-                            <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
+                            <li class="navbar-item nav-logo"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
                         {% else %}
-                            <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
+                            <li class="navbar-item nav-logo"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
                         {% endif %}
                         {% if request.get_full_path == "/" %}
-                            <li class="navbar-link navbar-item"><a href="">Overview</a></li>
-                            <li class="navbar-link navbar-item"><a href="">Features</a></li>
-                            <li class="navbar-link navbar-item"><a href="">How It Works</a></li>
-                            <li class="navbar-link navbar-item"><a href="">Getting Started</a></li>
+                            <li class="navbar-link navbar-item"><a href="#overview" data-ride="paranav">Overview</a></li>
+                            <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
+                            <li class="navbar-link navbar-item"><a href="#how-it-work" data-ride="paranav">How It Works</a></li>
+                            <li class="navbar-link navbar-item"><a href="#getting-started" data-ride="paranav">Getting Started</a></li>
                             <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>
                         {% else %}
                             <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>

@@ -1,30 +1,69 @@
-$heading-margin: 15px
+$heading-margin: 24px
 
+.navbar-item a.active
+  color: red
 #marketing
   background: $white
   line-height: 1.7
-
+  padding: 84px 0 0 0
   .page-section
-    padding: 54px 0
+    padding: 75px 0
+  .carousel
+    padding: 120px 0 20px 0
+    height: 540px
+  .carousel-indicators
+    bottom: 60px
 
-#marketing-features
-  background: url("/static/img/lsdf/lab.png")
-  background-size: cover
-  color: $white
-
+// section 1
 .hero-title
   font-size: 44px
   color: $isb-warning
   margin-bottom: $heading-margin
-  background: linear-gradient(145deg, #F7901E, #CFE02F)
+  background: linear-gradient(145deg, #CFE02F, #F7901E)
   -webkit-background-clip: text
   -webkit-text-fill-color: transparent
+  margin-top: $heading-margin * 2
+
+// section 3
+#features
+  background: url("/static/img/lsdf/lab.png")
+  background-size: cover
+  background-attachment: fixed
+  color: $white
+
+.featured-item
+  width: 25%
+  float: left
+  margin: $heading-margin 4.5% $heading-margin $heading-margin
+  &:nth-child(3n)
+    margin-right: 0
+
+.featured-title
+  margin: $heading-margin 0 16px 0
+  font-size: 18px
+
+//  Section 4
+#how-it-work
+  background: linear-gradient(180deg, $white, #f2f2f2)
+
+//  Section 5
+#getting-started
+  margin-top: 100px
+
+// General
+.cta-container
+  margin: 40px 0 $heading-margin 0
+  .btn
+    margin-right: 16px
+  span
+    color: #aaaaaa
 
 .marketing-section-title
   font-size: 28px
   color: $isb-warning
   position: relative
-  padding: $heading-margin * 2 0
+  padding: $heading-margin * 1.5 0 $heading-margin 0
+  margin: 0
 
   &:after
     content: ''
@@ -35,32 +74,34 @@ $heading-margin: 15px
     position: absolute
     top: 0
 
-.featured-item
-  width: 25%
-  float: left
-  margin-right: 7.5%
-  margin: $heading-margin * 3
-  &:nth-child(3n)
-    margin-right: 0
-
-.featured-title
-  margin: $heading-margin 0
-  font-size: 18px
-  
 .fixed-image-holder
   position: relative
   margin-top: 60px
-
-.fixed-image-2
-  position: absolute
+  [class^="fixed-image-"]
+    position: absolute
+.fixed-image-1
   right: -10px
   top: -80px
-.fixed-image-3
-  position: absolute
+  animation: slide-in-from-top 0.4s cubic-bezier(.17,.67,.82,1)
+.fixed-image-2
   left: -40px
-
-.fixed-image-4
-  position: absolute
+  top: 0px
+.fixed-image-3
   left: 0
   top: -40px
+.fixed-image-4
+  left: -80px
+  top: -80px
+.fixed-image-5
+  right: 20px
+  bottom: 30px
+.fixed-image-6
+  right: 0px
+  bottom: 80px
+
+@keyframes slide-in-from-top
+  from
+    transform: translate3d(0, -100px, 0)
+  to
+    transform: translate3d(0, 0, 0)
 

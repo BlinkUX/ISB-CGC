@@ -17,7 +17,12 @@ $carousel-indicator-margin: 4px
     transform: translateY(-50%)
 
   &.left, &.right
-    background-image: none
+    background-image: url('../img/lsdf/assets.png')
+    background-size: 700px
+    background-position: 10px 20px
+
+  &.right
+    background-position: -40px 20px
 
 .carousel-indicators
   li
@@ -29,3 +34,33 @@ $carousel-indicator-margin: 4px
     width: $carousel-indicator-size
     height: $carousel-indicator-size
     margin: $carousel-indicator-margin
+
+.carousel-img
+  position: relative
+  display: inline-block
+  margin-left: 4%
+  width: 45%
+  padding: 0 15px
+  vertical-align: middle
+
+.carousel-info
+  position: relative
+  display: inline-block
+  width: 34.5%
+  margin-left: 80px
+  padding: 15px
+  vertical-align: middle
+
+.carousel-number
+  position: absolute
+  color: darken($white, 5%)
+  font-size: 160px
+  font-weight: $bold-font-weight
+  font-family: $headings-font-family
+  line-height: 1
+  z-index: -1
+  transform: translate3d(-80px, -40%, 0)
+
+.carousel-title
+  color: $isb-primary
+  font-size: 24px
