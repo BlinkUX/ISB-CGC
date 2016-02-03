@@ -79,6 +79,18 @@ nav, .site-header
   float: none !important
   > a
     padding: 0 !important
+    position: relative
+
+    &:hover, &:active
+      text-decoration: none
+
+    &.active:after
+      display: block
+      content: ''
+      position: absolute
+      bottom: -5px
+      width: 100%
+      border-bottom: 2px solid $isb-info
 
   &__text
     display: inline-block

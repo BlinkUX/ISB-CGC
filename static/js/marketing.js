@@ -6,7 +6,7 @@ require.config({
         jqueryui: 'libs/jquery-ui.min',
 
         skrollr: 'libs/skrollr',
-        rx: 'libs/rx.lite',
+        TweenMax: 'libs/TweenMax',
         base: 'base'
     },
     shim: {
@@ -20,9 +20,9 @@ require([
     'jqueryui',
     'bootstrap',
     'skrollr',
-    'rx',
+    'TweenMax',
     'base'
-], function($, jqueryui, bootstrap, skrollr, rx) {
+], function($, jqueryui, bootstrap, skrollr, TweenMax) {
 
     'use strict';
 
@@ -46,13 +46,19 @@ require([
 
     console.log(navigator);
 
-    var navs = '[data-ride="paranav"]';
 
-    var Paranav = function(element, options){
+    // ==========================
+    // Building a paranav plugin to handle parallax navigation
+    // and parallax animation, solving parallax jittery issues
+    // of mousewheel scroll on Chrome and safari
+    //
+
+    var Paranav = function (element, options) {
         var $this = this;
         this.options = $.extend({}, Paranav.DEFAULT, options);
         this.$element = $(element);
         this.target = $(element).attr('data-target');
+        this.opacity = 50;
 
         if(!this.target){
             this.target = $(element).attr('href');
@@ -62,9 +68,10 @@ require([
         this.targetPosition = this.$target.offset().top;
         this.height = this.$target.outerHeight();
 
-        console.log(this);
+        $this.checkCurrentPosition();
+
         $(element).on('click', function(e){$this.scrollTo(e)});
-        $(document).on('scroll', function(e){$this.checkCurrentPosition(e)});
+        $(window).on('resize scroll', function () {$this.checkCurrentPosition();});
     };
 
     Paranav.DEFAULT = {
@@ -72,7 +79,7 @@ require([
         offset: 50,
         fixedHeader: true
     };
-    Paranav.prototype.scrollTo = function(e){
+    Paranav.prototype.scrollTo = function (e) {
         var $this = this;
         var position = $this.targetPosition - $this.options.offset;
 
@@ -81,27 +88,32 @@ require([
         // Scroll to target position on click
         $('html, body').animate({
             scrollTop: position
-        }, $this.options.duration);
-
-        //Add class to both navigation and target element
-        this.$element.addClass('active');
-        this.$target.addClass('is-inview');
+        }, $this.options.duration, function(){
+            // focus out from the click event
+            e.target.blur();
+        });
     };
-    Paranav.prototype.checkCurrentPosition = function(e){
-
-        var documentPosition = $(document).scrollTop() + this.options.offset;
-        var targetRect = this.$target[0].getBoundingClientRect();
-        console.log('document: ' + documentPosition);
-        console.log('targetTop: ' + targetRect.top);
-        console.log('targetHeight: ' + targetRect.bottom);
-        if((targetRect.top >= 0 && targetRect.top < window.innerHeight/2) || (targetRect.bottom <= window.innerHeight/2 && targetRect.bottom > window.innerHeight/2)){
+    Paranav.prototype.checkCurrentPosition = function () {
+        // Responding navigation's style based on target section's position
+        // in view port
+        //var $this = this;
+        if(this._checkTargetInViewPort(this.$target)){
             this.$element.addClass('active');
             this.$target.addClass('is-inview');
         }else{
             this.$element.removeClass('active');
             this.$target.removeClass('is-inview');
         }
-    }
+    };
+    Paranav.prototype._checkTargetInViewPort = function ($target) {
+        var targetrect = $target[0].getBoundingClientRect();
+        var viewPortHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // check target element's top is above the center of the view port
+        // or its bottom is bellow the center of the view port
+        return (targetrect.top >= 0 && targetrect.top <= viewPortHeight/2) || (targetrect.bottom <= viewPortHeight && targetrect.bottom > viewPortHeight/2);
+    };
+
     // Paranav plugin definition
     var old = $.fn.paranav;
 
@@ -117,7 +129,69 @@ require([
     }
     $.fn.paranav.Constructor = Paranav;
 
+    // Paranav no conflict
+    $.fn.paranav.noConflict = function () {
+        $.fn.paranav = old;
+        return this;
+    }
+
+    var navs = '[data-ride="paranav"]';
     var headerHeight = $('.site-header').outerHeight();
     $(navs).paranav({offset: headerHeight});
+
+    function _checkTargetInViewPort ($target, restriction) {
+        var targetrect = $target[0].getBoundingClientRect();
+        var viewPortHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        // check target element's top is above the center of the view port
+        // or its bottom is bellow the center of the view port
+        return (targetrect.top >= 0 && targetrect.top <= viewPortHeight) || (targetrect.bottom <= viewPortHeight && targetrect.bottom > 0);
+    };
+
+    function _getRandom(min, max){
+        return min + Math.random() * (max - min);
+    }
+
+    function scrollanimation (selector, animation, isScrollingUp) {
+        //if selector is in view animate
+        if(_checkTargetInViewPort(selector)){
+            // scroll up animation
+            if(isScrollingUp > 0){
+                TweenMax.to(selector, 1, {
+                    y: animation.y,
+                    delay: animation.delay || 0.15,
+                    ease: animation.ease || Power2.easeOut
+                })
+            }else{
+            //  scroll down animation
+                TweenMax.to(selector, 1, {
+                    y: 0,
+                    delay: animation.delay || 0.15,
+                    ease: animation.ease || Power2.easeOut
+                })
+            }
+        }
+        //if not
+    }
+
+    var lastScroll = 0;
+    $(document).on('scroll', function(){
+        var currentScroll = $(this).scrollTop();
+        var direction = currentScroll - lastScroll;
+
+        scrollanimation($('#overview .image-0'), {y: "-=4px"}, direction);
+        scrollanimation($('#overview .fixed-image-1'), {y: "-=16px"}, direction);
+        scrollanimation($('#overview .fixed-image-2'), {y: "-=8px"}, direction);
+        scrollanimation($('#overview .fixed-image-3'), {y: "-=12px"}, direction);
+
+        scrollanimation($('#getting-started .image-0'), {y: "-=4px"}, direction)
+        scrollanimation($('#getting-started .fixed-image-4'), {y: "-=16px"}, direction);
+        scrollanimation($('#getting-started .fixed-image-5'), {y: "-=8px"}, direction);
+        scrollanimation($('#getting-started .fixed-image-6'), {y: "-=12px"}, direction);
+
+        lastScroll = currentScroll;
+    });
+
+
 })
 

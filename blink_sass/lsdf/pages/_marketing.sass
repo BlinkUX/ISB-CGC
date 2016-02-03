@@ -1,7 +1,15 @@
 $heading-margin: 24px
 
-.navbar-item a.active
-  color: red
+// Unique site-wide typography
+// Using svg to display text gradient
+.hero-svg
+  width: 100%
+.hero-svg-title, text
+  font-size: 44px
+  font-family: $headings-font-family
+  font-weight: $bold-font-weight
+  color: $isb-warning
+
 #marketing
   background: $white
   line-height: 1.7
@@ -15,14 +23,7 @@ $heading-margin: 24px
     bottom: 60px
 
 // section 1
-.hero-title
-  font-size: 44px
-  color: $isb-warning
-  margin-bottom: $heading-margin
-  background: linear-gradient(145deg, #CFE02F, #F7901E)
-  -webkit-background-clip: text
-  -webkit-text-fill-color: transparent
-  margin-top: $heading-margin * 2
+
 
 // section 3
 #features
@@ -82,7 +83,6 @@ $heading-margin: 24px
 .fixed-image-1
   right: -10px
   top: -80px
-  animation: slide-in-from-top 0.4s cubic-bezier(.17,.67,.82,1)
 .fixed-image-2
   left: -40px
   top: 0px
@@ -91,13 +91,17 @@ $heading-margin: 24px
   top: -40px
 .fixed-image-4
   left: -80px
-  top: -80px
+  top: -100px
 .fixed-image-5
   right: 20px
-  bottom: 30px
+  bottom: 10px
 .fixed-image-6
   right: 0px
-  bottom: 80px
+  bottom: 60px
+
+
+// Animations
+
 
 @keyframes slide-in-from-top
   from
