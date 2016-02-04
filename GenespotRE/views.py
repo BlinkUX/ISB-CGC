@@ -123,7 +123,7 @@ def landing_page(request):
             print >> sys.stderr,"Printing os.getenv('BACKEND_ID') Failed"
 
     return render(request, 'GenespotRE/marketing_landing.html',
-                  {'request': request})
+                  {'request': request, 'full_width': 'true'})
 
 '''
 Returns css_test page used to test css for general ui elements

@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% load custom_tags %}
-{% block title %}$Title$ | ISB-CGC{% endblock %}}
+{% block title %}Avance{% endblock %}}
 {% block extra_css_libs %}{% endblock %}
 {% block header %}{% endblock %}
 
 {% block link_page_name %}marketing{% endblock %}
+{% block template_name %}marketing-template{% endblock %}
 {% block page_name %}marketing{% endblock %}
 
 {% block full_width_content %}
 <section class="page-section" id="overview">
     <div class="container">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-xs-6">
                 <div class="fixed-image-holder">
-                    <img src="{% static 'img/lsdf/cell-gray.png' %}" alt="" width="540px" class="image-0">
-                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="" width="418px" class="fixed-image-1">
-                    <img src="{% static 'img/lsdf/genes-image.png' %}" alt="" width="385px" class="fixed-image-2">
-                    <img src="{% static 'img/lsdf/rectangle-23.png' %}" alt="" width="375px" class="fixed-image-3">
+                    <img src="{% static 'img/lsdf/cell-gray.png' %}" alt="DNA cell" width="100%" class="image-0">
+                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="data notes" class="fixed-image-1">
+                    <img src="{% static 'img/lsdf/genes-image.png' %}" alt="gene cells" class="fixed-image-2">
+                    <img src="{% static 'img/lsdf/rectangle-23.png' %}" alt="gradient rectangle" class="fixed-image-3">
                 </div>
             </div>
-            <div class="col-md-4 col-md-push-1 col-sm-6">
+            <div class="col-lg-4 col-sm-push-1 col-md-5 col-sm-6">
                 <h1 class="sr-only">Bring your data stories to life</h1>
                 <svg class="hero-svg" height="150px">
                     <defs>
@@ -58,8 +59,9 @@
                 </p>
             </div>
             <div class="col-sm-5 col-sm-push-1">
-                <div class="fixed-img-holder">
-                    <img src="{% static 'img/lsdf/Dashboard.png' %}" alt="Avence Dashboard" height="450px">
+                <div class="fixed-image-holder">
+                    <img src="{% static 'img/lsdf/magnify-glass.png' %}" alt="Network graphic" width="310px" class="fixed-image-7">
+                    <img src="{% static 'img/lsdf/Dashboard.png' %}" alt="Avence Dashboard" height="420px">
                 </div>
             </div>
         </div>
@@ -122,7 +124,7 @@
             <li class="item active">
                 <div class="container">
                     <div class="carousel-img">
-                        <img src="{% static 'img/lsdf/slide-01.png' %}" alt="workbook concept" width="483px">
+                        <img src="{% static 'img/lsdf/slide-01.png' %}" alt="workbook concept" width="100%">
                     </div>
                     <div class="carousel-info">
                         <span class="carousel-number">01</span>
@@ -193,7 +195,7 @@
 <section class="page-section" id="getting-started">
     <div class="container">
         <div class="row">
-            <div class="col-md-4 col-sm-6">
+            <div class="col-lg-4 col-md-5 col-sm-6">
                 <h2 class="marketing-section-title">Signing up is <br> quick and free</h2>
                 <p>Avance is currently in Beta, and is free to all registered users. We invite you tu use these tools and to provide feedback about how we can improve them.</p>
                 <div class="cta-container">
@@ -201,12 +203,12 @@
                 </div>
                 <p class="small">(computing and data storage limits may apply as we scale up our infrastructure)</p>
             </div>
-            <div class="col-md-5 col-md-push-3 col-sm-6">
+            <div class="col-lg-5 col-lg-push-3 col-md-push-1 col-sm-6">
                 <div class="fixed-image-holder">
-                    <img src="{% static 'img/lsdf/cells-2.png' %}" alt="" width="369px" class="image-0">
-                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="" width="314px" class="fixed-image-4">
-                    <img src="{% static 'img/lsdf/dna-color.png' %}" alt="" width="273px" class="fixed-image-5">
-                    <img src="{% static 'img/lsdf/rectangle-23-v.png' %}" alt="" width="260px" class="fixed-image-6">
+                    <img src="{% static 'img/lsdf/cells-2.png' %}" alt="DNA cells" width="100%" class="image-0">
+                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="data notes" width="90%" class="fixed-image-4">
+                    <img src="{% static 'img/lsdf/dna-color.png' %}" alt="DNA image" width="304px" class="fixed-image-5">
+                    <img src="{% static 'img/lsdf/rectangle-23-v.png' %}" alt="rectangle" width="284px" class="fixed-image-6">
                 </div>
             </div>
         </div>
@@ -228,13 +230,20 @@
                     <li class="link"><a href="">Submit Feedback</a></li>
                 </ul>
             </div>
+            <div class="col-sm-6">
+                <h3 class="sr-only">Institute for Systems Biology</h3>
+                <img class="align-right" src="{% static 'img/lsdf/isb-logo-white.png' %}" alt="Institute for Systems Biology" width="140px">
+            </div>
         </div>
         <div class="row">
             <div class="col-sm-6">
                 <small class="copyright">Copyright Institute for Systems Biology 2016 • Institute of Systems Biology</small>
             </div>
             <div class="col-sm-6">
-                <ul class="footer-links pull-right">
+                <ul class="footer-links align-right">
+                    <li class="link">
+                        <span role="heading">Share this page</span>
+                    </li>
                     <li class="link"><a class="fb-share social" style='text-decoration:none;' type="icon_link" onClick="window.open('http://www.facebook.com/sharer.php?s=100&p[title]=YOUR_TITLE&p[summary]=YOUR_DESCRIPTION&p[url]=YOUR_URL&p[images][0]=YOUR_IMAGE','sharer','width=580,height=325');" href="javascript: void(0)"><i class="fa fa-facebook"></i><span class="sr-only">Share on Facebook</span></a></li>
                     <li class="link"><a class="twitter-share social" style='text-decoration:none;' type="icon_link" onClick="window.open('https://twitter.com/intent/tweet?text=hello%20world','sharer','width=580,height=325,top=50,left=290');" href="javascript: void(0)"><i class="fa fa-twitter"></i><span class="sr-only">Share on Twitter</span></a></li>
                     <li class="link"><a class="linkedin-share social" style='text-decoration:none;' type="icon_link" onClick="window.open('https://www.linkedin.com/shareArticle?mini=true&url=google.com&title=wneimse&summary=&source=','sharer','width=580,height=325');" href="javascript: void(0)"><i class="fa fa-linkedin"></i><span class="sr-only">Share on LinkedIn</span></a></li>

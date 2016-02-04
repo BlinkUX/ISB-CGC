@@ -46,24 +46,26 @@ nav
 
 .navbar-right
   float: right
-  margin-top: 14px
+  margin-top: 8px
   margin-right: 0
 
 .navbar-brand
-    height: 50px
-    padding: 5px 5px 5px 0
+    height: 40px
+    padding: 5px 5px 0px 0
     width: auto
     float: none
     display: inline-block
 
 nav, .site-header
-  background: $nav-bg
+  padding: 8px 0
+  background-color: transparent
   a
-    color: $font-color
+    color: $white
 
 .site-header
-  padding: 8px 0
+  padding: 0
   box-shadow: 0px 1px 2px $border-color
+  background-color: $isb-primary
 
 .nav-logo
   margin-right: 30px
@@ -72,7 +74,7 @@ nav, .site-header
   margin-top: 0
 
 .navbar-item
-  display: inline-block !important
+  display: inline-block
   vertical-align: middle
   padding-right: 5px
   padding-left: 5px
@@ -104,10 +106,10 @@ nav, .site-header
 .navbar-link
   padding-right: 10px
   padding-left: 10px
-  a
-    color: $link-color
-    &:hover, &:focus
-      color: darken($link-color, 10%)
+  //a
+  //  color: $link-color
+  //  &:hover, &:focus
+  //    color: darken($link-color, 10%)
 
 
 a.skip-nav
@@ -147,3 +149,16 @@ a.skip-nav
         > ul
             margin-top: 10px
 
+@media screen and (max-width: $screen-md)
+  .navbar-link
+    font-size: $font-size-small
+    padding-right: 5px
+    padding-left: 5px
+
+@media screen and (max-width: $screen-sm)
+  .navbar-item.navbar-link
+    display: none
+
+  .navbar-form
+    padding: 0 15px 0 0
+    margin-bottom: 0

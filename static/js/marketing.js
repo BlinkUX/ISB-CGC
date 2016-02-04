@@ -5,7 +5,6 @@ require.config({
         bootstrap: 'libs/bootstrap.min',
         jqueryui: 'libs/jquery-ui.min',
 
-        skrollr: 'libs/skrollr',
         TweenMax: 'libs/TweenMax',
         base: 'base'
     },
@@ -19,10 +18,10 @@ require([
     'jquery',
     'jqueryui',
     'bootstrap',
-    'skrollr',
+
     'TweenMax',
     'base'
-], function($, jqueryui, bootstrap, skrollr, TweenMax) {
+], function($, jqueryui, bootstrap, TweenMax) {
 
     'use strict';
 
@@ -145,30 +144,22 @@ require([
 
         // check target element's top is above the center of the view port
         // or its bottom is bellow the center of the view port
-        return (targetrect.top >= 0 && targetrect.top <= viewPortHeight) || (targetrect.bottom <= viewPortHeight && targetrect.bottom > 0);
+        return (targetrect.top >= 0 && targetrect.top <= viewPortHeight * 2 /3) || (targetrect.bottom <= viewPortHeight && targetrect.bottom > 0);
     };
 
     function _getRandom(min, max){
         return min + Math.random() * (max - min);
     }
 
-    function scrollanimation (selector, animation, isScrollingUp) {
+    function scrollanimation (selector, animationUp, animationDown, isScrollingUp) {
         //if selector is in view animate
         if(_checkTargetInViewPort(selector)){
             // scroll up animation
             if(isScrollingUp > 0){
-                TweenMax.to(selector, 1, {
-                    y: animation.y,
-                    delay: animation.delay || 0.15,
-                    ease: animation.ease || Power2.easeOut
-                })
+                TweenMax.to(selector, 1, animationUp)
             }else{
             //  scroll down animation
-                TweenMax.to(selector, 1, {
-                    y: 0,
-                    delay: animation.delay || 0.15,
-                    ease: animation.ease || Power2.easeOut
-                })
+                TweenMax.to(selector, 1, animationDown)
             }
         }
         //if not
@@ -178,16 +169,24 @@ require([
     $(document).on('scroll', function(){
         var currentScroll = $(this).scrollTop();
         var direction = currentScroll - lastScroll;
+        var delay =0.15;
+        var ease = Power2.easeOut;
+        var animationTransformYDown = {y: 0, delay: delay, ease: Power2.easeOut};
+        var animationOpacityDown = {opacity: '0.8', y:0, delay: delay, ease: Power2.easeOut};
+        var animationOpacityUp = {opacity: "+=0.1", y: "-=2px", delay: delay, ease: ease}
 
-        scrollanimation($('#overview .image-0'), {y: "-=4px"}, direction);
-        scrollanimation($('#overview .fixed-image-1'), {y: "-=16px"}, direction);
-        scrollanimation($('#overview .fixed-image-2'), {y: "-=8px"}, direction);
-        scrollanimation($('#overview .fixed-image-3'), {y: "-=12px"}, direction);
+        scrollanimation($('#overview .image-0'), {y: "-=4px", delay: delay, ease: ease}, animationTransformYDown, direction);
+        scrollanimation($('#overview .fixed-image-1'), {y: "-=16px", delay: delay, ease: ease}, animationTransformYDown, direction);
+        scrollanimation($('#overview .fixed-image-2'), {y: "-=8px", delay: delay, ease: ease}, animationTransformYDown, direction);
+        scrollanimation($('#overview .fixed-image-3'), {y: "-=12px", delay: delay, ease: ease}, animationTransformYDown, direction);
 
-        scrollanimation($('#getting-started .image-0'), {y: "-=4px"}, direction)
-        scrollanimation($('#getting-started .fixed-image-4'), {y: "-=16px"}, direction);
-        scrollanimation($('#getting-started .fixed-image-5'), {y: "-=8px"}, direction);
-        scrollanimation($('#getting-started .fixed-image-6'), {y: "-=12px"}, direction);
+        scrollanimation($('#features .set1'), animationOpacityUp, animationOpacityDown, direction);
+        scrollanimation($('#features .set2'), animationOpacityUp, animationOpacityDown, direction);
+
+        scrollanimation($('#getting-started .image-0'), {y: "-=3px", delay: delay, ease: ease}, animationTransformYDown,direction)
+        scrollanimation($('#getting-started .fixed-image-4'), {y: "-=12px", delay: delay, ease: ease}, animationTransformYDown, direction);
+        scrollanimation($('#getting-started .fixed-image-5'), {y: "-=6px", delay: delay, ease: ease}, animationTransformYDown,direction);
+        scrollanimation($('#getting-started .fixed-image-6'), {y: "-=9px", delay: delay, ease: ease}, animationTransformYDown,direction);
 
         lastScroll = currentScroll;
     });

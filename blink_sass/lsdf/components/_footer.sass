@@ -11,6 +11,9 @@
   .container
     padding: 45px 0
 
+  .align-right
+    float: right
+
   .social
     width: 32px
     height: 32px
@@ -36,7 +39,18 @@
   .link
     display: inline-block
     padding-right: 15px
+    vertical-align: middle
 
 .footer-info
   margin-bottom: 30px
+
+@media screen and (max-width: $screen-sm)
+  .footer
+    padding: 0 15px
+    .align-right
+      float: none
+
+  .footer-links
+    margin: 15px 0
+
 
