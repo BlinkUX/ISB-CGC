@@ -175,6 +175,12 @@ require([
         var animationOpacityDown = {opacity: '0.8', y:0, delay: delay, ease: Power2.easeOut};
         var animationOpacityUp = {opacity: "+=0.1", y: "-=2px", delay: delay, ease: ease}
 
+        var overViewRect = document.getElementById('overview').getBoundingClientRect();
+        if(overViewRect.bottom < 55){
+            $('.sign-up').addClass('active');
+        }else{
+            $('.sign-up').removeClass('active');
+        }
         scrollanimation($('#overview .image-0'), {y: "-=4px", delay: delay, ease: ease}, animationTransformYDown, direction);
         scrollanimation($('#overview .fixed-image-1'), {y: "-=16px", delay: delay, ease: ease}, animationTransformYDown, direction);
         scrollanimation($('#overview .fixed-image-2'), {y: "-=8px", delay: delay, ease: ease}, animationTransformYDown, direction);

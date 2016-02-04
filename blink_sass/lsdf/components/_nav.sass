@@ -2,9 +2,10 @@
 // Sub navigation styles goes here
 // --------------------------------------------
 .subnav
-  background-color: $isb-primary
-  color: $white
+  background-color: $bg-color
+  color: $isb-primary
   padding: 0
+  border-top: 1px solid rgba(255, 255, 255, 0.1)
 
   a
     color: inherit
@@ -35,10 +36,10 @@
     vertical-align: top
     position: relative
     padding: 15px 25px
-    font-weight: $medium-font-weight
+    font-weight: $regular-font-weight
 
     &:hover
-      background: lighten($isb-dark, 10%)
+      background: darken($white, 8%)
 
 .menu-item
   position: relative
@@ -50,18 +51,16 @@
     > li
       padding: 10px 5px
       border-bottom: 1px solid darken($white, 20%)
-      font-weight: $medium-font-weight
+      font-weight: $regular-font-weight
 
       &:last-child
         border-bottom: none
-    .item-list li:hover
-      background: $isb-dark
 
   &.has-drop-down
     > .drop
       display: none
       position: absolute
-      background: lighten($isb-dark, 10%)
+      background: darken($white, 8%)
       top: 100%
       left: 0
     &:hover > .drop
@@ -81,11 +80,9 @@
         left: 100%
         top: -10px
         padding: 10px
-        background: $isb-dark
+        background: darken($white, 8%)
         width: 250px
 
-        li:hover
-          background: lighten($isb-dark, 10%)
       &:hover > .drop
         display: block
 

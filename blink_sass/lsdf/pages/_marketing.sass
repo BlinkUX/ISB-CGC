@@ -4,6 +4,7 @@ $heading-margin: 24px
 // Using svg to display text gradient
 .hero-svg
   width: 100%
+  height: 150px
 .hero-svg-title, text
   font-size: 44px
   font-family: $headings-font-family
@@ -14,11 +15,25 @@ $heading-margin: 24px
   overflow: hidden
   line-height: 1.7
 
+.marketing-template
   .carousel
     padding: 120px 0 20px 0
     height: 540px
   .carousel-indicators
     bottom: 60px
+  .site-header
+    background-color: $white
+    .navbar-link.navbar-item a
+      color: $isb-info
+    .navbar-item a
+      color: $isb-primary
+    .lines-button.collapsed .lines, .lines-button .lines:before, .lines-button .lines:after
+      background-color: $isb-primary
+  .sign-up
+    display: none
+    margin-right: 5px
+    &.active
+      display: inline-block
 
 // section 1
 #overview
@@ -139,16 +154,26 @@ $heading-margin: 24px
     bottom: 20px
   .fixed-image-6
     bottom: 60px
+  .marketing-template
+    .sign-up.active
+      display: none
 
 @media screen and (max-width: $screen-md)
   .featured-item
     width: 27%
     margin: 24px 2.5%
 
-  #marketing
+  .marketing-template
     .carousel
       padding: 100px 0 20px 0
-      height: 500px
+      height: 570px
+    #user-login
+      display: none
+    .navbar-right
+      margin-top: 15px
+    .sign-up.active
+      display: inline-block
+
   #overview .fixed-image-holder
     transform: translate3d(0, 40px, 0)
   #getting-started .fixed-image-holder
@@ -156,9 +181,9 @@ $heading-margin: 24px
   .image-0
     max-width: 480px
   .fixed-image-1
-    width: 318px
-    top: -120px
-    right: -80px
+    width: 338px
+    top: -190px
+    right: -40px
   .fixed-image-2
     width: 335px
     top: -30px
@@ -173,13 +198,87 @@ $heading-margin: 24px
   .fixed-image-6
     width: 234px
 
-@media screen and (max-width: $screen-sm)
-  #marketing .carousel
-    padding: 40px 0 0 0
-    height: auto
-    min-height: 570px
+@media screen and (max-width: 767px)
+  .marketing-template
+    .carousel
+      padding: 40px 0 0 0
+      height: auto
+      min-height: 570px
+    .sign-up, .sign-in
+      margin-top: -7px
+
+  .marketing-section-title
+    font-size: 24px
+
+  .page-section
+    padding: 30px 0
 
   .featured-item
     width: 100%
     padding: 15px 30px
     margin: 0
+
+  .hero-svg
+    height: 100px
+  .hero-svg-title, text
+    font-size: 35px
+
+  #overview .fixed-image-holder
+    transform: translate3d(0, -20px, 0)
+    margin-top: 0
+
+  #section2
+    .marketing-section-title
+      margin-top: 0
+    .fixed-image-holder img:last-child
+      height: 390px
+      width: auto
+
+  #getting-started
+    padding: 60px 0 100px 0
+
+  .fixed-image-1
+    right: 0
+    width: 418px
+    top: -120px
+  .fixed-image-2
+    left: 0
+    min-width: 320px
+    max-width: 450px
+    width: 85%
+  .fixed-image-3
+    left: 40px
+    top: -60px
+    min-width: 300px
+    max-width: 430px
+    width: 83%
+  .fixed-image-4
+    left: 14%
+    top: -14%
+    max-width: 480px
+    width: 85%
+  .fixed-image-5
+    min-width: 254px
+    width: 47%
+    left: -15px
+    right: auto
+  .fixed-image-6
+    min-width: 234px
+    width: 45%
+    left: 30px
+    right: auto
+  .fixed-image-7
+    width: 270px
+    left: -20px
+    top: -40px
+@media screen and (max-width: 480px)
+  .fixed-image-1
+    display: none
+  .fixed-image-4
+    display: none
+  .marketing-template
+    .sign-up.active
+      display: none
+  #getting-started
+    .fixed-image-holder
+      margin-top: 65px

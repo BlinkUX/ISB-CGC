@@ -11,11 +11,14 @@
                 <div class="col-lg-12">
                 <div class="nav navbar-left">
                     <ul class="">
-                        {% if user.is_authenticated %}
-                            <li class="navbar-item nav-logo"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
-                        {% else %}
-                            <li class="navbar-item nav-logo"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/lsdf/avance.png' %}" alt="Avance Logo"/><span class="navbar-item sr-only">Avance</span></a></li>
-                        {% endif %}
+
+                        <li class="navbar-item nav-logo">
+                            <a {% if user.is_authenticated %}href="{% url 'dashboard' %}"{% else %}href="{% url 'dashboard' %}" {% endif %}>
+                                <img class="navbar-brand" {% if request.get_full_path == "/" %} src="{% static 'img/lsdf/avance.png' %}" {% else %} src="{% static 'img/lsdf/avance-white.png' %}" {% endif %}  alt="Avance Logo"/>
+                                <span class="navbar-item sr-only">Avance</span>
+                            </a>
+                        </li>
+
                         {% if request.get_full_path == "/" %}
                             <li class="navbar-link navbar-item"><a href="#overview" data-ride="paranav">Overview</a></li>
                             <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
@@ -52,7 +55,11 @@
                             </a>
                         </div>
                     {% else %}
-                        <div id="user-login" class="navbar-form inline-block">
+                        <div class="inline-block sign-up">
+                            <!-- same thing as /accounts/login-->
+                            <a class="btn btn-default mod-info" href="{% url 'account_login' %}" title="Sign Up" ></i> Sign Up</a>
+                        </div>
+                        <div class="inline-block sign-in">
                             <!-- same thing as /accounts/login-->
                             <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
                         </div>
