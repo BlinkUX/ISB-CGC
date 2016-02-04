@@ -19,7 +19,7 @@ limitations under the License.
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from accounts.models import NIH_User, Bucket, GoogleProject
+from accounts.models import NIH_User, Bucket, GoogleProject, Usage
 
 
 class NIH_UserAdmin(admin.ModelAdmin):
@@ -54,6 +54,14 @@ class GoogleProjectAdmin(admin.ModelAdmin):
         'project_id'
     )
 
+class UserUsageAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'usage_bytes',
+        'usage_bytes_max'
+    )
+
 admin.site.register(NIH_User, NIH_UserAdmin)
 admin.site.register(Bucket, BucketAdmin)
 admin.site.register(GoogleProject, GoogleProjectAdmin)
+admin.site.register(Usage, UserUsageAdmin)

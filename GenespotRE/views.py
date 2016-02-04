@@ -46,13 +46,11 @@ from visualizations.models import SavedViz, Viz_Perms
 from cohorts.models import Cohort, Cohort_Perms
 from projects.models import Project
 from workbooks.models import Workbook
-from accounts.models import NIH_User
+from accounts.models import NIH_User, Usage
 
 from allauth.socialaccount.models import SocialAccount
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-
-debug = settings.DEBUG
 logger = logging.getLogger(__name__)
 
 urlfetch.set_default_fetch_deadline(60)
@@ -377,8 +375,24 @@ def help_page(request):
 def about_page(request):
     return render(request, 'GenespotRE/about.html')
 
+def get_storage_string(size):
+    if size > 1000000000 :
+        string = str(size / 1000000000) + " GB"
+    elif size > 1000000 :
+        string = str(size / 1000000) + " MB"
+    elif size > 1000 :
+        string = str(size / 1000) + " kB"
+    else :
+        string = str(size) + " b"
+    return string
+
 @login_required
 def dashboard_page(request):
+    # TODO Temporary Solution : This shouldn't be hit on every login, Eventually add to sign up sequence
+    if settings.ENFORCE_USER_STORAGE_SIZE:
+        if not hasattr(request.user, 'usage'):
+            usage_model = Usage(user=request.user, usage_bytes_max=settings.USER_STORAGE_LIMIT_BYTES)
+            usage_model.save()
 
     # Cohort List
     isb_superuser = User.objects.get(username='isb')
@@ -398,9 +412,17 @@ def dashboard_page(request):
     workbooks = userWorkbooks | sharedWorkbooks
     workbooks = workbooks.distinct().order_by('-last_date_saved')
 
-    return render(request, 'GenespotRE/dashboard.html', {
+    context = {
+        'usage_monitoring_enabled' : settings.ENFORCE_USER_STORAGE_SIZE,
         'request'  : request,
         'cohorts'  : cohorts,
         'projects' : projects,
-        'workbooks': workbooks,
-    })
+        'workbooks': workbooks
+    }
+
+    if settings.ENFORCE_USER_STORAGE_SIZE :
+        context['current_usage_string'] = get_storage_string(request.user.usage.usage_bytes)
+        context['max_usage_string'] = get_storage_string(request.user.usage.usage_bytes_max)
+        context['usage_percentage'] = (request.user.usage.usage_bytes / request.user.usage.usage_bytes_max) * 100
+
+    return render(request, 'GenespotRE/dashboard.html', context)

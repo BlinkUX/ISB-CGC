@@ -32,9 +32,9 @@ def project_list(request, is_public=False):
     projects = projects.distinct()
 
     context = {
-        'projects': projects,
-        'public_projects': Project.objects.all().filter(is_public=True,active=True),
-        'is_public': is_public
+        'projects' : projects,
+        'public_projects' : Project.objects.all().filter(is_public=True,active=True),
+        'is_public' : is_public
     }
     return render(request, template, context)
 
@@ -82,6 +82,17 @@ The user %s has requested a new Google Project be created. Here is their message
     }
     return render(request, template, context)
 
+def get_storage_string(size):
+    if size > 1000000000 :
+        string = str(size / 1000000000) + " GB"
+    elif size > 1000000 :
+        string = str(size / 1000000) + " MB"
+    elif size > 1000 :
+        string = str(size / 1000) + " kB"
+    else :
+        string = str(size) + " b"
+    return string
+
 @login_required
 def project_upload(request):
     if not hasattr(request.user, 'googleproject'):
@@ -89,11 +100,18 @@ def project_upload(request):
     else:
         template = 'projects/project_upload.html'
 
-    projects = request.user.project_set.all().filter(active=True)
+    usage = get_storage_string(request.user.usage.usage_bytes)
+    max_usage = get_storage_string(request.user.usage.usage_bytes_max)
 
+    projects = request.user.project_set.all().filter(active=True)
     context = {
+        'usage_monitoring_enabled' : settings.ENFORCE_USER_STORAGE_SIZE,
+        'usage_size'  : request.user.usage.usage_bytes,
+        'usage'  : usage,
+        'max_usage' : max_usage,
+        'max_usage_size' : request.user.usage.usage_bytes_max,
         'requested': False,
-        'projects': projects,
+        'projects': projects
     }
     return render(request, template, context)
 
@@ -182,8 +200,8 @@ def upload_files(request):
                 "FEATURE_DEFS": User_Feature_Definitions._meta.db_table
             }
         }
-        all_columns = []
 
+        all_columns = []
         for formfield in request.FILES:
             file = request.FILES[formfield]
             file_upload = UserUploadedFile(upload=upload, file=file, bucket=config['BUCKET'])
@@ -235,7 +253,7 @@ def upload_files(request):
 
             config['FILES'].append(fileJSON)
 
-        # Skip *_samples table for low level data
+        #Skip *_samples table for low level data
         create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low')
 
         dataset = request.user.user_data_tables_set.create(
@@ -272,6 +290,16 @@ def upload_files(request):
 
             upload.save()
 
+        #update usage on the users account
+        if settings.ENFORCE_USER_STORAGE_SIZE :
+            total_file_size = 0
+            for formfield in request.FILES:
+                total_file_size += request.FILES[formfield].size
+
+            #update the user's account usage
+            request.user.usage.usage_bytes = request.user.usage.usage_bytes + total_file_size
+            request.user.usage.save()
+
     resp = {
         'status': status,
         'message': message
@@ -286,6 +314,15 @@ def project_delete(request, project_id=0):
     proj = request.user.project_set.get(id=project_id)
     proj.active = False
     proj.save()
+
+    #deactivate all studies as well
+    studies = proj.study_set.all()
+    for study in studies:
+        study.active = False
+        study.save()
+        usage = request.user.usage
+        usage.usage_bytes = usage.usage_bytes - study.get_storage_size()
+        usage.save()
 
     return JsonResponse({
         'status': 'success'
@@ -325,6 +362,11 @@ def study_delete(request, project_id=0, study_id=0):
     study = proj.study_set.get(id=study_id)
     study.active = False
     study.save()
+
+    #subtract usage from total
+    usage = request.user.usage
+    usage.usage_bytes = usage.usage_bytes - study.get_storage_size()
+    usage.save()
 
     return JsonResponse({
         'status': 'success'

@@ -28,6 +28,10 @@ ALLOWED_HOSTS = [
     secret_settings.get('ALLOWED_HOST')
 ]
 
+#Per User Usage restrictions
+ENFORCE_USER_STORAGE_SIZE = secret_settings.get('ENFORCE_USER_STORAGE_SIZE')
+USER_STORAGE_LIMIT_BYTES = secret_settings.get('USER_STORAGE_LIMIT_BYTES')
+
 ### added for connecting to CloudSQL with SSL certs on MVM platform
 SSL_DIR = os.path.abspath(os.path.dirname(__file__))+os.sep
 MVM_ON = True

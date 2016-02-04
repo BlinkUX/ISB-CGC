@@ -1,5 +1,13 @@
 <div class="column-definitions" data-file="<%- uid %>">
-    <h4>File <%- file.name %></h4>
+    <h4 style="display: inline-block;">File <%- file.name %> </h4>
+    <% if (file.size / 1000000 > 1) { %>
+        <span> (<%- file.size / 1000000  %> MB)</span>
+    <% } else if (file.size / 1000 > 1) { %>
+        <span> (<%- file.size / 1000 %> kB)</span>
+    <% } else { %>
+        <span> (<%- file.size %> b)</span>
+    <% } %>
+    <br>
     <label>
         Platform <input type="text" name="platform" class="form-control platform-field" required>
     </label>
