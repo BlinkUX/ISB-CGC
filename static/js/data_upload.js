@@ -34,7 +34,6 @@ require([
     'base',
 ], function($, jqueryui, bootstrap, session_security, _, UploadFileListItemTemplate, UploadInputTableTemplate) {
     'use strict';
-
     var uploadFileListItemTemplate = _.template(UploadFileListItemTemplate),
         uploadInputTableTemplate = _.template(UploadInputTableTemplate),
         uploadGroup = $('#data-upload-group'),
@@ -346,6 +345,11 @@ require([
         addedFiles.splice(addedFiles.indexOf(obj), 1);
         fileEl.remove();
 
+        var files = [];
+        for(var i in addedFiles){
+            files.push(addedFiles[i].file);
+        }
+        updateTotalUsage(files);
         if(addedFiles.length == 0) {
             $('#file-list-table .table-message').show();
         }
@@ -374,6 +378,9 @@ require([
                 var table = $('#file-list-table');
                 table.find('.table-message').hide();
                 // Add files
+                if($("#data-upload-forms").attr("usage")){
+                    updateTotalUsage(this.files);
+                }
                 for(var f = 0, l = this.files.length; f < l; f++) {
                     var tr = $(uploadFileListItemTemplate(this.files[f]));
                     tr.data('fileObj', this.files[f]);
@@ -386,6 +393,43 @@ require([
                 }
             }
         });
+
+    // calculates the total usage for display above the file table
+    // also notifies the user if the current upload maxs out their usage
+    // and disables upload if the upload size is too much
+    function updateTotalUsage(files){
+         $("#total-size-warning").hide();
+
+        function getSizeString(size){
+            var str_size;
+            if(size > 1000000) {
+                str_size = size / 1000000 + " MB";
+            } else if (total_size > 1000){
+                str_size = size / 1000 + " kB";
+            } else {
+                str_size = size + " bytes";
+            }
+            return str_size;
+        }
+
+        var total_size = 0;
+        for(var f = 0; f < files.length; f++) {
+            total_size += files[f].size;
+        }
+
+        var current = parseInt($('#total-size-display').attr("current-usage"));
+        var max = parseInt($('#total-size-display').attr("max-usage"));
+        if(current + total_size > max){
+            $("#total-size-warning").show();
+            $("#overage-size").text(getSizeString(current + total_size - max));
+            $("#next-btn").attr("disabled", true);
+        } else {
+            $("#next-btn").attr("disabled", false);
+        }
+
+        $('#total-size-display').show();
+        $('#total-size').text(getSizeString(total_size));
+    }
 
     function clearErrors() {
         $('.error-message-container').empty();
@@ -605,7 +649,7 @@ require([
         form.append('data-type', uploadDataType);
 
         _.each(addedFiles, function (added) {
-            form.append('file_'+added.uid, added.file, added.file.name);
+            form.append('file_'+ added.uid, added.file, added.file.name);
             form.append('file_' + added.uid + '_type', added.datatype);
             if(!added.processed)
                 added.processed = {};

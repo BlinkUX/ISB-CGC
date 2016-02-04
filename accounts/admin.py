@@ -57,8 +57,8 @@ class GoogleProjectAdmin(admin.ModelAdmin):
 class UserUsageAdmin(admin.ModelAdmin):
     list_display = (
         'user',
-        'usage_kilobytes',
-        'usage_kilobytes_max'
+        'usage_bytes',
+        'usage_bytes_max'
     )
 
 admin.site.register(NIH_User, NIH_UserAdmin)

@@ -46,7 +46,6 @@
                 <div class="dropdown pull-left">
                     <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-gear"></i></a>
                     <ul class="dropdown-menu">
-                        <li role="menuitem"><a href="">New Workbook</a></li>
                         <li role="menuitem"><a data-toggle="modal" data-target="#edit-study-details-modal-{{ study.id }}">Edit Details</a></li>
                         <li role="menuitem"><a data-toggle="modal" data-target="#delete-study-modal-{{ study.id }}" class="study-delete">Delete</a></li>
                     </ul>
@@ -77,6 +76,8 @@
                     <dd>{{ study.last_date_saved }}</dd>
                     <dt>Number of Files</dt>
                     <dd>{{ study.get_file_count }}</dd>
+                    <dt>Storage Amount</dt>
+                    <dd>{{ study.get_storage_string }}</dd>
                 </dl>
             </div>
         </section>

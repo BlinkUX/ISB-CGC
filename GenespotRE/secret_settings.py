@@ -12,7 +12,7 @@ SETTINGS = {
     'PROJECT_NAME': os.environ.get('GCLOUD_PROJECT_NAME'),
 
     'ENFORCE_USER_STORAGE_SIZE' : os.environ.get('ENFORCE_USER_STORAGE_SIZE', False),
-    'USER_STORAGE_LIMIT_KILOBYTES' : os.environ.get('USER_STORAGE_LIMIT_KILOBYTES'),
+    'USER_STORAGE_LIMIT_BYTES' : os.environ.get('USER_STORAGE_LIMIT_BYTES'),
 
     'REQUEST_PROJECT_EMAIL': os.environ.get('REQUEST_PROJECT_EMAIL', 'request@example.com'),
 

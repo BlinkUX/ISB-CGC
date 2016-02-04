@@ -56,8 +56,8 @@ class GoogleProject(models.Model):
 
 class Usage(models.Model):
     user  = models.OneToOneField(User, null=False)
-    usage_kilobytes = models.BigIntegerField(null=False, default=0)
-    usage_kilobytes_max = models.BigIntegerField(null=False, default=0)
+    usage_bytes = models.BigIntegerField(null=False, default=0)
+    usage_bytes_max = models.BigIntegerField(null=False, default=0)
 
     def __str__(self):
-        return str(self.usage_kilobytes * 0.001) + " MB"
+        return str(self.usage_bytes * 0.000001) + " MB"
