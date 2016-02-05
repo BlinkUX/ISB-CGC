@@ -1,0 +1,119 @@
+$carousel-indicator-size: 11px
+$carousel-indicator-margin: 4px
+
+.carousel-control
+  height: 100px
+  background-color: transparentize($isb-info, 0.9)
+  opacity: 1
+  top: 50%
+  transform: translateY(-50%)
+
+  &:hover
+    background-color: transparentize($isb-info, 0.8)
+
+  .fa
+    position: absolute
+    top: 50%
+    transform: translateY(-50%)
+
+  &.left, &.right
+    background-image: url('../img/lsdf/assets.png')
+    background-size: 700px
+    background-position: 10px 20px
+
+  &.right
+    background-position: -40px 20px
+
+.carousel-indicators
+  li
+    width: $carousel-indicator-size
+    height: $carousel-indicator-size
+    background: transparentize($isb-info, 0.9)
+    margin: $carousel-indicator-margin
+  .active
+    width: $carousel-indicator-size
+    height: $carousel-indicator-size
+    margin: $carousel-indicator-margin
+
+.carousel-img
+  position: relative
+  display: inline-block
+  width: 45%
+  padding: 0 15px 0 4%
+  vertical-align: middle
+  opacity: 0.4
+
+  .active &
+    opacity: 1
+    transition: 0.6s ease-in-out opacity
+
+.carousel-info
+  position: relative
+  display: inline-block
+  width: 45%
+  padding: 40px 0 0 80px
+  vertical-align: middle
+
+.carousel-number
+  position: absolute
+  color: darken($white, 5%)
+  font-size: 160px
+  font-weight: $bold-font-weight
+  font-family: $headings-font-family
+  line-height: 1
+  z-index: -1
+  transform: translate3d(-80px, -40%, 0)
+
+.carousel-title
+  color: $isb-primary
+  font-size: 24px
+
+@media screen and (max-width: $screen-md)
+  .carousel-control
+    height: 70px
+    width: 40px
+
+    &.left, &.right
+      background-size: 400px
+      background-position: 10px 20px
+
+    &.right
+      background-position: -20px 20px
+
+  .carousel-info
+    width: 40%
+    padding: 40px 0 0 40px
+
+  .carousel-img
+    width: 57%
+    padding: 0 15px
+
+  .carousel-number
+    font-size: 100px
+    transform: translate3d(-40px, -40%, 0)
+
+@media screen and (max-width: $screen-sm)
+  .carousel-control
+    height: 70px
+    width: 40px
+
+    &.left, &.right
+      background-size: 400px
+      background-position: 10px 20px
+
+    &.right
+      background-position: -20px 20px
+
+  .carousel-info
+    width: 100%
+    padding: 40px
+  .carousel-img
+    width: 100%
+    max-width: 480px
+    margin: 0 auto
+    display: block
+  .carousel-number
+    font-size: 100px
+    transform: translate3d(-40px, -40%, 0)
+  .carousel-indicators
+    display: none

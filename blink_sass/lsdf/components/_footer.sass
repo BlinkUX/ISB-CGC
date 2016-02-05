@@ -1,0 +1,56 @@
+.footer
+  background: $isb-warning
+  color: $white
+
+  a
+    color: $white
+
+  p
+    margin: 15px 0
+
+  .container
+    padding: 45px 0
+
+  .align-right
+    float: right
+
+  .social
+    width: 32px
+    height: 32px
+    color: $isb-warning
+    font-size: 1.5em
+    position: relative
+    border-radius: 50%
+    display: inline-block
+    background: $white
+    transition: background 0.2s ease-in
+    i
+      position: absolute
+      left: 50%
+      top: 50%
+      transform: translate3d(-50%, -50%, 0)
+    &:hover, &:focus, &:active
+      border: 1px solid $white
+      background: transparent
+      color: $white
+
+
+.footer-links
+  .link
+    display: inline-block
+    padding-right: 15px
+    vertical-align: middle
+
+.footer-info
+  margin-bottom: 30px
+
+@media screen and (max-width: 767px)
+  .footer
+    padding: 0 15px
+    .align-right
+      float: none
+
+  .footer-links
+    margin: 15px 0
+
+

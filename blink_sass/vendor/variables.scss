@@ -1,7 +1,7 @@
 // --------------------------------------------
 // Viewport sizes
 // --------------------------------------------
-
+$screen-xs: 480px;
 $screen-sm: 768px;
 $screen-md: 992px;
 $screen-lg: 1200px;
@@ -13,12 +13,12 @@ $white: #fff;
 $base-dark: #000;
 
 // Brand color
-$isb-primary: #2A537A;
-$isb-info: #49AFCD;
+$isb-primary: #003F72;
+$isb-info: #00A8DB;
 $isb-success: #C9DD03;
 $isb-warning: #F7991B;
 $isb-danger: #BB00BB;
-$isb-dark: #676767;
+$isb-dark: #6D6E71;
 
 // Additional color choices
 $nav-bg: $white;
@@ -60,15 +60,20 @@ $font-size-small: ceil($font-size * 0.85) !default;
 $font-size-h3: 24px;
 $font-size-h4: 18px;
 
-$default-font-family: "proxima-nova", Arial, sans-serif;
-
 $regular-font-weight: 400;
 $medium-font-weight: 500;
 $bold-font-weight: 700;
 
-$heading-font-weight: $bold-font-weight;
+$default-font-family: "Open Sans", Arial, sans-serif;
+$headings-font-family: "Montserrat", sans-serif;
+$headings-font-weight: $bold-font-weight;
+$headings-line-height: 1.21;
 
-$font-color: darken($base-dark, 10%);
+$font-color: $isb-dark;
+$text-color: $isb-dark;
+
+$link-font-family: $headings-font-family;
+$link-font-weight: $regular-font-weight;
 $link-color: $isb-info;
 
 // --------------------------------------------
@@ -100,11 +105,14 @@ $border-radius-base: 2px;
 // --------------------------------------------
 // Buttons
 // --------------------------------------------
-$btn-font-weight: $medium-font-weight;
+$btn-font-weight: $regular-font-weight;
+$btn-font-family: $headings-font-family;
 
 $btn-default-bg: transparent;
 $btn-default-color: $isb-warning;
 $btn-default-border: $isb-warning;
+
+$btn-border-radius-base: 0;
 
 $button-size: 2rem;
 $transition: 0.3s;
@@ -132,3 +140,19 @@ $breadcrumb-color: $isb-info;
 
 //** Text color of current page in the breadcrumb
 $breadcrumb-separator: ">";
+
+// --------------------------------------------
+// Carousel
+// --------------------------------------------
+
+$carousel-text-shadow: none;
+
+$carousel-control-color: $isb-info;
+$carousel-control-width: 60px;
+$carousel-control-opacity: 0.5;
+$carousel-control-font-size: 3em;
+
+$carousel-indicator-active-bg: $isb-info;
+$carousel-indicator-border-color: transparent;
+
+$carousel-caption-color: #fff;

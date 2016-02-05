@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load custom_tags %}
+{% block title %}Avance{% endblock %}}
+{% block extra_css_libs %}{% endblock %}
+{% block header %}{% endblock %}
+
+{% block link_page_name %}marketing{% endblock %}
+{% block template_name %}marketing-template{% endblock %}
+{% block page_name %}marketing{% endblock %}
+
+{% block full_width_content %}
+<section class="page-section" id="overview">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="fixed-image-holder">
+                    <img src="{% static 'img/lsdf/cell-gray.png' %}" alt="DNA cell" width="100%" class="image-0">
+                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="data notes" class="fixed-image-1">
+                    <img src="{% static 'img/lsdf/genes-image.png' %}" alt="gene cells" class="fixed-image-2">
+                    <img src="{% static 'img/lsdf/rectangle-23.png' %}" alt="gradient rectangle" class="fixed-image-3">
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-push-1 col-md-5 col-sm-6">
+                <h1 class="hero-title">Bring your data stories to life</h1>
+                <svg class="hero-svg">
+                    <defs>
+                        <linearGradient id="gradPatten" x1="0%" y1="15%" x2="60%" y2="80%" >
+                            <stop offset="0%" style="stop-color:rgb(207,224,47);stop-opacity: 1"/>
+                            <stop offset="100%" style="stop-color:rgb(247,144,30); stop-opacity: 1"/>
+                        </linearGradient>
+                    </defs>
+                    <text class="hero-svg-title" x="0" y="1.5em" fill="url(#gradPatten)">
+                        Bring your data
+                        <tspan x="0" y="2.7em">stories to life</tspan>
+                    </text>
+                </svg>
+                <p>Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.</p>
+                <div class="cta-container">
+                    <button class="btn btn-default mod-info">Sign Up</button>
+                    <p class="small"><strong><i>It’s free, and you can sign-in with your Google account</i></strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="page-section" id="section2">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2 class="marketing-section-title">
+                    A faster, more collaborative path from questions to answers.
+                </h2>
+                <p>
+                    Avance was created by the <a href="https://www.systemsbiology.org/">Institute for Systems Biology</a> with support from the <a
+                        href="http://www.cancer.gov/">National Cancer Institute</a> and the <a href="http://www.lsdfa.org/">Life Sciences Discovery Fund</a>. Our goal is to enable biologists to perform large scale integrative data analysis more efficiently, without requiring coding skills or the resources of a big informatics department.
+                </p>
+                <p>
+                    The easy to use, web-based interface promotes collaboration and helps researchers easily compare their own data to publically available research. All storage, transformation and manipulation of data happens in the cloud, freeing researchers to focus on analysis.
+                </p>
+            </div>
+            <div class="col-sm-5 col-sm-push-1">
+                <div class="fixed-image-holder">
+                    <img src="{% static 'img/lsdf/magnify-glass.png' %}" alt="Network graphic" width="310px" class="fixed-image-7">
+                    <img src="{% static 'img/lsdf/Dashboard.png' %}" alt="Avence Dashboard" height="420px">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="page-section" id="features">
+    <div class="container">
+        <div class="row">
+            <div class="featured-item set1">
+                <img src="{% static 'img/lsdf/interface-icon.png' %}" alt="Simple interface" height="80px">
+                <h5 class="featured-title">A Simple, Intuitive Way to Interact with Your Data</h5>
+                <p class="featured-description">
+                    Upload your data, select your variables, and interact with your research through web-based visualizations. No coding required.
+                </p>
+            </div>
+            <div class="featured-item set1">
+                <img src="{% static 'img/lsdf/statistical-icon.png' %}" alt="Statistical Visualization" height="80px">
+                <h5 class="featured-title">Multiple Statistical Tests & Visualization Styles</h5>
+                <p class="featured-description">
+                    Avance will automatically run the most appropriate statistical tests based on the visualization—or visualizations—you select.
+                </p>
+            </div>
+            <div class="featured-item set1">
+                <img src="{% static 'img/lsdf/workbook-icon.png' %}" alt="Workbook and worksheets" height="80px">
+                <h5 class="featured-title">Workbook <br> + Worksheets Model</h5>
+                <p class="featured-description">Create and save multiple analyses of a data set, compare different variables or groups as you build your data story.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="featured-item set2">
+                <img src="{% static 'img/lsdf/real-time-icon.png' %}" alt="Real-time comparisons" height="80px">
+                <h5 class="featured-title">Real-Time Comparisons</h5>
+                <p class="featured-description">View and interact with your data side by side with publically available data or data from other researchers and collaborators.</p>
+            </div>
+            <div class="featured-item set2">
+                <img src="{% static 'img/lsdf/collaboration-icon.png' %}" alt="collaborate" height="80px">
+                <h5 class="featured-title">Facilitate Collaboration</h5>
+                <p class="featured-description">Enable collaborators near and far to share data and collaborate on analysis in real time.</p>
+            </div>
+            <div class="featured-item set2">
+                <img src="{% static 'img/lsdf/infrastructure-icon.png' %}" alt="Web-based infrastructure" height="80px">
+                <h5 class="featured-title">Web-Based Infrastructure</h5>
+                <p class="featured-description">All storage, transformation and manipulation of data happens in the cloud, freeing researchers to focus on analysis.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="how-it-work">
+    <div class="carousel slide" data-ride="carousel" id="carousel-instructions" data-interval="false">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            <li class="active" data-target="#carousel-instructions" data-slide-to="0"></li>
+            <li data-target="#carousel-instructions" data-slide-to="1"></li>
+            <li data-target="#carousel-instructions" data-slide-to="2"></li>
+            <li data-target="#carousel-instructions" data-slide-to="3"></li>
+            <li data-target="#carousel-instructions" data-slide-to="4"></li>
+        </ol>
+        <!-- Wrapper for slides -->
+        <ul class="carousel-inner" role="listbox">
+            <li class="item active">
+                <div class="container">
+                    <div class="carousel-img">
+                        <img src="{% static 'img/lsdf/slide-01.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="carousel-info">
+                        <span class="carousel-number">01</span>
+                        <h4 class="carousel-title">UPLOAD YOUR DATA</h4>
+                        <p>Avance accepts raw data in most standard formats, so you can begin performing analysis as soon as you get your data. (You can also interact with our library of publically available data sets.)</p>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="carousel-img">
+                        <img src="{% static 'img/lsdf/slide-03.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="carousel-info">
+                        <span class="carousel-number">02</span>
+                        <h4 class="carousel-title">ADD VARIABLES AND COHORTS</h4>
+                        <p>Slice and segment your data and easily pull in publically available data sets from our library. Different cohorts and variables are clearly segmented for easy, one-click comparisons.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="carousel-img">
+                        <img src="{% static 'img/lsdf/slide-04.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="carousel-info">
+                        <span class="carousel-number">03</span>
+                        <h4 class="carousel-title">ANALYZE AND VISUALIZE YOUR DATA</h4>
+                        <p>Choose from our ever-growing library of statistical tests and corresponding visualizations.  The avance application can perform a variety of simple-to-complex quantitative analyses and provide an appropriate, interactive plot of the results.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="carousel-img">
+                        <img src="{% static 'img/lsdf/slide-05.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="carousel-info">
+                        <span class="carousel-number">04</span>
+                        <h4 class="carousel-title">SHARE AND COLLABORATE</h4>
+                        <p>Easily share data stories right from the app. Invite team members or colleagues to view and interact with your data, upload their own, and collaborate on analyses. You can even export visualizations for presentation or publication.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="item">
+                <div class="container">
+                    <div class="carousel-img">
+                        <img src="{% static 'img/lsdf/slide-02.png' %}" alt="workbook concept" width="100%">
+                    </div>
+                    <div class="carousel-info">
+                        <span class="carousel-number">05</span>
+                        <h4 class="carousel-title">POWERFUL ANALYSIS <br>
+                        AND POWERFUL TEAMWORK</h4>
+                        <p>Use the “Workbook/Worksheet” model to create multiple projects or working groups and easily facilitate side-by-side comparisons of different analyses and visualizations.</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <!-- Controls -->
+        <a href="#carousel-instructions" class="left carousel-control" role="button" data-slide="prev">
+            <span class="sr-only">Previous</span>
+        </a>
+        <a href="#carousel-instructions" class="right carousel-control" role="button" data-slide="next">
+            <span class="sr-only">next</span>
+        </a>
+    </div>
+</section>
+<section class="page-section" id="getting-started">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-5 col-sm-6">
+                <h2 class="marketing-section-title">Signing up is <br> quick and free</h2>
+                <p>Avance is currently in Beta, and is free to all registered users. We invite you tu use these tools and to provide feedback about how we can improve them.</p>
+                <div class="cta-container">
+                    <button class="btn btn-default mod-info">Sign Up</button>
+                </div>
+                <p class="small">(signup and use are free, but data storage limits may apply in order to preserve access for all users as we scale up our infrastructure.)</p>
+            </div>
+            <div class="col-lg-5 col-lg-push-3 col-md-push-1 col-sm-6">
+                <div class="fixed-image-holder">
+                    <img src="{% static 'img/lsdf/cells-2.png' %}" alt="DNA cells" width="100%" class="image-0">
+                    <img src="{% static 'img/lsdf/data-connection.png' %}" alt="data notes" width="90%" class="fixed-image-4">
+                    <img src="{% static 'img/lsdf/dna-color.png' %}" alt="DNA image" width="304px" class="fixed-image-5">
+                    <img src="{% static 'img/lsdf/rectangle-23-v.png' %}" alt="rectangle" width="284px" class="fixed-image-6">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block footer %}
+    <div class="container">
+        <div class="row footer-info">
+            <div class="col-sm-6">
+                <h3 class="sr-only">Avance</h3>
+                <img src="{% static 'img/lsdf/avance-white.png' %}" alt="Avance Logo" width="175px">
+                <p>
+                    Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.
+                </p>
+                <ul class="footer-links">
+                    <li class="link"><a href="">Technical Specifications</a></li>
+                    <li class="link"><a href="">Submit Feedback</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <h3 class="sr-only">Institute for Systems Biology</h3>
+                <a href="https://www.systemsbiology.org/">
+                    <img class="align-right" src="{% static 'img/lsdf/isb-logo-white.png' %}" alt="Institute for Systems Biology" width="140px">
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <small class="copyright">Copyright Institute for Systems Biology 2016 • Institute of Systems Biology</small>
+            </div>
+            <div class="col-sm-6">
+                <ul class="footer-links align-right">
+                    <li class="link">
+                        <span role="heading">Share this page</span>
+                    </li>
+                    <li class="link"><a class="fb-share social" style='text-decoration:none;' type="icon_link" href="http://www.facebook.com/sharer.php?u=http://google.com" target="_blank"><i class="fa fa-facebook"></i><span class="sr-only">Share on Facebook</span></a></li>
+                    <li class="link"><a class="twitter-share social" style='text-decoration:none;' type="icon_link" href="https://twitter.com/intent/tweet?text=Avance is a web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment." target="_blank"><i class="fa fa-twitter"></i><span class="sr-only">Share on Twitter</span></a></li>
+                    <li class="link"><a class="linkedin-share social" style='text-decoration:none;' type="icon_link" href="https://www.linkedin.com/shareArticle?mini=true&url=avance.com&title=Avance&summary=Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment. &source=" target="_blank"><i class="fa fa-linkedin"></i><span class="sr-only">Share on LinkedIn</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_file %}{% static 'js/marketing.js' %}{% endblock %}
