@@ -211,7 +211,7 @@ require([
         var top = clientHeight/2 - winHeight/2;
         var left = clientWidth/2 - winWidth/2;
 
-        window.open(url, "sharer, height=" + winHeight + ",width=" + winWidth + ",top=" + top +",left=" + left);
+        return window.open(url, "sharer", 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+winWidth+', height='+winHeight+', top='+top+', left='+left);
     });
 })
 
