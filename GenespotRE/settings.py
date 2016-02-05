@@ -28,6 +28,10 @@ ALLOWED_HOSTS = [
     secret_settings.get('ALLOWED_HOST')
 ]
 
+#Per User Usage restrictions
+ENFORCE_USER_STORAGE_SIZE = secret_settings.get('ENFORCE_USER_STORAGE_SIZE')
+USER_STORAGE_LIMIT_BYTES = secret_settings.get('USER_STORAGE_LIMIT_BYTES')
+
 ### added for connecting to CloudSQL with SSL certs on MVM platform
 SSL_DIR = os.path.abspath(os.path.dirname(__file__))+os.sep
 MVM_ON = True
@@ -362,8 +366,6 @@ ERA_LOGIN_URL                       = secret_settings.get('ERA_LOGIN_URL')
 IPV4                                = secret_settings.get('IPV4')
 SAML_FOLDER                         = secret_settings.get('SAML_FOLDER')
 
-
-
 ##############################
 #   Start django-finalware   #
 ##############################
@@ -371,13 +373,18 @@ SAML_FOLDER                         = secret_settings.get('SAML_FOLDER')
 INSTALLED_APPS += (
     'finalware',)
 TEMPLATE_CONTEXT_PROCESSORS += (
-    'finalware.context_processors.contextify',)
+    'finalware.context_processors.contextify', 'GenespotRE.context_processor.additional_context')
 
 SITE_SUPERUSER_USERNAME = secret_settings.get('SU_USER')
 SITE_SUPERUSER_EMAIL = ''
 SITE_SUPERUSER_PASSWORD = secret_settings.get('SU_PASS')
-
+SITE_GOOGLE_ANALYTICS   = secret_settings.get('SITE_GOOGLE_ANALYTICS')
 
 ############################
 #   End django-finalware   #
 ############################
+
+############################
+#   CUSTOM TEMPLATE CONTEXT
+############################
+SITE_GOOGLE_TAG_MANAGER_ID = secret_settings.get('SITE_GOOGLE_TAG_MANAGER_ID')

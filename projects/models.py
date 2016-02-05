@@ -116,6 +116,31 @@ class Study(models.Model):
                 count += datatable.data_upload.useruploadedfile_set.count()
         return count
 
+    def get_storage_size(self):
+        files = []
+        for datatable in self.user_data_tables_set.all():
+            if datatable.data_upload is not None:
+                files.extend(datatable.data_upload.useruploadedfile_set.all())
+
+        total_size = 0
+        for file in files :
+            total_size += file.file.size
+
+        return total_size
+
+    def get_storage_string(self):
+        size = self.get_storage_size()
+        string = ""
+        if size > 1000000000 :
+            string = str(size / 1000000000) + " GB"
+        elif size > 1000000 :
+            string = str(size / 1000000) + " MB"
+        elif size > 1000 :
+            string = str(size / 1000) + " kB"
+        else :
+            string = str(size) + " b"
+        return string
+
     def __str__(self):
         return self.name
 
@@ -123,7 +148,6 @@ class Study_Last_View(models.Model):
     study = models.ForeignKey(Study, blank=False)
     user = models.ForeignKey(User, null=False, blank=False)
     last_view = models.DateTimeField(auto_now_add=True, auto_now=True)
-
 
 class User_Feature_Definitions(models.Model):
     study = models.ForeignKey(Study, null=False)

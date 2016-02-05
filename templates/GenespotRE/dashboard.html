@@ -13,6 +13,13 @@
 {% block page_header %}
 <div class="container">
     <h1 class="page-header">Your Dashboard</h1>
+    {% if usage_monitoring_enabled == "True" %}
+        <div class="usage-container">
+            <div class="usage-text">Data Usage {{ current_usage_string }} / {{ max_usage_string }}</div>
+            <div class="usage-box"></div>
+            <div class="usage-fill {% if usage_percentage > 90 %} usage-warning {% endif %}" style="width: {{ usage_percentage }}"></div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% block content %}
@@ -57,15 +64,21 @@
 
                 <div class="collapse clearfix" id="more-analysis">
                     <li class="item">
-                        <img class="img-fluid" src="{% static 'img/histogram.png' %}">
+                        <div class="image-holder">
+                            <img class="img-fluid" src="{% static 'img/histogram.png' %}">
+                        </div>
                         <p>Violin Plot 2</p>
                     </li>
                     <li class="item">
-                        <img class="img-fluid" src="{% static 'img/histogram.png' %}">
+                        <div class="image-holder">
+                            <img class="img-fluid" src="{% static 'img/histogram.png' %}">
+                        </div>
                         <p>Cubby Hole</p>
                     </li>
                     <li class="item">
-                        <img class="img-fluid" src="{% static 'img/seqpeak.png' %}" alt="">
+                        <div class="image-holder">
+                            <img class="img-fluid" src="{% static 'img/seqpeak.png' %}" alt="">
+                        </div>
                         <p>SeqPeak</p>
                     </li>
                 </div>

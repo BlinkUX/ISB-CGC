@@ -11,6 +11,9 @@ SETTINGS = {
     'BQ_PROJECT_ID': os.environ.get('BIGQUERY_PROJECT_ID', os.environ.get('GCLOUD_PROJECT_ID')), # Google Cloud Project ID #
     'PROJECT_NAME': os.environ.get('GCLOUD_PROJECT_NAME'),
 
+    'ENFORCE_USER_STORAGE_SIZE' : os.environ.get('ENFORCE_USER_STORAGE_SIZE', False),
+    'USER_STORAGE_LIMIT_BYTES' : os.environ.get('USER_STORAGE_LIMIT_BYTES'),
+
     'REQUEST_PROJECT_EMAIL': os.environ.get('REQUEST_PROJECT_EMAIL', 'request@example.com'),
 
     # TODO: Should be deleted at some point in favor of merged settings
@@ -131,6 +134,9 @@ SETTINGS = {
 
     'SU_USER': os.environ.get('SUPERUSER_USERNAME', 'isb'),
     'SU_PASS': os.environ.get('SUPERUSER_PASSWORD', 'isbcgctest'),
+
+    'SITE_GOOGLE_TAG_MANAGER_ID' : os.environ.get('SITE_GOOGLE_TAG_MANAGER_ID', False),
+    'SITE_GOOGLE_ANALYTICS' : os.environ.get('SITE_GOOGLE_ANALYTICS_ID', False),
 }
 
 if os.environ.has_key('DB_SSL_CERT'):
