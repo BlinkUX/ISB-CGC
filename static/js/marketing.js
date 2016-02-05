@@ -172,8 +172,8 @@ require([
         var delay =0.15;
         var ease = Power2.easeOut;
         var animationTransformYDown = {y: 0, delay: delay, ease: Power2.easeOut};
-        var animationOpacityDown = {opacity: '0.8', y:0, delay: delay, ease: Power2.easeOut};
-        var animationOpacityUp = {opacity: "+=0.1", y: "-=2px", delay: delay, ease: ease}
+        var animationOpacityDown = {opacity: '0.6', y:0, delay: delay, ease: Power2.easeOut};
+        var animationOpacityUp = {opacity: "+=0.1", y: "-=3px", delay: delay, ease: ease}
 
         var overViewRect = document.getElementById('overview').getBoundingClientRect();
         if(overViewRect.bottom < 55){

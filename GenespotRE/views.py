@@ -373,7 +373,8 @@ def help_page(request):
     return render(request, 'GenespotRE/help.html')
 
 def about_page(request):
-    return render(request, 'GenespotRE/about.html')
+    return render(request, 'GenespotRE/marketing_landing.html',
+                  {'request': request, 'full_width': 'true'})
 
 def get_storage_string(size):
     if size > 1000000000 :

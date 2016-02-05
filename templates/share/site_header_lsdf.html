@@ -14,12 +14,12 @@
 
                         <li class="navbar-item nav-logo">
                             <a {% if user.is_authenticated %}href="{% url 'dashboard' %}"{% else %}href="{% url 'dashboard' %}" {% endif %}>
-                                <img class="navbar-brand" {% if request.get_full_path == "/" %} src="{% static 'img/lsdf/avance.png' %}" {% else %} src="{% static 'img/lsdf/avance-white.png' %}" {% endif %}  alt="Avance Logo"/>
+                                <img class="navbar-brand" {% if full_width %} src="{% static 'img/lsdf/avance.png' %}" {% else %} src="{% static 'img/lsdf/avance-white.png' %}" {% endif %}  alt="Avance Logo"/>
                                 <span class="navbar-item sr-only">Avance</span>
                             </a>
                         </li>
 
-                        {% if request.get_full_path == "/" %}
+                        {% if full_width %}
                             <li class="navbar-link navbar-item"><a href="#overview" data-ride="paranav">Overview</a></li>
                             <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
                             <li class="navbar-link navbar-item"><a href="#how-it-work" data-ride="paranav">How It Works</a></li>
