@@ -120,8 +120,8 @@ def landing_page(request):
         except:
             print >> sys.stderr,"Printing os.getenv('BACKEND_ID') Failed"
 
-    return render(request, 'GenespotRE/landing.html',
-                  {'request': request})
+    return render(request, 'GenespotRE/marketing_landing.html',
+                  {'request': request, 'full_width': 'true'})
 
 '''
 Returns css_test page used to test css for general ui elements
@@ -373,7 +373,8 @@ def help_page(request):
     return render(request, 'GenespotRE/help.html')
 
 def about_page(request):
-    return render(request, 'GenespotRE/about.html')
+    return render(request, 'GenespotRE/marketing_landing.html',
+                  {'request': request, 'full_width': 'true'})
 
 def get_storage_string(size):
     if size > 1000000000 :

@@ -4,20 +4,31 @@
 {% load project_custom_tags %}
 {% load workbook_custom_tags %}
 
+
     <header class="navbar navbar-fixed-top site-header" role="header">
         <nav class="container">
             <div class="row">
                 <div class="col-lg-12">
                 <div class="nav navbar-left">
-                     <ul class="">
-                         {% if user.is_authenticated %}
-                            <li class="navbar-item"> <a href="{% url 'dashboard' %}"><img class="navbar-brand" src="{% static 'img/isblogo.png' %}" alt="ISB Logo"/><span class="navbar-item">ISB-CGC</span></a></li>
-                         {% else %}
-                            <li class="navbar-item"> <a href="{% url 'landing_page' %}"><img class="navbar-brand" src="{% static 'img/isblogo.png' %}" alt="ISB Logo"/><span class="navbar-item">ISB-CGC</span></a></li>
-                         {% endif %}
+                    <ul class="">
 
-                        <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
-                        <li class="navbar-link navbar-item"><a href="{% url 'help' %}" target="_blank">Help</a></li>
+                        <li class="navbar-item nav-logo">
+                            <a {% if user.is_authenticated %}href="{% url 'dashboard' %}"{% else %}href="{% url 'dashboard' %}" {% endif %}>
+                                <img class="navbar-brand" {% if full_width %} src="{% static 'img/lsdf/avance.png' %}" {% else %} src="{% static 'img/lsdf/avance-white.png' %}" {% endif %}  alt="Avance Logo"/>
+                                <span class="navbar-item sr-only">Avance</span>
+                            </a>
+                        </li>
+
+                        {% if full_width %}
+                            <li class="navbar-link navbar-item"><a href="#overview" data-ride="paranav">Overview</a></li>
+                            <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
+                            <li class="navbar-link navbar-item"><a href="#how-it-work" data-ride="paranav">How It Works</a></li>
+                            <li class="navbar-link navbar-item"><a href="#getting-started" data-ride="paranav">Getting Started</a></li>
+                            <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>
+                        {% else %}
+                            <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
+                            <li class="navbar-link navbar-item"><a href="{% url 'help' %}" target="_blank">Help</a></li>
+                        {% endif %}
                     </ul>
                 </div>
 
@@ -44,14 +55,18 @@
                             </a>
                         </div>
                     {% else %}
-                        <div id="user-login" class="navbar-form inline-block">
+                        <div class="inline-block sign-up">
                             <!-- same thing as /accounts/login-->
-                            <a class="login-link" href="{% url 'account_login' %}" title="Sign In"><i class="fa fa-sign-in"></i> Sign In</a>
+                            <a class="btn btn-default mod-info" href="{% url 'account_login' %}" title="Sign Up" ></i> Sign Up</a>
+                        </div>
+                        <div class="inline-block sign-in">
+                            <!-- same thing as /accounts/login-->
+                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
                         </div>
                     {% endif %}
                 </div>
                 </div>
             </div>
         </nav>
-        {% include 'share/sub_nav.html' %}
+        {% include 'share/sub_nav.html'  %}
     </header>
