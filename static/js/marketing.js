@@ -30,7 +30,6 @@ require([
     if(navigator.userAgent.match(/Trident\/7\./)){
         // Disable smooth scroll on mousewheel scroll on IE
         // For fixed background image
-        console.log('no smooth scrolling');
         $('body').on("mousewheel", function () {
             // remove default behavior
             event.preventDefault();
@@ -41,9 +40,6 @@ require([
             window.scrollTo(0, currentScrollPosition - wheelDelta);
         });
     }
-
-
-    console.log(navigator);
 
 
     // ==========================
