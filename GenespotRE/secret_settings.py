@@ -137,6 +137,8 @@ SETTINGS = {
 
     'SITE_GOOGLE_TAG_MANAGER_ID' : os.environ.get('SITE_GOOGLE_TAG_MANAGER_ID', False),
     'SITE_GOOGLE_ANALYTICS' : os.environ.get('SITE_GOOGLE_ANALYTICS_ID', False),
+
+    'FORCE_SINGLE_GOOGLE_ACCOUNT' : os.environ.get('FORCE_SINGLE_GOOGLE_ACCOUNT', False),
 }
 
 if os.environ.has_key('DB_SSL_CERT'):
