@@ -197,6 +197,21 @@ require([
         lastScroll = currentScroll;
     });
 
+    // share on social channel
+    $('a.social').on('click', function (e) {
+        e.preventDefault();
 
+        var url = encodeURI($(this).attr('href'));
+        var clientWidth = window.innerWidth || document.documentElement.clientWidth;
+        var clientHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        var winWidth = (clientWidth > 580) ? 580 : 320;
+        var winHeight = 300;
+
+        var top = clientHeight/2 - winHeight/2;
+        var left = clientWidth/2 - winWidth/2;
+
+        window.open(url, "sharer, height=" + winHeight + ",width=" + winWidth + ",top=" + top +",left=" + left);
+    });
 })
 

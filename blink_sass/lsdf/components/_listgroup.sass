@@ -63,6 +63,7 @@
   display: none
 
 .table-list, .table-list_warning
+  line-height: 1.7
   a:hover, a:active
     text-decoration: none
   .list-title
@@ -70,18 +71,22 @@
     font-weight: $bold-font-weight
     margin-bottom: 0
     color: $isb-dark
+
   .list-main
     display: inline-block
     vertical-align: middle
     width: 70%
     p
       color: $font-color
+      font-family: $default-font-family
+      font-size: 0.9em
   .list-info
     display: inline-block
     vertical-align: middle
     width: 29%
-    color: $isb-dark
+    color: $font-color
     font-size: $font-size-small
+    font-family: $default-font-family
   li
     @extend %clearfix
     padding: 5px 15px

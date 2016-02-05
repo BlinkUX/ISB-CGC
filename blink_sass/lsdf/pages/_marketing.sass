@@ -1,15 +1,27 @@
 $heading-margin: 24px
 
+// if browser support svg, h1 only used to sr purpose
+.svg .hero-title
+  position: absolute
+  width: 1px
+  height: 1px
+  margin: -1px
+  padding: 0
+  overflow: hidden
+  clip: rect(0, 0, 0, 0)
+  border: 0
 // Unique site-wide typography
 // Using svg to display text gradient
 .hero-svg
   width: 100%
   height: 150px
-.hero-svg-title, text
+.hero-svg-title, text, .hero-title
   font-size: 44px
   font-family: $headings-font-family
   font-weight: $bold-font-weight
   color: $isb-warning
+.no-svg .hero-svg
+  display: none
 
 #marketing
   overflow: hidden
@@ -94,8 +106,10 @@ $heading-margin: 24px
   margin: 40px 0 $heading-margin 0
   .btn
     margin-right: 16px
-  span
+  .small
     color: #aaaaaa
+    margin-top: 15px
+    max-width: 200px
 
 .marketing-section-title
   font-size: 28px
