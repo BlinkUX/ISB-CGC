@@ -29,12 +29,11 @@ define([
     'violin_plot',
     'histogram_plot',
     'bar_plot',
-    'visualizations/mock_histogram_data',
     'select2',
     'assetscore',
     'assetsresponsive'
 
-], function($, jqueryui, bootstrap, session_security, d3, d3tip, vizhelpers, scatter_plot, cubby_plot, violin_plot, histogram, bar_graph, mock_histogram_data ) {
+], function($, jqueryui, bootstrap, session_security, d3, d3tip, vizhelpers, scatter_plot, cubby_plot, violin_plot, histogram, bar_graph ) {
     A11y.Core();
 
     var scatter_plot_obj = Object.create(scatter_plot, {});
@@ -369,8 +368,6 @@ define([
         cohorts_override : boolean on whether to override the color_by parameter
      */
     function generate_plot(plot_selector, legend_selector, pairwise_element, type, x_attr, y_attr, color_by, cohorts, cohort_override, callback) {
-
-        //data = mock_histogram_data.get_data();
         //select_plot(plot_selector, legend_selector, pairwise_element, type, x_attr, y_attr, color_by, cohorts, cohort_override, data);
         //callback();
         $.ajax({
