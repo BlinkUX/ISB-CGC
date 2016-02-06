@@ -11,9 +11,11 @@ from django.db import connection
 from django.core.urlresolvers import reverse
 from data_upload.models import UserUpload, UserUploadedFile
 from projects.models import User_Feature_Definitions, User_Feature_Counts, Project
+from accounts.models import GoogleProject,Bucket
 from sharing.service import create_share
 from google.appengine.api.mail import send_mail
 
+import sys
 import json
 import requests
 
@@ -95,10 +97,22 @@ def get_storage_string(size):
 
 @login_required
 def project_upload(request):
+    template = 'projects/project_upload.html'
+
     if not hasattr(request.user, 'googleproject'):
-        template = 'projects/project_request.html'
-    else:
-        template = 'projects/project_upload.html'
+        if settings.FORCE_SINGLE_GOOGLE_ACCOUNT:
+            proj = GoogleProject(user=request.user,
+                                 project_name=settings.PROJECT_NAME,
+                                 project_id=settings.PROJECT_ID,
+                                 big_query_dataset=settings.BQ_PROJECT_ID)
+            proj.save()
+
+            buck = Bucket(user = request.user,
+                          bucket_name=settings.GCLOUD_BUCKET)
+            buck.save()
+        else :
+            template = 'projects/project_request.html'
+
 
     usage = get_storage_string(request.user.usage.usage_bytes)
     max_usage = get_storage_string(request.user.usage.usage_bytes_max)
