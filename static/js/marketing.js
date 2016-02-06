@@ -25,8 +25,6 @@ require([
 
     'use strict';
 
-    //skrollr.init();
-
     if(navigator.userAgent.match(/Trident\/7\./)){
         // Disable smooth scroll on mousewheel scroll on IE
         // For fixed background image
@@ -46,7 +44,6 @@ require([
     // Building a paranav plugin to handle parallax navigation
     // and parallax animation, solving parallax jittery issues
     // of mousewheel scroll on Chrome and safari
-    //
 
     var Paranav = function (element, options) {
         var $this = this;
