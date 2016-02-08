@@ -28,6 +28,9 @@ ALLOWED_HOSTS = [
     secret_settings.get('ALLOWED_HOST')
 ]
 
+# Limit all users to a single google account
+FORCE_SINGLE_GOOGLE_ACCOUNT = secret_settings.get('FORCE_SINGLE_GOOGLE_ACCOUNT')
+
 #Per User Usage restrictions
 ENFORCE_USER_STORAGE_SIZE = secret_settings.get('ENFORCE_USER_STORAGE_SIZE')
 USER_STORAGE_LIMIT_BYTES = secret_settings.get('USER_STORAGE_LIMIT_BYTES')
@@ -388,3 +391,6 @@ SITE_GOOGLE_ANALYTICS   = secret_settings.get('SITE_GOOGLE_ANALYTICS')
 #   CUSTOM TEMPLATE CONTEXT
 ############################
 SITE_GOOGLE_TAG_MANAGER_ID = secret_settings.get('SITE_GOOGLE_TAG_MANAGER_ID')
+
+
+
