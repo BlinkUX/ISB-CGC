@@ -124,7 +124,7 @@ class Study(models.Model):
 
         total_size = 0
         for file in files :
-            total_size += file.file.size
+            total_size += int(file.file.size)
 
         return total_size
 
