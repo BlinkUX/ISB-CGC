@@ -894,8 +894,6 @@ a.skip-nav {
 .panel {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
   border: none; }
-  .panel-body {
-    min-height: 635px; }
   .panel-invisible {
     margin-bottom: 30px; }
   .panel-heading a:hover {
