@@ -139,6 +139,9 @@ SETTINGS = {
     'SITE_GOOGLE_ANALYTICS' : os.environ.get('SITE_GOOGLE_ANALYTICS_ID', False),
 
     'FORCE_SINGLE_GOOGLE_ACCOUNT' : os.environ.get('FORCE_SINGLE_GOOGLE_ACCOUNT', False),
+
+    'API_HEADER_KEY' : os.environ.get('API_HEADER_KEY', False),
+    'API_HEADER_VALUE' : os.environ.get('API_HEADER_VALUE', False)
 }
 
 if os.environ.has_key('DB_SSL_CERT'):

@@ -451,3 +451,25 @@ def study_data_error(request, project_id=0, study_id=0, dataset_id=0):
     return JsonResponse({
         'status': 'success'
     })
+
+#this file will accept a list of files and render a process to create or extend a project
+def import_files(request):
+    if request.META[settings.API_HEADER_KEY] == settings.API_HEADER_VALUE:
+        template = 'projects/import_files.html'
+        context = {}
+        if request.method == "POST" :
+            auth_token = request.POST['auth_token']
+            file_list  = request.POST['file_url_list']
+
+            context['file_list'] = file_list
+            context['auth'] = auth_token
+            #if not request.user :
+                #template = 'auth/login'
+
+            return render(request, template, context)
+        else :
+            return HttpResponseNotFound('<h1>Page not found</h1>')
+    else :
+        return HttpResponseNotFound('<h1>Page not found</h1>')
+
+
