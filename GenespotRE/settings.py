@@ -392,5 +392,10 @@ SITE_GOOGLE_ANALYTICS   = secret_settings.get('SITE_GOOGLE_ANALYTICS')
 ############################
 SITE_GOOGLE_TAG_MANAGER_ID = secret_settings.get('SITE_GOOGLE_TAG_MANAGER_ID')
 
+BASESPACE_APP_SECRET=secret_settings.get('BASESPACE_APP_SECRET')
+BASESPACE_APP_ID=secret_settings.get('BASESPACE_APP_ID')
+
+MAX_VCF_SIZE=secret_settings.get('MAX_VCF_SIZE')
+
 
 
