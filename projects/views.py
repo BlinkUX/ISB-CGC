@@ -453,10 +453,6 @@ def study_data_error(request, project_id=0, study_id=0, dataset_id=0):
     })
 
 #this file will accept a list of files and render a process to create or extend a project
-#login required will force redirect to login page, however how to we send the parameters
-#
-# e.g. LSDF_BaseSpaceEndpoint.py?action=trigger&appsessionuri=v1pre3/appsessions/32597636&authorization_code=fdf8a49ad47840cfbaa74c07f2c0a9a2
-#The client secret code for the BS test app is: bs['client_secret'] =
 ## FOR TESTING PURPOSES ONLY
 @login_required
 def import_auth(request):
@@ -508,7 +504,7 @@ def import_files(request):
     template = 'projects/project_select.html'
     context = {}
     if request.method == "GET" :
-        appsession_uri       = request.GET['appsessionuri']  #appsessionuri=v1pre3/appsessions/{AppSessionId}
+        appsession_uri       = request.GET['appsessionuri']
         authorization_code   = request.GET['authorization_code']
 
         redirect_url         = request.get_host() + reverse('accept_external_files')
@@ -516,9 +512,7 @@ def import_files(request):
             redirect_url = "https://" + redirect_url
         else :
             redirect_url = "http://" + redirect_url
-        #redirect_url         = 'https://db.systemsbiology.net/devDC/sbeams/cgi/Skunkworks/LSDF_BaseSpaceEndpoint.py' #authorization key expired
 
-        # a) use authorization_code plus the app private key (mentioned in previous email) to request an access_token.
         access_token = get_basespace_access_token(basespace_app_id, basespace_app_secret, redirect_url, authorization_code)
 
         if access_token :
@@ -614,150 +608,3 @@ def write_response_to_basespace(result, access_token, session_uri):
     r = h.getresponse()
 
     return r
-
-#session structure returned
-# {
-# 	"Notifications": [],
-# 	"ResponseStatus": {},
-# 	"Response": {
-# 		"StatusSummary": "",
-# 		"References": [{
-# 			"Rel": "Input",
-# 			"Href": "v1pre3/projects/28460436",
-# 			"Type": "Project",
-# 			"HrefContent": "v1pre3/projects/28460436",
-# 			"Content": {
-# 				"HasCollaborators": false,
-# 				"TotalSize": 0,
-# 				"DateModified": "2016-02-08T18:12:38.0000000",
-# 				"UserOwnedBy": {
-# 					"Href": "v1pre3/users/7614612",
-# 					"Name": "Ross Bohner",
-# 					"DateCreated": "0001-01-01T00:00:00.0000000",
-# 					"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
-# 					"Id": "7614612"
-# 				},
-# 				"Name": "LSDF File Download App",
-# 				"DateCreated": "2016-02-08T18:12:38.0000000",
-# 				"Href": "v1pre3/projects/28460436",
-# 				"Id": "28460436",
-# 				"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
-# 			}
-# 		}],
-# 		"Properties": {
-# 			"Href": "v1pre3/appsessions/32627092/properties",
-# 			"TotalCount": 4,
-# 			"DisplayedCount": 4,
-# 			"Items": [{
-# 				"Href": "v1pre3/appsessions/32627092/properties/Input.project-id",
-# 				"Type": "project",
-# 				"Description": "Project",
-# 				"Content": {
-# 					"HasCollaborators": false,
-# 					"TotalSize": 0,
-# 					"DateModified": "2016-02-08T18:12:38.0000000",
-# 					"UserOwnedBy": {
-# 						"Href": "v1pre3/users/7614612",
-# 						"Name": "Ross Bohner",
-# 						"DateCreated": "0001-01-01T00:00:00.0000000",
-# 						"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
-# 						"Id": "7614612"
-# 					},
-# 					"Name": "LSDF File Download App",
-# 					"DateCreated": "2016-02-08T18:12:38.0000000",
-# 					"Href": "v1pre3/projects/28460436",
-# 					"Id": "28460436",
-# 					"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
-# 				},
-# 				"Name": "Input.project-id"
-# 			}, {
-# 				"Name": "Input.project-id.attributes",
-# 				"ItemsTotalCount": 1,
-# 				"Items": [
-# 					[{
-# 						"Key": "FieldId",
-# 						"Values": ["project-id"]
-# 					}, {
-# 						"Key": "ResourceType",
-# 						"Values": ["project"]
-# 					}, {
-# 						"Key": "ResourceId",
-# 						"Values": ["28460436"]
-# 					}, {
-# 						"Key": "ResourceHref",
-# 						"Values": ["v1pre3/projects/28460436"]
-# 					}]
-# 				],
-# 				"Href": "v1pre3/appsessions/32627092/properties/Input.project-id.attributes",
-# 				"Type": "map[]",
-# 				"ItemsDisplayedCount": 1,
-# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Input.project-id.attributes/items",
-# 				"Description": "Project Attributes"
-# 			}, {
-# 				"Name": "Input.Projects",
-# 				"ItemsTotalCount": 1,
-# 				"Items": [{
-# 					"HasCollaborators": false,
-# 					"TotalSize": 0,
-# 					"DateModified": "2016-02-08T18:12:38.0000000",
-# 					"UserOwnedBy": {
-# 						"Href": "v1pre3/users/7614612",
-# 						"Name": "Ross Bohner",
-# 						"DateCreated": "0001-01-01T00:00:00.0000000",
-# 						"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
-# 						"Id": "7614612"
-# 					},
-# 					"Name": "LSDF File Download App",
-# 					"DateCreated": "2016-02-08T18:12:38.0000000",
-# 					"Href": "v1pre3/projects/28460436",
-# 					"Id": "28460436",
-# 					"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
-# 				}],
-# 				"Href": "v1pre3/appsessions/32627092/properties/Input.Projects",
-# 				"Type": "project[]",
-# 				"ItemsDisplayedCount": 1,
-# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Input.Projects/items",
-# 				"Description": ""
-# 			}, {
-# 				"Name": "Output.Projects",
-# 				"ItemsTotalCount": 0,
-# 				"Items": [],
-# 				"Href": "v1pre3/appsessions/32627092/properties/Output.Projects",
-# 				"Type": "project[]",
-# 				"ItemsDisplayedCount": 0,
-# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Output.Projects/items",
-# 				"Description": ""
-# 			}]
-# 		},
-# 		"Name": "Test LSDF App",
-# 		"Application": {
-# 			"AppFamilySlug": "blink-ux.test-lsdf-app",
-# 			"PublishStatus": "Development",
-# 			"Classifications": ["Quality"],
-# 			"DateCreated": "2016-02-09T21:31:50.0000000",
-# 			"Category": "Other",
-# 			"Name": "Test LSDF App",
-# 			"ShortDescription": "This is a temporary application used for LSDF testing",
-# 			"CompanyName": "Blink UX",
-# 			"Features": [],
-# 			"Href": "v1pre3/applications/2550548",
-# 			"IsBillingActivated": false,
-# 			"VersionNumber": "1.0.0",
-# 			"AppVersionSlug": "blink-ux.test-lsdf-app.1.0.0",
-# 			"Id": "2550548"
-# 		},
-# 		"DateCreated": "2016-02-10T00:02:09.0000000",
-# 		"UserCreatedBy": {
-# 			"Href": "v1pre3/users/7614612",
-# 			"Name": "Ross Bohner",
-# 			"DateCreated": "0001-01-01T00:00:00.0000000",
-# 			"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
-# 			"Id": "7614612"
-# 		},
-# 		"Href": "v1pre3/appsessions/32627092",
-# 		"Status": "Running",
-# 		"OriginatingUri": "https://basespace.illumina.com",
-# 		"ModifiedOn": "2016-02-10T00:02:13.0000000",
-# 		"Id": "32627092"
-# 	}
-# }
