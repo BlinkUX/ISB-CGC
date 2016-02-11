@@ -140,8 +140,9 @@ SETTINGS = {
 
     'FORCE_SINGLE_GOOGLE_ACCOUNT' : os.environ.get('FORCE_SINGLE_GOOGLE_ACCOUNT', False),
 
-    'API_HEADER_KEY' : os.environ.get('API_HEADER_KEY', False),
-    'API_HEADER_VALUE' : os.environ.get('API_HEADER_VALUE', False)
+    'BASESPACE_APP_SECRET' : os.environ.get('BASESPACE_APP_SECRET', False),
+    'BASESPACE_APP_ID' : os.environ.get('BASESPACE_APP_ID', False),
+    'MAX_VCF_SIZE' : os.environ.get('MAX_VCF_SIZE', False)
 }
 
 if os.environ.has_key('DB_SSL_CERT'):

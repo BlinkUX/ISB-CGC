@@ -46,5 +46,15 @@ class CloudFileStorage(Storage):
         name = settings.MEDIA_FOLDER + name
         return bucket + '/' + name
 
+    def size(self, name):
+        filepath = name.split('/')
+        bucket = filepath.pop(0)
+        name = '/'.join(filepath)
+        metadata = self.storage.objects().get(
+            bucket=bucket,
+            object=name
+        ).execute()
+        return metadata['size']
+
     def deconstruct(self):
         return ('google_helpers.cloud_file_storage.CloudFileStorage', [], {})

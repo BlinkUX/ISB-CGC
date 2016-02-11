@@ -1,10 +1,12 @@
 from copy import deepcopy
 import re
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
+from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
+from django.core.files.base import ContentFile
 from django.http import JsonResponse, HttpResponseNotFound
 from django.conf import settings
 from django.db import connection
@@ -18,6 +20,8 @@ from google.appengine.api.mail import send_mail
 import sys
 import json
 import requests
+import urllib
+import httplib
 
 @login_required
 def public_project_list(request):
@@ -166,15 +170,14 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
             feature_table_sql += ")"
             cursor.execute(feature_table_sql, feature_table_args)
 
-@login_required
-def upload_files(request):
+def complete_download(request, file_descriptor_list):
     status = 'success'
     message = None
+
     proj = None
     study = None
 
     # TODO: Validation
-
     if request.POST['project-type'] == 'new':
         proj = request.user.project_set.create(name=request.POST['project-name'], description=request.POST['project-description'])
         proj.save()
@@ -199,7 +202,6 @@ def upload_files(request):
 
         upload = UserUpload(owner=request.user)
         upload.save()
-
         config = {
             "USER_PROJECT": proj.id,
             "USER_ID": request.user.id,
@@ -216,25 +218,23 @@ def upload_files(request):
         }
 
         all_columns = []
-        for formfield in request.FILES:
-            file = request.FILES[formfield]
+        for file_obj in file_descriptor_list:
+            file = file_obj['file']
             file_upload = UserUploadedFile(upload=upload, file=file, bucket=config['BUCKET'])
             file_upload.save()
 
-            descriptor = json.loads(request.POST[formfield + '_desc'])
-            datatype = request.POST[formfield + '_type']
             fileJSON = {
                 "FILENAME": file_upload.file.name,
-                "PLATFORM": descriptor['platform'],
-                "PIPELINE": descriptor['pipeline'],
-                "BIGQUERY_TABLE_NAME": "cgc_" + ("user" if datatype == 'user_gen' else datatype) +
+                "PLATFORM": file_obj['descriptor']['platform'],
+                "PIPELINE": file_obj['descriptor']['pipeline'],
+                "BIGQUERY_TABLE_NAME": "cgc_" + ("user" if file_obj['datatype'] == 'user_gen' else file_obj['datatype']) +
                                        "_" + str(proj.id) + "_" + str(study.id),
-                "DATATYPE": datatype,
+                "DATATYPE": file_obj['datatype'],
                 "COLUMNS": []
             }
 
-            if datatype == "user_gen":
-                for column in descriptor['columns']:
+            if file_obj['datatype'] == "user_gen":
+                for column in file_obj['descriptor']['columns']:
                     if column['ignored']:
                         continue
 
@@ -282,9 +282,9 @@ def upload_files(request):
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
-                'project_id':proj.id,
-                'study_id':study.id,
-                'dataset_id':dataset.id
+                'project_id'    : proj.id,
+                'study_id'      : study.id,
+                'dataset_id'    : dataset.id
             }
             success_url = reverse('study_data_success', kwargs=post_args) + '?key=' + upload.key
             failure_url = reverse('study_data_error', kwargs=post_args) + '?key=' + upload.key
@@ -307,8 +307,8 @@ def upload_files(request):
         #update usage on the users account
         if settings.ENFORCE_USER_STORAGE_SIZE :
             total_file_size = 0
-            for formfield in request.FILES:
-                total_file_size += request.FILES[formfield].size
+            for file in file_descriptor_list:
+                total_file_size += int(file['size'])
 
             #update the user's account usage
             request.user.usage.usage_bytes = request.user.usage.usage_bytes + total_file_size
@@ -321,7 +321,7 @@ def upload_files(request):
     if status is "success":
         resp['redirect_url'] = '/projects/' + str(proj.id) + '/'
 
-    return JsonResponse(resp)
+    return resp
 
 @login_required
 def project_delete(request, project_id=0):
@@ -453,23 +453,311 @@ def study_data_error(request, project_id=0, study_id=0, dataset_id=0):
     })
 
 #this file will accept a list of files and render a process to create or extend a project
-def import_files(request):
-    if request.META[settings.API_HEADER_KEY] == settings.API_HEADER_VALUE:
-        template = 'projects/import_files.html'
-        context = {}
-        if request.method == "POST" :
-            auth_token = request.POST['auth_token']
-            file_list  = request.POST['file_url_list']
+#login required will force redirect to login page, however how to we send the parameters
+#
+# e.g. LSDF_BaseSpaceEndpoint.py?action=trigger&appsessionuri=v1pre3/appsessions/32597636&authorization_code=fdf8a49ad47840cfbaa74c07f2c0a9a2
+#The client secret code for the BS test app is: bs['client_secret'] =
+## FOR TESTING PURPOSES ONLY
+@login_required
+def import_auth(request):
+    redirect_url = request.get_host() + reverse('accept_external_files')
+    if request.is_secure():
+        redirect_url = "https://" + redirect_url
+    else :
+        redirect_url = "http://" + redirect_url
 
-            context['file_list'] = file_list
-            context['auth'] = auth_token
-            #if not request.user :
-                #template = 'auth/login'
+    auth_url = 'https://basespace.illumina.com/oauth/authorize'
+    params   = {'client_id'     : settings.BASESPACE_APP_ID,
+                'redirect_uri'  : redirect_url,
+                'response_type' : 'code'}
+
+    print >> sys.stderr, auth_url+"?"+urllib.urlencode(params)
+    return redirect(auth_url+"?"+urllib.urlencode(params))
+
+basespace_app_secret = settings.BASESPACE_APP_SECRET
+basespace_app_id     = settings.BASESPACE_APP_ID
+basespace_api_uri    = 'https://api.basespace.illumina.com/'
+basespace_api_domain = 'api.basespace.illumina.com/'
+basespace_auth_uri   = 'https://api.basespace.illumina.com/v1pre3/oauthv2/token'
+
+#
+# acquire a basespace access token
+#
+def get_basespace_access_token(app_id, app_secret, redirect_url, auth_code):
+    params = {  'client_id'     : app_id,
+                'client_secret' : app_secret,
+                'grant_type'    : 'authorization_code',
+                'redirect_uri'  : redirect_url,
+                'code'          : auth_code }
+
+    params_enc = urllib.urlencode(params)
+    response = urllib.urlopen(basespace_auth_uri, params_enc)
+    response = json.loads( response.read())
+
+    access_token = False
+    if 'access_token' in response :
+        access_token = response['access_token']
+    elif 'error' in response :
+        print >> sys.stderr, 'ERROR : ' + response['error'] + " reason : " + response['error_description']
+
+    return access_token
+
+
+@login_required
+def import_files(request):
+    template = 'projects/project_select.html'
+    context = {}
+    if request.method == "GET" :
+        appsession_uri       = request.GET['appsessionuri']  #appsessionuri=v1pre3/appsessions/{AppSessionId}
+        authorization_code   = request.GET['authorization_code']
+
+        redirect_url         = request.get_host() + reverse('accept_external_files')
+        if request.is_secure():
+            redirect_url = "https://" + redirect_url
+        else :
+            redirect_url = "http://" + redirect_url
+        #redirect_url         = 'https://db.systemsbiology.net/devDC/sbeams/cgi/Skunkworks/LSDF_BaseSpaceEndpoint.py' #authorization key expired
+
+        # a) use authorization_code plus the app private key (mentioned in previous email) to request an access_token.
+        access_token = get_basespace_access_token(basespace_app_id, basespace_app_secret, redirect_url, authorization_code)
+
+        if access_token :
+            # b) fetch appsession info (JSON object), including list of files
+            session_uri = basespace_api_uri + appsession_uri + '?access_token=' + access_token
+            session_resp = urllib.urlopen(session_uri)
+            session_dict = json.loads(session_resp.read())
+
+            # c) fetch files themselves
+            files = []
+            bs_project = {}
+
+            if 'Response' in session_dict.keys():
+                references = session_dict['Response']['References']
+                for ref in references:
+                    if ref['Type'] == 'Project':
+                        bs_project = {'name'        : ref['Content']['Name'],
+                                      'description' : ref['Content']['Description']}
+                    elif ref['Type'] == 'File':
+                        files.append({"name"    : str(ref['Content']['Name']),
+                                      "size"    : get_storage_string(ref['Content']['Size']),
+                                      "rawsize" : str(ref['Content']['Size']),
+                                      "id"      : str(ref['Content']['Id']),
+                                      "href"    : str(ref['HrefContent'])})
+
+            ownedProjects = request.user.project_set.all().filter(active=True)
+            context = {'projects'     : ownedProjects,
+                       'files'        : files,
+                       'bs_project'   : bs_project,
+                       'session_uri'  : appsession_uri,
+                       'access_token' : access_token}
+
 
             return render(request, template, context)
         else :
-            return HttpResponseNotFound('<h1>Page not found</h1>')
+            return HttpResponseNotFound('<h1>Access not authorized by Basespace</h1>')
+    else :
+        return HttpResponseNotFound('<h1>Page not found</h1>')
+
+#Accept file upload from web upload form
+@login_required
+def upload_files(request):
+    file_descriptor_list = []
+    for formfield in request.FILES :
+        file       = request.FILES[formfield]
+        descriptor = json.loads(request.POST[formfield + '_desc'])
+        datatype   = request.POST[formfield + '_type']
+        file_descriptor_list.append({'file' : file, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file.size})
+
+    return JsonResponse(complete_download(request, file_descriptor_list))
+
+#Accept project selection for Basespace import
+def upload_basespace_files(request):
+    file_descriptor_list = []
+
+    #TODO check for limit on file size
+    if request.method == "POST" :
+        access_token = request.POST['access_token']
+        session_uri  = request.POST['session_uri']
+        files = json.loads(request.POST['files'])
+        for file in files:
+            file_name = file['name']
+            file_fetch_uri = basespace_api_uri + file['href'] + '/content?access_token=' + access_token
+            wf = urllib.urlopen( file_fetch_uri )
+            importedFile = ContentFile(wf.read(), file_name)
+            wf.close()
+
+            descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'column' : []}
+            datatype   = 'vcf_file'
+            file_descriptor_list.append({'file' : importedFile, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file['size']})
+
+        result = complete_download(request, file_descriptor_list)
+
+        if result :
+            basespace_response = write_response_to_basespace(result, access_token, session_uri)
+            appession_id  = session_uri.split( "/" )[2]
+            result["redirect_url"] = 'https://basespace.illumina.com/analyses/' + appession_id
+
+        return JsonResponse(result)
     else :
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
 
+def write_response_to_basespace(result, access_token, session_uri):
+    status_params = { 'Status'          : "Complete", #result['status'],
+                      'Statussummary'   : 'import complete'}
+    status_params_enc = urllib.urlencode(status_params)
+
+    session_uri.split( "/" )
+    h = httplib.HTTPSConnection(basespace_api_domain)
+    headers = {"x-access-token" : access_token, "Accept": "text/plain"}
+    h.request('POST', session_uri, status_params_enc, headers)
+    r = h.getresponse()
+
+    return r
+
+#session structure returned
+# {
+# 	"Notifications": [],
+# 	"ResponseStatus": {},
+# 	"Response": {
+# 		"StatusSummary": "",
+# 		"References": [{
+# 			"Rel": "Input",
+# 			"Href": "v1pre3/projects/28460436",
+# 			"Type": "Project",
+# 			"HrefContent": "v1pre3/projects/28460436",
+# 			"Content": {
+# 				"HasCollaborators": false,
+# 				"TotalSize": 0,
+# 				"DateModified": "2016-02-08T18:12:38.0000000",
+# 				"UserOwnedBy": {
+# 					"Href": "v1pre3/users/7614612",
+# 					"Name": "Ross Bohner",
+# 					"DateCreated": "0001-01-01T00:00:00.0000000",
+# 					"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
+# 					"Id": "7614612"
+# 				},
+# 				"Name": "LSDF File Download App",
+# 				"DateCreated": "2016-02-08T18:12:38.0000000",
+# 				"Href": "v1pre3/projects/28460436",
+# 				"Id": "28460436",
+# 				"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
+# 			}
+# 		}],
+# 		"Properties": {
+# 			"Href": "v1pre3/appsessions/32627092/properties",
+# 			"TotalCount": 4,
+# 			"DisplayedCount": 4,
+# 			"Items": [{
+# 				"Href": "v1pre3/appsessions/32627092/properties/Input.project-id",
+# 				"Type": "project",
+# 				"Description": "Project",
+# 				"Content": {
+# 					"HasCollaborators": false,
+# 					"TotalSize": 0,
+# 					"DateModified": "2016-02-08T18:12:38.0000000",
+# 					"UserOwnedBy": {
+# 						"Href": "v1pre3/users/7614612",
+# 						"Name": "Ross Bohner",
+# 						"DateCreated": "0001-01-01T00:00:00.0000000",
+# 						"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
+# 						"Id": "7614612"
+# 					},
+# 					"Name": "LSDF File Download App",
+# 					"DateCreated": "2016-02-08T18:12:38.0000000",
+# 					"Href": "v1pre3/projects/28460436",
+# 					"Id": "28460436",
+# 					"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
+# 				},
+# 				"Name": "Input.project-id"
+# 			}, {
+# 				"Name": "Input.project-id.attributes",
+# 				"ItemsTotalCount": 1,
+# 				"Items": [
+# 					[{
+# 						"Key": "FieldId",
+# 						"Values": ["project-id"]
+# 					}, {
+# 						"Key": "ResourceType",
+# 						"Values": ["project"]
+# 					}, {
+# 						"Key": "ResourceId",
+# 						"Values": ["28460436"]
+# 					}, {
+# 						"Key": "ResourceHref",
+# 						"Values": ["v1pre3/projects/28460436"]
+# 					}]
+# 				],
+# 				"Href": "v1pre3/appsessions/32627092/properties/Input.project-id.attributes",
+# 				"Type": "map[]",
+# 				"ItemsDisplayedCount": 1,
+# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Input.project-id.attributes/items",
+# 				"Description": "Project Attributes"
+# 			}, {
+# 				"Name": "Input.Projects",
+# 				"ItemsTotalCount": 1,
+# 				"Items": [{
+# 					"HasCollaborators": false,
+# 					"TotalSize": 0,
+# 					"DateModified": "2016-02-08T18:12:38.0000000",
+# 					"UserOwnedBy": {
+# 						"Href": "v1pre3/users/7614612",
+# 						"Name": "Ross Bohner",
+# 						"DateCreated": "0001-01-01T00:00:00.0000000",
+# 						"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
+# 						"Id": "7614612"
+# 					},
+# 					"Name": "LSDF File Download App",
+# 					"DateCreated": "2016-02-08T18:12:38.0000000",
+# 					"Href": "v1pre3/projects/28460436",
+# 					"Id": "28460436",
+# 					"Description": "This is the app needed to for LSDF to call Basespace and retrieve user's bs files.  Note that this is a test app and the actual implementation should use the app id of the Basespace application that posts filenames to LSDF endpoint"
+# 				}],
+# 				"Href": "v1pre3/appsessions/32627092/properties/Input.Projects",
+# 				"Type": "project[]",
+# 				"ItemsDisplayedCount": 1,
+# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Input.Projects/items",
+# 				"Description": ""
+# 			}, {
+# 				"Name": "Output.Projects",
+# 				"ItemsTotalCount": 0,
+# 				"Items": [],
+# 				"Href": "v1pre3/appsessions/32627092/properties/Output.Projects",
+# 				"Type": "project[]",
+# 				"ItemsDisplayedCount": 0,
+# 				"HrefItems": "v1pre3/appsessions/32627092/properties/Output.Projects/items",
+# 				"Description": ""
+# 			}]
+# 		},
+# 		"Name": "Test LSDF App",
+# 		"Application": {
+# 			"AppFamilySlug": "blink-ux.test-lsdf-app",
+# 			"PublishStatus": "Development",
+# 			"Classifications": ["Quality"],
+# 			"DateCreated": "2016-02-09T21:31:50.0000000",
+# 			"Category": "Other",
+# 			"Name": "Test LSDF App",
+# 			"ShortDescription": "This is a temporary application used for LSDF testing",
+# 			"CompanyName": "Blink UX",
+# 			"Features": [],
+# 			"Href": "v1pre3/applications/2550548",
+# 			"IsBillingActivated": false,
+# 			"VersionNumber": "1.0.0",
+# 			"AppVersionSlug": "blink-ux.test-lsdf-app.1.0.0",
+# 			"Id": "2550548"
+# 		},
+# 		"DateCreated": "2016-02-10T00:02:09.0000000",
+# 		"UserCreatedBy": {
+# 			"Href": "v1pre3/users/7614612",
+# 			"Name": "Ross Bohner",
+# 			"DateCreated": "0001-01-01T00:00:00.0000000",
+# 			"GravatarUrl": "https://secure.gravatar.com/avatar/51b8fa9209be39516b28893f673b97a6.jpg?s=20&d=https%3a%2f%2fbasespace.illumina.com%2fpublic%2fimages%2fDefaultCustomerGravatar.png&r=PG",
+# 			"Id": "7614612"
+# 		},
+# 		"Href": "v1pre3/appsessions/32627092",
+# 		"Status": "Running",
+# 		"OriginatingUri": "https://basespace.illumina.com",
+# 		"ModifiedOn": "2016-02-10T00:02:13.0000000",
+# 		"Id": "32627092"
+# 	}
+# }
