@@ -11,7 +11,6 @@ from django.core.files.storage import Storage
 from google_helpers import storage_service
 from googleapiclient import http
 
-
 class CloudFileStorage(Storage):
 
     def __init__(self):
@@ -23,6 +22,7 @@ class CloudFileStorage(Storage):
         name = '/'.join(filepath)
         return self.storage.objects().get(bucket=bucket, object=name).execute()
 
+    #this can potentially cause a bad status line error
     def _save(self, name, content):
         media = http.MediaInMemoryUpload(content.read())
         filepath = name.split('/')
@@ -54,7 +54,7 @@ class CloudFileStorage(Storage):
             bucket=bucket,
             object=name
         ).execute()
-        return metadata['size']
+        return metadata['size'];
 
     def deconstruct(self):
         return ('google_helpers.cloud_file_storage.CloudFileStorage', [], {})
