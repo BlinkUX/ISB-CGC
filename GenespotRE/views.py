@@ -424,6 +424,5 @@ def dashboard_page(request):
     if settings.ENFORCE_USER_STORAGE_SIZE :
         context['current_usage_string'] = get_storage_string(request.user.usage.usage_bytes)
         context['max_usage_string'] = get_storage_string(request.user.usage.usage_bytes_max)
-        context['usage_percentage'] = (request.user.usage.usage_bytes / request.user.usage.usage_bytes_max) * 100
-
+        context['usage_percentage'] = (float(request.user.usage.usage_bytes) / float(request.user.usage.usage_bytes_max)) * 100.0
     return render(request, 'GenespotRE/dashboard.html', context)

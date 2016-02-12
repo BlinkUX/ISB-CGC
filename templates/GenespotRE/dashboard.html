@@ -17,7 +17,7 @@
         <div class="usage-container">
             <div class="usage-text">Data Usage {{ current_usage_string }} / {{ max_usage_string }}</div>
             <div class="usage-box"></div>
-            <div class="usage-fill {% if usage_percentage > 90 %} usage-warning {% endif %}" style="width: {{ usage_percentage }}"></div>
+            <div class="usage-fill {% if usage_percentage > 90 %} usage-warning {% endif %}" style="width: {{ usage_percentage }}%"></div>
         </div>
     {% endif %}
 </div>
