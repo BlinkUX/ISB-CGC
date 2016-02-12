@@ -16,7 +16,7 @@
 #
 ###
 
-runtime: custom
+runtime: python27 #custom
 module: mvm
 api_version: 1
 threadsafe: true
@@ -38,7 +38,7 @@ automatic_scaling:
   cool_down_period_sec: 60
   cpu_utilization:
     target_utilization: 0.5
-    
+
 handlers:
 - url: /favicon.ico
   static_files: static/img/favicon.ico

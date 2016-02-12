@@ -257,11 +257,11 @@ require([
             var csrftoken = get_cookie('csrftoken');
             $.ajax({
                 type: 'POST',
-                url : base_api_url + '/variables/save',
+                url : base_url + '/variables/save',
                 data: JSON.stringify({name : name, variables : variable_list}),
                 beforeSend: function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
                 success: function (data) {
-                    window.location = base_api_url + '/variables/';
+                    window.location = base_url + '/variables/';
                 },
                 error: function () {
                     //TODO Create fail ui indicator
@@ -278,16 +278,16 @@ require([
     $("#edit_favorite_list").on('click', function(event){
         var name = $.trim($("#variable_list_name_input").val());
         var variable_list = get_variable_list();
-        var variable_id = this.getAttribute("variable_list_id");
+        var variable_id = this.getAttribute("variable_id");
         if(name && variable_list.length>0){
             var csrftoken = get_cookie('csrftoken');
             $.ajax({
                 type : 'POST',
-                url  : base_api_url + '/variables/' + variable_id + '/update',
+                url  : base_url + '/variables/' + variable_id + '/update',
                 data : JSON.stringify({name : name, variables : variable_list}),
                 beforeSend: function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
                 success: function (data) {
-                    window.location = base_api_url + '/variables/';
+                    window.location = base_url + '/variables/';
                 },
                 error: function () {
                     //TODO Create fail ui indicator
@@ -312,11 +312,11 @@ require([
             var csrftoken = get_cookie('csrftoken');
             $.ajax({
                 type : 'POST',
-                url  : base_api_url + '/workbooks/' + workbook_id + '/worksheets/' + worksheet_id + '/variables/edit',
+                url  : base_url + '/workbooks/' + workbook_id + '/worksheets/' + worksheet_id + '/variables/edit',
                 data : JSON.stringify({name : name, variables : variable_list}),
                 beforeSend: function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
                 success: function (data) {
-                    window.location = base_api_url + '/workbooks/' + workbook_id + '/worksheets/' + worksheet_id + '/';
+                    window.location = base_url + '/workbooks/' + workbook_id + '/worksheets/' + worksheet_id + '/';
                 },
                 error: function () {
                     //TODO Create fail ui indicator

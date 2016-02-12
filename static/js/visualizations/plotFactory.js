@@ -258,7 +258,7 @@ define([
         return api_url;
     }
 
-    function configure_pairwise_display(element){
+    function configure_pairwise_display(element, data){
         if (data['pairwise_result'].hasOwnProperty('result_vectors')) {
             var vectors = data['pairwise_result']['result_vectors'];
 
@@ -289,7 +289,7 @@ define([
             y_type = '';
 
         if (data.hasOwnProperty('pairwise_result')) {
-            configure_pairwise_display(pairwise_element);
+            configure_pairwise_display(pairwise_element, data);
         }
         if (data.hasOwnProperty('items')) {
             //TODO where are these used?
@@ -368,6 +368,8 @@ define([
         cohorts_override : boolean on whether to override the color_by parameter
      */
     function generate_plot(plot_selector, legend_selector, pairwise_element, type, x_attr, y_attr, color_by, cohorts, cohort_override, callback) {
+
+        //data = mock_histogram_data.get_data();
         //select_plot(plot_selector, legend_selector, pairwise_element, type, x_attr, y_attr, color_by, cohorts, cohort_override, data);
         //callback();
         $.ajax({
