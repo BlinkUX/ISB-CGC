@@ -279,6 +279,7 @@ def complete_download(request, file_descriptor_list):
             google_bucket=request.user.bucket_set.all()[0]
         )
 
+        print >> sys.stderr, json.dumps(config)
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
@@ -544,7 +545,6 @@ def import_files(request):
                        'bs_project'   : bs_project,
                        'session_uri'  : appsession_uri,
                        'access_token' : access_token}
-
 
             return render(request, template, context)
         else :
