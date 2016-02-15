@@ -165,9 +165,11 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
             feature_table_args = [user.id, study.id]
 
             for column in columns:
-                feature_table_sql += ", " + filter_column_name(column['name']) + " " + column['type']
+                feature_table_sql += ", " + "content_" + filter_column_name(column['name']) + " " + column['type']
 
             feature_table_sql += ")"
+
+            print sys.stderr, feature_table_sql
             cursor.execute(feature_table_sql, feature_table_args)
 
 def complete_download(request, file_descriptor_list):
@@ -233,7 +235,7 @@ def complete_download(request, file_descriptor_list):
                 "COLUMNS": []
             }
 
-            if file_obj['datatype'] == "user_gen":
+            if file_obj['datatype'] == "user_gen" or file_obj['datatype'] == "vcf_file":
                 for column in file_obj['descriptor']['columns']:
                     if column['ignored']:
                         continue
@@ -279,7 +281,6 @@ def complete_download(request, file_descriptor_list):
             google_bucket=request.user.bucket_set.all()[0]
         )
 
-        print >> sys.stderr, json.dumps(config)
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
@@ -453,29 +454,12 @@ def study_data_error(request, project_id=0, study_id=0, dataset_id=0):
         'status': 'success'
     })
 
-#this file will accept a list of files and render a process to create or extend a project
-## FOR TESTING PURPOSES ONLY
-@login_required
-def import_auth(request):
-    redirect_url = request.get_host() + reverse('accept_external_files')
-    if request.is_secure():
-        redirect_url = "https://" + redirect_url
-    else :
-        redirect_url = "http://" + redirect_url
-
-    auth_url = 'https://basespace.illumina.com/oauth/authorize'
-    params   = {'client_id'     : settings.BASESPACE_APP_ID,
-                'redirect_uri'  : redirect_url,
-                'response_type' : 'code'}
-
-    print >> sys.stderr, auth_url+"?"+urllib.urlencode(params)
-    return redirect(auth_url+"?"+urllib.urlencode(params))
-
-basespace_app_secret = settings.BASESPACE_APP_SECRET
-basespace_app_id     = settings.BASESPACE_APP_ID
-basespace_api_uri    = 'https://api.basespace.illumina.com/'
-basespace_api_domain = 'api.basespace.illumina.com/'
-basespace_auth_uri   = 'https://api.basespace.illumina.com/v1pre3/oauthv2/token'
+basespace_app_secret    = settings.BASESPACE_APP_SECRET
+basespace_app_id        = settings.BASESPACE_APP_ID
+basespace_api_uri       = settings.BASESPACE_API_URL
+basespace_api_domain    = settings.BASESPACE_API_DOMAIN
+basespace_auth_uri      = settings.BASESPACE_AUTH_URL
+basespace_redirect_url  = settings.BASESPACE_REDIRECT_URL
 
 #
 # acquire a basespace access token
@@ -499,7 +483,9 @@ def get_basespace_access_token(app_id, app_secret, redirect_url, auth_code):
 
     return access_token
 
-
+#
+# URL route for basespace app to call that initiates the import flow
+#
 @login_required
 def import_files(request):
     template = 'projects/project_select.html'
@@ -522,7 +508,7 @@ def import_files(request):
             session_resp = urllib.urlopen(session_uri)
             session_dict = json.loads(session_resp.read())
 
-            # c) fetch files themselves
+            # c) gather the file metadata
             files = []
             bs_project = {}
 
@@ -552,7 +538,9 @@ def import_files(request):
     else :
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
-#Accept file upload from web upload form
+#
+# user upload url route to accept user defined files for upload
+#
 @login_required
 def upload_files(request):
     file_descriptor_list = []
@@ -564,11 +552,34 @@ def upload_files(request):
 
     return JsonResponse(complete_download(request, file_descriptor_list))
 
-#Accept project selection for Basespace import
+#
+# parse type based on string format
+#
+integer_pattern = re.compile("^[0-9]+$")
+float_pattern = re.compile("^[0-9]*\.?[0-9]+$")
+url_pattern = re.compile("^(http|gs|ftp)s?:\/\/", re.IGNORECASE)
+
+def find_type(str):
+    type = ""
+    if integer_pattern.match(str):
+        type = "integer"
+    elif float_pattern.match(str):
+        type = "float"
+    elif url_pattern.match(str):
+        type = "url"
+    elif len(str)  <= 200 :
+        type = "text"
+    else :
+        type = "long text"
+
+    return type
+#
+# url route to accept project selection for Basespace import and download the basespace files
+#
 def upload_basespace_files(request):
     file_descriptor_list = []
 
-    #TODO check for limit on file size
+    #TODO do we need to check for limit on file size
     if request.method == "POST" :
         access_token = request.POST['access_token']
         session_uri  = request.POST['session_uri']
@@ -578,9 +589,48 @@ def upload_basespace_files(request):
             file_fetch_uri = basespace_api_uri + file['href'] + '/content?access_token=' + access_token
             wf = urllib.urlopen( file_fetch_uri )
             importedFile = ContentFile(wf.read(), file_name)
+
+            #gather the columns for the file
+            columns = []
+            contents = importedFile.readlines()
+            count = 0
+            for line in contents :
+                if line.startswith('##') : #meta header
+                    None
+                elif line.startswith('#') : #column definition
+                    line = line[1:] #remove the #
+                    rawColumns = line.split("\t")
+                    index = 0
+                    for rawCol in rawColumns :
+                        col = {}
+                        col['ignored'] = False
+                        #col['controlled'] = False
+                        col['type']  = None
+                        col['index'] = index
+                        col['name']  = filter_column_name(rawCol)
+                        columns.append(col)
+                        index += 1
+                    break
+                else : # data line
+                    None
+                count += 1
+
+            for line in range(count+1,count+10):
+                if line < len(contents) :
+                    cols = contents[line].split("\t")
+                    if len(cols) == len(columns):
+                        i = 0
+                        for col in cols :
+                            type = find_type(col)
+                            if columns[i]['type'] is None:
+                                columns[i]['type'] = type
+                            elif columns[i]['type'] != type:
+                                columns[i]['type'] = "text"
+                            i += 1
+
             wf.close()
 
-            descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'column' : []}
+            descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'columns' : columns}
             datatype   = 'vcf_file'
             file_descriptor_list.append({'file' : importedFile, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file['size']})
 
@@ -589,13 +639,15 @@ def upload_basespace_files(request):
         if result :
             basespace_response = write_response_to_basespace(result, access_token, session_uri)
             appession_id  = session_uri.split( "/" )[2]
-            result["redirect_url"] = 'https://basespace.illumina.com/analyses/' + appession_id
+            result["redirect_url"] = basespace_redirect_url + appession_id
 
         return JsonResponse(result)
     else :
         return HttpResponseNotFound('<h1>Page not found</h1>')
 
-
+#
+# Write response back to basespace informing that the import is complete
+#
 def write_response_to_basespace(result, access_token, session_uri):
     status_params = { 'Status'          : "Complete", #result['status'],
                       'Statussummary'   : 'import complete'}
