@@ -13,6 +13,44 @@ html, body, ul, ol {
 ul, ol {
   list-style: none; }
 
+@keyframes blink {
+    0% {
+           background-color: rgba(42,83,122,1)
+    }
+    50% {
+           background-color: rgba(42,83,122,0.5)
+    }
+    100% {
+           background-color: rgba(42,83,122,1)
+    }
+}
+@-webkit-keyframes blink {
+    0% {
+           background-color: rgba(42,83,122,1)
+    }
+    50% {
+           background-color: rgba(42,83,122,0.5)
+    }
+    100% {
+           background-color: rgba(42,83,122,1)
+    }
+}
+
+.slow-blink {
+    -moz-transition:all 0.5s ease-in-out;
+    -webkit-transition:all 0.5s ease-in-out;
+    -o-transition:all 0.5s ease-in-out;
+    -ms-transition:all 0.5s ease-in-out;
+    transition:all 0.5s ease-in-out;
+    -moz-animation:blink normal 1.5s infinite ease-in-out;
+    -webkit-animation:blink normal 1.5s infinite ease-in-out;
+    -ms-animation:blink normal 1.5s infinite ease-in-out;
+    animation:blink normal 1.5s infinite ease-in-out;
+}
+.slow-blink .fa-spin {
+  transform-origin: 35% 50%; !important
+}
+
 @-webkit-keyframes ripple {
   0% {
     -ms-transform: scale(1);

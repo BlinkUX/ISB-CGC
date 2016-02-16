@@ -56,7 +56,7 @@
                 <a href="#new-project" aria-controls="new-projects-list" role="tab" data-toggle="tab">New Project</a>
             </li>
         </ul>
-        <div class="tab-content">
+        <div class="tab-content" style="padding : 0px 10px 5px 10px">
             <div role="tabpanel" class="tab-pane active" id="existing-projects-list">
                 <div class="panel-body">
                     {% if projects %}
@@ -83,7 +83,12 @@
                             </tbody>
                         </table>
                         <div style="height:35px">
-                            <button id="upload-button" class="btn btn-primary pull-right"><i class="fa fa-cloud-upload"></i>Import Files</button>
+                            <button id="upload-button" class="btn btn-primary">
+                                <i class="fa fa-cloud-upload"></i>Import Files
+                            </button>
+                            <button id="upload-button-importing" class="hidden btn btn-primary slow-blink">
+                                <i class="fa fa-cog fa-spin"></i><span>Importing</span>
+                            </button>
                         </div>
                     {% else %}
                         <p class="center space-top-10">You don't have any saved projects yet</p>
@@ -93,6 +98,9 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="new-project">
                 <input type="hidden" id="project-tab" value="new">
+                <div style="height: 35px;">
+                    <div id="validate-warning" class="message message-error alert" style="margin:0px -10px 10px -10px; display : none">Project name is required</div>
+                </div>
                 <div class="panel-body">
                     <section id="project-info" class="collapse in">
                         <div class="form-group">
@@ -105,7 +113,12 @@
                         </div>
                     </section>
                     <div style="height:35px">
-                        <button id="upload-button-new" class="btn btn-primary"><i class="fa fa-cloud-upload"></i>Import Files</button>
+                        <button id="upload-button-new" class="btn btn-primary">
+                            <i class="fa fa-cloud-upload"></i><span>Import Files</span>
+                        </button>
+                        <button id="upload-button-new-importing" class="hidden btn btn-primary slow-blink">
+                             <i class="fa fa-cog fa-spin"></i><span class=>Importing</span>
+                        </button>
                     </div>
                 </div>
             </div>

@@ -24,8 +24,11 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-
     <section class="panel panel-default">
+        {% if user.last_login == user.date_joined %}
+            <!-- used for google tag manager -->
+            <button id="gtm-new-user-button" style="height:0px"></button>
+        {% endif %}
         <div class="panel-heading">
             <a role="button" data-target="#analysis-body" data-toggle="collapse" aria-expanded="true" aria-controls="analysis-body">
                 <i class="fa fa-caret-down" style="display: inline-block;"></i>
@@ -118,7 +121,7 @@
             <div style="height:40px">
                 <form id="create-workbook" method="POST" action="{% url 'workbook_create' %}" class="pull-left">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary" ><i class="fa fa-plus"></i>Create a New Workbook</button>
+                    <button type="submit" id="gtm-create-workbook_button" class="btn btn-primary" ><i class="fa fa-plus"></i>Create a New Workbook</button>
                 </form>
                 {#            <a class="btn btn-link" href="{% url 'workbook_samples' %}">Sample Workbooks</a>#}
             </div>
@@ -237,7 +240,7 @@
                     {% endif %}
                 </div>
                 <div class="panel-footer">
-                    <a href="{% url 'project_upload' %}" class="btn btn-primary"><i class="fa fa-cloud-upload"></i>Upload Project Data</a>
+                    <a href="{% url 'project_upload' %}" id="gtm-upload-project-button" class="btn btn-primary"><i class="fa fa-cloud-upload"></i>Upload Project Data</a>
                 </div>
             </section>
             <section class="panel panel-default">

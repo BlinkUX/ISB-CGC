@@ -32,7 +32,7 @@
                 <li class="menu-item">
                     <form action="{% url 'workbook_create' %}" method="POST">
                         {% csrf_token %}
-                        <button type="submit">Create a New Workbook</button>
+                        <button id="gtm-create-workbook-nav-button" type="submit">Create a New Workbook</button>
                     </form>
                 </li>
                 <li class="menu-item"><a href="{% url 'workbook_samples' %}">Sample Workbooks</a></li>
@@ -73,7 +73,7 @@
                 </li>
                 {% endif %}
                 <li class="menu-item"><a href="{% url 'projects' %}">Saved Projects ( {% user_project_count %} )</a></li>
-                <li class="menu-item"><a href="{% url 'project_upload' %}">Upload Project Data</a></li>
+                <li class="menu-item"><a id="gtm-upload-project-nav-button" href="{% url 'project_upload' %}">Upload Project Data</a></li>
                 <li class="menu-item"><a href="{% url 'public_projects' %}">Public Projects ( {% public_project_count %} )</a></li>
             </ul>
         </li>

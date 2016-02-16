@@ -12,7 +12,7 @@
             <form id="copy-workbook" method="POST" action="{% url 'worksheet_copy' workbook.id worksheet.id %}">
                 {% csrf_token %}
                 <div class="modal-footer">
-                    <input type="submit" value="Duplicate" class="btn btn-primary" />
+                    <input type="submit" id="gtm-worksheet-duplicate-button" value="Duplicate" class="btn btn-primary" />
                     <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
                 </div>
             </form>

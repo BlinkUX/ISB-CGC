@@ -47,6 +47,13 @@ require([
         params['files'] = JSON.stringify(files);
         params['data-type'] = 'basespace';
 
+        if(params['project-type'] == "new"){
+            $("#upload-button-new").addClass("hidden");
+            $("#upload-button-new-importing").removeClass("hidden");
+        } else {
+            $("#upload-button").addClass("hidden");
+            $("#upload-button-importing").removeClass("hidden");
+        }
         $.ajax({
             type : 'POST',
             url  : url,
@@ -54,6 +61,14 @@ require([
             datatype : "json",
             beforeSend : function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
             success : function (res) {
+                if(params['project-type'] == "new"){
+                    $("#upload-button-new").removeClass("hidden");
+                    $("#upload-button-new-importing").addClass("hidden");
+                } else {
+                    $("#upload-button").removeClass("hidden");
+                    $("#upload-button-importing").addClass("hidden");
+                }
+
                 $("#success-modal").find("#project-name").text(res.project_name);
                 $("#success-modal").find("#study-name").text(res.study_name);
                 $("#success-modal").find("#redirect").attr('href', res.redirect_url);
@@ -70,22 +85,21 @@ require([
         if($(this).hasClass('disabled'))
             return;
 
-        //if(!validateSectionTwo())
-        //    return;
-        //
-        //$('#upload-button, #back-button').addClass('disabled')
-        //    .siblings('.progress-message').removeClass('hidden');
+        $("#validate-warning").css("display","none");
 
         var params = {};
         params['project-type'] = "new";
         params['project-name'] = $.trim( $('#project-name').val());
         params['project-description'] = $.trim( $('#project-description').val());
+        if(params['project-name'].length == 0){
+            $("#validate-warning").fadeIn()
+        } else {
+            //taken from the basespace
+            params['study-name'] = $('#bs-project-name').val();
+            params['study-description'] = $('#bs-project-description').val();
 
-        //taken from the basespace
-        params['study-name'] = $('#bs-project-name').val();
-        params['study-description'] = $('#bs-project-description').val();
-
-        file_import(params);
+            file_import(params);
+        }
     })
 
     //existing projects
