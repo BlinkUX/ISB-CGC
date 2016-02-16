@@ -32,6 +32,8 @@ require([
     'tablesorter',
     'base'
 ], function($) {
+    //used for google tag manager, will only exist if a new user
+    $("#gtm-new-user-button").click();
 
     //Using functions in user_landing
     A11y.Core();

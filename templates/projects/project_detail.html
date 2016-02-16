@@ -54,21 +54,22 @@
             </div>
             <div class="panel-body">
                 {% if study.get_status == 'Processing' %}
-                <div class="message message-info alert alert-dismissible fade in">
-                    <p>Study Data is currently being processed.</p>
-                    <a class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></a>
-                </div>
+                    <div class="message message-info alert fade in">
+                        <p>Study Data is currently being processed.</p>
+                    </div>
+                {% elif study.get_status == 'Pending' %}
+                    <div class="message message-info alert fade in">
+                        <p>Study Data is currently being processed.</p>
+                    </div>
                 {% elif study.get_status == 'Error' %}
-                <div class="message message-error alert alert-dismissible fade in">
-                    <p>Upload of study data has an error. Please delete the study and re-upload.</p>
-                    <a class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></a>
-                </div>
-                {% comment "Success message does not yet have technical implementation" %}
-                <div class="message message-success alert alert-dismissible fade in">
-                    Upload of study data is complete.
-                    <a class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></a>
-                </div>
-                {% endcomment %}
+                    <div class="message message-error alert fade in">
+                        <p>Upload of study data has an error. Please delete the study and re-upload.</p>
+                    </div>
+                {% elif study.get_status == 'Success' %}
+                    <div class="message message-success alert fade in">
+                        Upload of study data is complete.
+                        <a class="close" data-dismiss="alert" aria-label="Close"></a>
+                    </div>
                 {% endif %}
                 <p>{{ study.description }}</p>
                 <dl>

@@ -140,8 +140,12 @@ SETTINGS = {
 
     'FORCE_SINGLE_GOOGLE_ACCOUNT' : os.environ.get('FORCE_SINGLE_GOOGLE_ACCOUNT', False),
 
-    'BASESPACE_APP_SECRET' : os.environ.get('BASESPACE_APP_SECRET', False),
-    'BASESPACE_APP_ID' : os.environ.get('BASESPACE_APP_ID', False),
+    'BASESPACE_APP_SECRET'      : os.environ.get('BASESPACE_APP_SECRET', False),
+    'BASESPACE_APP_ID'          : os.environ.get('BASESPACE_APP_ID', False),
+    'BASESPACE_API_URL'         : os.environ.get('BASESPACE_API_URL', False),
+    'BASESPACE_API_DOMAIN'      : os.environ.get('BASESPACE_API_DOMAIN', False),
+    'BASESPACE_AUTH_URL'        : os.environ.get('BASESPACE_AUTH_URL', False),
+    'BASESPACE_REDIRECT_URL'    : os.environ.get('BASESPACE_REDIRECT_URL', False),
     'MAX_VCF_SIZE' : os.environ.get('MAX_VCF_SIZE', False)
 }
 
