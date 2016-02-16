@@ -54,33 +54,15 @@ require([
             datatype : "json",
             beforeSend : function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
             success : function (res) {
-                console.log(res);
-                location.href = res.redirect_url;
+                $("#success-modal").find("#project-name").text(res.project_name);
+                $("#success-modal").find("#study-name").text(res.study_name);
+                $("#success-modal").find("#redirect").attr('href', res.redirect_url);
+                $("#success-modal").modal({backdrop : 'static', keyboard : false})
             },
             error: function () {
 
             }
         });
-        //$.ajax({
-        //    url: url,
-        //    type: 'POST',
-        //    data: form,
-        //    processData: false,
-        //    contentType: false,
-        //}).done(function (res) {
-        //    console.log('Response: ', res);
-        //    if(res.status === 'success') {
-        //        $('#base-data-form')[0].reset();
-        //        location.href = res.redirect_url;
-        //    } else {
-        //        errorMessage('Error submitting response' + res.message);
-        //    }
-        //}).fail(function () {
-        //    errorMessage('We had an error submitting the response. Please try again later');
-        //}).always(function () {
-        //    $('#upload-button, #back-button').removeClass('disabled')
-        //        .siblings('.progress-message').addClass('hidden');
-        //});
     }
 
     //new projects

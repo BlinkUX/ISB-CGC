@@ -105,13 +105,30 @@
                         </div>
                     </section>
                     <div style="height:35px">
-                        <button id="upload-button-new" class="btn btn-primary pull-right"><i class="fa fa-cloud-upload"></i>Import Files</button>
+                        <button id="upload-button-new" class="btn btn-primary"><i class="fa fa-cloud-upload"></i>Import Files</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="success-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Complete</h4>
+            </div>
+            <div class="modal-body">
+                Files have been successfully imported to the project "<span id="project-name"></span>" under the study "</span><span id="study-name"></span>"
+                <br></br>
+                <a id="redirect" class="btn btn-primary" href="">Back to Basespace</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+
 
 {% block js_file %}{% static 'js/project_import.js' %}{% endblock %}

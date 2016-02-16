@@ -169,7 +169,6 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
 
             feature_table_sql += ")"
 
-            print sys.stderr, feature_table_sql
             cursor.execute(feature_table_sql, feature_table_args)
 
 def complete_download(request, file_descriptor_list):
@@ -318,6 +317,8 @@ def complete_download(request, file_descriptor_list):
 
     resp = {
         'status': status,
+        'project_name' : proj.name,
+        'study_name' : study.name,
         'message': message
     }
     if status is "success":
@@ -588,11 +589,19 @@ def upload_basespace_files(request):
             file_name = file['name']
             file_fetch_uri = basespace_api_uri + file['href'] + '/content?access_token=' + access_token
             wf = urllib.urlopen( file_fetch_uri )
-            importedFile = ContentFile(wf.read(), file_name)
 
-            #gather the columns for the file
+            #TODO the wf filehandle does not have a chunking mechanism to lower memory consumption
+            tempFile = ContentFile(wf.read(), "tmp")
+            wf.close()
+
+            #Contentfiles are streams so reading clears the buffer, so we need to push the content to another file
+            contents = tempFile.readlines()
+            raw = ""
+            for line in contents :
+                raw += line
+            importedFile = ContentFile(raw,  file_name)
+
             columns = []
-            contents = importedFile.readlines()
             count = 0
             for line in contents :
                 if line.startswith('##') : #meta header
@@ -627,8 +636,6 @@ def upload_basespace_files(request):
                             elif columns[i]['type'] != type:
                                 columns[i]['type'] = "text"
                             i += 1
-
-            wf.close()
 
             descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'columns' : columns}
             datatype   = 'vcf_file'
