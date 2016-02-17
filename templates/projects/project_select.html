@@ -22,18 +22,26 @@
         <input type="hidden" id="access-token" value="{{ access_token }}">
         <input type="hidden" id="session-uri" value="{{ session_uri }}">
         <input type="hidden" id="action-url" value="{% url 'file_import' %}">
+        <input type="hidden" id="max-usage" value="{{ max_usage_bytes }}">
+        <input type="hidden" id="current-usage" value="{{usage_bytes }}">
+        <p style="padding-bottom: 5px;">You currently have used {{ usage_size }} of your account's total {{ max_usage_size }} storage space</p>
+        <p id="total-size-display" >Total size of this upload <label id="total-size">0 kb</label></p>
+        <p id="total-size-warning" class="alert alert-danger alert-error-message" style="display:none">Warning your current upload is  <label id="overage-size">0 kb</label> over your account's storage limit. Please remove one or more files before continuing</p>
+        <p id="no-file-warning" class="alert alert-danger alert-error-message" style="display:none">At least one file must be selected for importing</p>
         <div class="padding-10" style="padding : 10px">
             {% if files %}
                 <table id="file-table" class="table tablesorter">
                     <thead>
                         <th class="name-col">File Name</th>
                         <th class="study-col">Size</th>
+                        <th>Ignore</th>
                     </thead>
                     <tbody>
                         {% for file in files %}
                             <tr class="file" name="{{ file.name }}" size="{{ file.rawsize }}" href="{{ file.href }}" class="row-{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                                 <td class="name-col">{{ file.name }}</td>
                                 <td class="study-col">{{ file.size }}</td>
+                                <td><i class="file-removal pointer text-danger fa fa-remove pointer"></i></td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -83,10 +91,10 @@
                             </tbody>
                         </table>
                         <div style="height:35px">
-                            <button id="upload-button" class="btn btn-primary">
+                            <button id="upload-button" style="width: 136px;" class="btn btn-primary">
                                 <i class="fa fa-cloud-upload"></i>Import Files
                             </button>
-                            <button id="upload-button-importing" class="hidden btn btn-primary slow-blink">
+                            <button id="upload-button-importing" style="width: 136px;" class="hidden btn btn-primary slow-blink">
                                 <i class="fa fa-cog fa-spin"></i><span>Importing</span>
                             </button>
                         </div>
@@ -113,10 +121,10 @@
                         </div>
                     </section>
                     <div style="height:35px">
-                        <button id="upload-button-new" class="btn btn-primary">
+                        <button id="upload-button-new" style="width: 136px;" class="btn btn-primary">
                             <i class="fa fa-cloud-upload"></i><span>Import Files</span>
                         </button>
-                        <button id="upload-button-new-importing" class="hidden btn btn-primary slow-blink">
+                        <button id="upload-button-new-importing" style="width: 136px;" class="hidden btn btn-primary slow-blink">
                              <i class="fa fa-cog fa-spin"></i><span class=>Importing</span>
                         </button>
                     </div>
@@ -135,7 +143,7 @@
             <div class="modal-body">
                 Files have been successfully imported to the project "<span id="project-name"></span>" under the study "</span><span id="study-name"></span>"
                 <br></br>
-                <a id="redirect" class="btn btn-primary" href="">Back to Basespace</a>
+                <a id="redirect" class="btn btn-primary" href="">To Project Details</a>
             </div>
         </div>
     </div>

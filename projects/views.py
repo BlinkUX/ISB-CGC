@@ -171,6 +171,9 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
 
             cursor.execute(feature_table_sql, feature_table_args)
 
+#
+# Performs the project /study creation, storage of files and creation of configuration file and metadata files
+#
 def complete_download(request, file_descriptor_list):
     status = 'success'
     message = None
@@ -213,12 +216,13 @@ def complete_download(request, file_descriptor_list):
             "FILES": [],
             "USER_METADATA_TABLES": {
                 "METADATA_DATA" : "user_metadata_" + str(request.user.id) + "_" + str(study.id),
-                "METADATA_SAMPLES" : "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id),
+                "METADATA_SAMPLES" : "not generated",
                 "FEATURE_DEFS": User_Feature_Definitions._meta.db_table
             }
         }
 
         all_columns = []
+
         for file_obj in file_descriptor_list:
             file = file_obj['file']
             file_upload = UserUploadedFile(upload=upload, file=file, bucket=config['BUCKET'])
@@ -234,7 +238,7 @@ def complete_download(request, file_descriptor_list):
                 "COLUMNS": []
             }
 
-            if file_obj['datatype'] == "user_gen" or file_obj['datatype'] == "vcf_file":
+            if file_obj['datatype'] == "user_gen":
                 for column in file_obj['descriptor']['columns']:
                     if column['ignored']:
                         continue
@@ -268,8 +272,12 @@ def complete_download(request, file_descriptor_list):
 
             config['FILES'].append(fileJSON)
 
-        #Skip *_samples table for low level data
-        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low')
+        #list the metadata_sample_table that will be generated if needed
+        if request.POST['data-type'] != 'low':
+            config["USER_METADATA_TABLES"]["METADATA_SAMPLES"] = "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id)
+
+        #Skip *_samples table for low level data or vcf data
+        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low' or len(all_columns) == 0)
 
         dataset = request.user.user_data_tables_set.create(
             study=study,
@@ -280,6 +288,7 @@ def complete_download(request, file_descriptor_list):
             google_bucket=request.user.bucket_set.all()[0]
         )
 
+        #print >> sys.stderr, " configuration file : " + json.dumps(config)
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
@@ -512,7 +521,7 @@ def import_files(request):
             # c) gather the file metadata
             files = []
             bs_project = {}
-
+            total_upload_bytes = 0
             if 'Response' in session_dict.keys():
                 references = session_dict['Response']['References']
                 for ref in references:
@@ -525,19 +534,28 @@ def import_files(request):
                                       "rawsize" : str(ref['Content']['Size']),
                                       "id"      : str(ref['Content']['Id']),
                                       "href"    : str(ref['HrefContent'])})
+                        total_upload_bytes += int(ref['Content']['Size'])
 
+            usage_size = get_storage_string(request.user.usage.usage_bytes)
+            max_usage_size = get_storage_string(request.user.usage.usage_bytes_max)
             ownedProjects = request.user.project_set.all().filter(active=True)
-            context = {'projects'     : ownedProjects,
-                       'files'        : files,
-                       'bs_project'   : bs_project,
-                       'session_uri'  : appsession_uri,
-                       'access_token' : access_token}
+            context = {'projects'           : ownedProjects,
+                       'files'              : files,
+                       'bs_project'         : bs_project,
+                       'session_uri'        : appsession_uri,
+                       'access_token'       : access_token,
+                       'usage_size'         : usage_size,
+                       'usage_byte'         : request.user.usage.usage_bytes,
+                       'max_usage_bytes'    : request.user.usage.usage_bytes_max,
+                       'max_usage_size'     : max_usage_size}
 
             return render(request, template, context)
         else :
-            return HttpResponseNotFound('<h1>Access not authorized by Basespace</h1>')
+            template = "basespace_error.html"
+            return render(request, template, context)
     else :
-        return HttpResponseNotFound('<h1>Page not found</h1>')
+        template = "403.html"
+        return render(request, template, context)
 
 #
 # user upload url route to accept user defined files for upload
@@ -553,27 +571,6 @@ def upload_files(request):
 
     return JsonResponse(complete_download(request, file_descriptor_list))
 
-#
-# parse type based on string format
-#
-integer_pattern = re.compile("^[0-9]+$")
-float_pattern = re.compile("^[0-9]*\.?[0-9]+$")
-url_pattern = re.compile("^(http|gs|ftp)s?:\/\/", re.IGNORECASE)
-
-def find_type(str):
-    type = ""
-    if integer_pattern.match(str):
-        type = "integer"
-    elif float_pattern.match(str):
-        type = "float"
-    elif url_pattern.match(str):
-        type = "url"
-    elif len(str)  <= 200 :
-        type = "text"
-    else :
-        type = "long text"
-
-    return type
 #
 # url route to accept project selection for Basespace import and download the basespace files
 #
@@ -591,52 +588,10 @@ def upload_basespace_files(request):
             wf = urllib.urlopen( file_fetch_uri )
 
             #TODO the wf filehandle does not have a chunking mechanism to lower memory consumption
-            tempFile = ContentFile(wf.read(), "tmp")
+            importedFile = ContentFile(wf.read(), file_name)
             wf.close()
 
-            #Contentfiles are streams so reading clears the buffer, so we need to push the content to another file
-            contents = tempFile.readlines()
-            raw = ""
-            for line in contents :
-                raw += line
-            importedFile = ContentFile(raw,  file_name)
-
             columns = []
-            count = 0
-            for line in contents :
-                if line.startswith('##') : #meta header
-                    None
-                elif line.startswith('#') : #column definition
-                    line = line[1:] #remove the #
-                    rawColumns = line.split("\t")
-                    index = 0
-                    for rawCol in rawColumns :
-                        col = {}
-                        col['ignored'] = False
-                        #col['controlled'] = False
-                        col['type']  = None
-                        col['index'] = index
-                        col['name']  = filter_column_name(rawCol)
-                        columns.append(col)
-                        index += 1
-                    break
-                else : # data line
-                    None
-                count += 1
-
-            for line in range(count+1,count+10):
-                if line < len(contents) :
-                    cols = contents[line].split("\t")
-                    if len(cols) == len(columns):
-                        i = 0
-                        for col in cols :
-                            type = find_type(col)
-                            if columns[i]['type'] is None:
-                                columns[i]['type'] = type
-                            elif columns[i]['type'] != type:
-                                columns[i]['type'] = "text"
-                            i += 1
-
             descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'columns' : columns}
             datatype   = 'vcf_file'
             file_descriptor_list.append({'file' : importedFile, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file['size']})
@@ -645,8 +600,6 @@ def upload_basespace_files(request):
 
         if result :
             basespace_response = write_response_to_basespace(result, access_token, session_uri)
-            appession_id  = session_uri.split( "/" )[2]
-            result["redirect_url"] = basespace_redirect_url + appession_id
 
         return JsonResponse(result)
     else :
