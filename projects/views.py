@@ -219,6 +219,7 @@ def complete_download(request, file_descriptor_list):
         }
 
         all_columns = []
+
         for file_obj in file_descriptor_list:
             file = file_obj['file']
             file_upload = UserUploadedFile(upload=upload, file=file, bucket=config['BUCKET'])
@@ -234,7 +235,7 @@ def complete_download(request, file_descriptor_list):
                 "COLUMNS": []
             }
 
-            if file_obj['datatype'] == "user_gen" or file_obj['datatype'] == "vcf_file":
+            if file_obj['datatype'] == "user_gen":
                 for column in file_obj['descriptor']['columns']:
                     if column['ignored']:
                         continue
@@ -269,7 +270,7 @@ def complete_download(request, file_descriptor_list):
             config['FILES'].append(fileJSON)
 
         #Skip *_samples table for low level data
-        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low')
+        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low' or len(all_columns) == 0)
 
         dataset = request.user.user_data_tables_set.create(
             study=study,
@@ -512,7 +513,7 @@ def import_files(request):
             # c) gather the file metadata
             files = []
             bs_project = {}
-
+            total_upload_bytes = 0
             if 'Response' in session_dict.keys():
                 references = session_dict['Response']['References']
                 for ref in references:
@@ -525,13 +526,28 @@ def import_files(request):
                                       "rawsize" : str(ref['Content']['Size']),
                                       "id"      : str(ref['Content']['Id']),
                                       "href"    : str(ref['HrefContent'])})
+                        total_upload_bytes += int(ref['Content']['Size'])
+
+            usage_size = get_storage_string(request.user.usage.usage_bytes)
+            max_usage_size = get_storage_string(request.user.usage.usage_bytes_max)
+            total_upload_size = get_storage_string(total_upload_bytes)
+            overage = request.user.usage.usage_bytes_max - request.user.usage.usage_bytes - total_upload_bytes
+            overage_size = False
+            if overage < 0 :
+                overage_size = get_storage_string(overage)
 
             ownedProjects = request.user.project_set.all().filter(active=True)
-            context = {'projects'     : ownedProjects,
-                       'files'        : files,
-                       'bs_project'   : bs_project,
-                       'session_uri'  : appsession_uri,
-                       'access_token' : access_token}
+            context = {'projects'           : ownedProjects,
+                       'files'              : files,
+                       'bs_project'         : bs_project,
+                       'session_uri'        : appsession_uri,
+                       'access_token'       : access_token,
+                       'usage_size'         : usage_size,
+                       'usage_byte'         : request.user.usage.usage_bytes,
+                       'max_usage_bytes'    : request.user.usage.usage_bytes_max,
+                       'max_usage_size'     : max_usage_size,
+                       'total_upload_size'  : total_upload_size,
+                       'overage_size'       : overage_size}
 
             return render(request, template, context)
         else :
@@ -554,27 +570,6 @@ def upload_files(request):
     return JsonResponse(complete_download(request, file_descriptor_list))
 
 #
-# parse type based on string format
-#
-integer_pattern = re.compile("^[0-9]+$")
-float_pattern = re.compile("^[0-9]*\.?[0-9]+$")
-url_pattern = re.compile("^(http|gs|ftp)s?:\/\/", re.IGNORECASE)
-
-def find_type(str):
-    type = ""
-    if integer_pattern.match(str):
-        type = "integer"
-    elif float_pattern.match(str):
-        type = "float"
-    elif url_pattern.match(str):
-        type = "url"
-    elif len(str)  <= 200 :
-        type = "text"
-    else :
-        type = "long text"
-
-    return type
-#
 # url route to accept project selection for Basespace import and download the basespace files
 #
 def upload_basespace_files(request):
@@ -591,52 +586,10 @@ def upload_basespace_files(request):
             wf = urllib.urlopen( file_fetch_uri )
 
             #TODO the wf filehandle does not have a chunking mechanism to lower memory consumption
-            tempFile = ContentFile(wf.read(), "tmp")
+            importedFile = ContentFile(wf.read(), file_name)
             wf.close()
 
-            #Contentfiles are streams so reading clears the buffer, so we need to push the content to another file
-            contents = tempFile.readlines()
-            raw = ""
-            for line in contents :
-                raw += line
-            importedFile = ContentFile(raw,  file_name)
-
             columns = []
-            count = 0
-            for line in contents :
-                if line.startswith('##') : #meta header
-                    None
-                elif line.startswith('#') : #column definition
-                    line = line[1:] #remove the #
-                    rawColumns = line.split("\t")
-                    index = 0
-                    for rawCol in rawColumns :
-                        col = {}
-                        col['ignored'] = False
-                        #col['controlled'] = False
-                        col['type']  = None
-                        col['index'] = index
-                        col['name']  = filter_column_name(rawCol)
-                        columns.append(col)
-                        index += 1
-                    break
-                else : # data line
-                    None
-                count += 1
-
-            for line in range(count+1,count+10):
-                if line < len(contents) :
-                    cols = contents[line].split("\t")
-                    if len(cols) == len(columns):
-                        i = 0
-                        for col in cols :
-                            type = find_type(col)
-                            if columns[i]['type'] is None:
-                                columns[i]['type'] = type
-                            elif columns[i]['type'] != type:
-                                columns[i]['type'] = "text"
-                            i += 1
-
             descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'columns' : columns}
             datatype   = 'vcf_file'
             file_descriptor_list.append({'file' : importedFile, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file['size']})

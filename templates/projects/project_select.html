@@ -22,18 +22,28 @@
         <input type="hidden" id="access-token" value="{{ access_token }}">
         <input type="hidden" id="session-uri" value="{{ session_uri }}">
         <input type="hidden" id="action-url" value="{% url 'file_import' %}">
+        <input type="hidden" id="max-usage" value="{{ max_usage_bytes }}">
+        <input type="hidden" id="current-usage" value="{{usage_bytes }}">
+        <p>You currently have used {{ usage_size }} of your account's total {{ max_usage_size }} storage space</p>
+        <p id="total-size-display" >Total size of this upload <label id="total-size">{{ total_upload_size }} </label></p>
+        {% if overage_size %}
+            <p id="total-size-warning" class="alert alert-danger alert-error-message" style="display:none">Warning your current upload is  <label id="overage-size">{{ overage_size }}</label> over your account's storage limit. Please remove one or more files before continuing</p>
+        {% endif %}
         <div class="padding-10" style="padding : 10px">
             {% if files %}
+
                 <table id="file-table" class="table tablesorter">
                     <thead>
                         <th class="name-col">File Name</th>
                         <th class="study-col">Size</th>
+                        <th>Ignore</th>
                     </thead>
                     <tbody>
                         {% for file in files %}
                             <tr class="file" name="{{ file.name }}" size="{{ file.rawsize }}" href="{{ file.href }}" class="row-{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
                                 <td class="name-col">{{ file.name }}</td>
                                 <td class="study-col">{{ file.size }}</td>
+                                <td>X</td>
                             </tr>
                         {% endfor %}
                     </tbody>
