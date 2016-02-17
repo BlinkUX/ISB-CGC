@@ -33,6 +33,68 @@ require([
 ], function($, jqueryui, bootstrap, session_security, _) {
     'use strict';
 
+    //on initialization, check to see if there is an overage
+    var availableStorage = $("#max-usage").val() - $("#current-usage").val();
+    check_overage();
+    function check_overage(){
+        function get_size_string(size){
+            var str_size;
+            if(size > 1000000) {
+                str_size = Math.floor(size / 1000000) + " MB";
+            } else if (size > 1000){
+                str_size = Math.floor(size / 1000) + " kB";
+            } else {
+                str_size = size + " bytes";
+            }
+            return str_size;
+        }
+
+        var totalSize = 0;
+        $(".file").each(function(i, element){
+            if(element.getAttribute("ignore") != "true") {
+                totalSize += element.getAttribute("size");
+            }
+        })
+
+        $("#total-size").text(get_size_string(totalSize));
+        if (totalSize > availableStorage){
+            $("#no-file-warning").fadeOut();
+            $("#total-size-warning").fadeIn();
+            $("#upload-button-new").prop("disabled", true);
+            $("#upload-button").prop("disabled", true);
+            $("#overage-size").text(get_size_string(totalSize - availableStorage));
+        } else if (totalSize == 0) {
+            $("#no-file-warning").fadeIn();
+            $("#upload-button-new").prop("disabled", true);
+            $("#upload-button").prop("disabled", true);
+        } else {
+            $("#no-file-warning").fadeOut();
+            $("#total-size-warning").fadeOut();
+            $("#upload-button-new").prop("disabled", false);
+            $("#upload-button").prop("disabled", false);
+        }
+    }
+
+    $(".file-removal").click(function(event){
+        //assuming structure <tr><td><i></td></tr>
+        if($(this).parent().parent().attr("ignore") == "true"){
+            $(this).parent().parent().attr("ignore", false);
+            $(this).parent().parent().removeClass("message");
+            $(this).parent().parent().removeClass("line-through");
+            $(this).removeClass("fa-plus");
+            $(this).addClass("fa-close");
+            $(this).addClass("text-danger");
+        } else {
+            $(this).parent().parent().attr("ignore", true);
+            $(this).parent().parent().addClass("message");
+            $(this).parent().parent().addClass("line-through");
+            $(this).addClass("fa-plus");
+            $(this).removeClass("fa-close");
+            $(this).removeClass("text-danger");
+        }
+        check_overage();
+    })
+
     function file_import(params){
         var csrftoken = get_cookie('csrftoken');
         var url = $('#action-url').val();
@@ -40,7 +102,7 @@ require([
         params['session_uri']  = $("#session-uri").val();
         var files = [];
         $("#file-table").find(".file").each(function(i, ele){
-            if(ele.getAttribute("name") != "") {
+            if(ele.getAttribute("name") != "" && ele.getAttribute("ignore") != "true" ) {
                 files.push({"name": ele.getAttribute("name"), "size" : ele.getAttribute("size"), "href": ele.getAttribute("href")});
             }
         })

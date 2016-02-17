@@ -404,7 +404,7 @@ require([
             var str_size;
             if(size > 1000000) {
                 str_size = size / 1000000 + " MB";
-            } else if (total_size > 1000){
+            } else if (size > 1000){
                 str_size = size / 1000 + " kB";
             } else {
                 str_size = size + " bytes";

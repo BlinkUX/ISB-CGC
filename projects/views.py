@@ -171,6 +171,9 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
 
             cursor.execute(feature_table_sql, feature_table_args)
 
+#
+# Performs the project /study creation, storage of files and creation of configuration file and metadata files
+#
 def complete_download(request, file_descriptor_list):
     status = 'success'
     message = None
@@ -213,7 +216,7 @@ def complete_download(request, file_descriptor_list):
             "FILES": [],
             "USER_METADATA_TABLES": {
                 "METADATA_DATA" : "user_metadata_" + str(request.user.id) + "_" + str(study.id),
-                "METADATA_SAMPLES" : "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id),
+                "METADATA_SAMPLES" : "not generated",
                 "FEATURE_DEFS": User_Feature_Definitions._meta.db_table
             }
         }
@@ -269,7 +272,11 @@ def complete_download(request, file_descriptor_list):
 
             config['FILES'].append(fileJSON)
 
-        #Skip *_samples table for low level data
+        #list the metadata_sample_table that will be generated if needed
+        if request.POST['data-type'] != 'low':
+            config["USER_METADATA_TABLES"]["METADATA_SAMPLES"] = "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id)
+
+        #Skip *_samples table for low level data or vcf data
         create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low' or len(all_columns) == 0)
 
         dataset = request.user.user_data_tables_set.create(
@@ -281,6 +288,7 @@ def complete_download(request, file_descriptor_list):
             google_bucket=request.user.bucket_set.all()[0]
         )
 
+        #print >> sys.stderr, " configuration file : " + json.dumps(config)
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
@@ -530,12 +538,6 @@ def import_files(request):
 
             usage_size = get_storage_string(request.user.usage.usage_bytes)
             max_usage_size = get_storage_string(request.user.usage.usage_bytes_max)
-            total_upload_size = get_storage_string(total_upload_bytes)
-            overage = request.user.usage.usage_bytes_max - request.user.usage.usage_bytes - total_upload_bytes
-            overage_size = False
-            if overage < 0 :
-                overage_size = get_storage_string(overage)
-
             ownedProjects = request.user.project_set.all().filter(active=True)
             context = {'projects'           : ownedProjects,
                        'files'              : files,
@@ -545,15 +547,15 @@ def import_files(request):
                        'usage_size'         : usage_size,
                        'usage_byte'         : request.user.usage.usage_bytes,
                        'max_usage_bytes'    : request.user.usage.usage_bytes_max,
-                       'max_usage_size'     : max_usage_size,
-                       'total_upload_size'  : total_upload_size,
-                       'overage_size'       : overage_size}
+                       'max_usage_size'     : max_usage_size}
 
             return render(request, template, context)
         else :
-            return HttpResponseNotFound('<h1>Access not authorized by Basespace</h1>')
+            template = "basespace_error.html"
+            return render(request, template, context)
     else :
-        return HttpResponseNotFound('<h1>Page not found</h1>')
+        template = "403.html"
+        return render(request, template, context)
 
 #
 # user upload url route to accept user defined files for upload
@@ -598,8 +600,6 @@ def upload_basespace_files(request):
 
         if result :
             basespace_response = write_response_to_basespace(result, access_token, session_uri)
-            appession_id  = session_uri.split( "/" )[2]
-            result["redirect_url"] = basespace_redirect_url + appession_id
 
         return JsonResponse(result)
     else :
