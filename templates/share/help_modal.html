@@ -1,0 +1,44 @@
+{% load static %}
+<div class="modal fade" id="help-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Request Help</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <p>Do you have question? Submit this form and we will get back to you</p>
+                    <p style="display:none; margin: 0 -24px 10px -24px;" class="message message-error alert fade in" id="help-missing-email-warning">Please enter an email address</p>
+                    <input class="form-control" type="email" name="email" placeholder="Email address" id="email" value="{{ user.email }}">
+                    <input id="help-action-url" type="hidden" value="{% url "help_submit" %}">
+                    <br>
+                    <p style="display:none; margin: 0 -24px 10px -24px;" class="message message-error alert fade in"id="help-missing-question-warning">Please enter a question</p>
+                    <textarea style="resize: none;" class="form-control" placeholder="Your question" id="description" name="description" cols="30" rows="5"></textarea>
+                    <br>
+                    <p style="display:none; margin: 0 -24px 10px -24px;" class="message message-error alert fade in"id="help-error-warning">There was an error in the submission, please submit again.</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="help-submit">Submit</button>
+                <button class="btn btn-primary" data-target="#help-modal" data-dismiss="modal" id="cancel">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="thank-you-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Thank you </h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <p>Your question as been submitted.  We will get in touch with you soon</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button data-target="#thank-you-modal" data-dismiss="modal" class="btn btn-primary" id="cancel">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

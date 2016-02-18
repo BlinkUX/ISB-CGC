@@ -1,10 +1,9 @@
 {% load staticfiles %}
+{% load static %}
 {% load cohort_filters %}
 {% load custom_tags %}
 {% load project_custom_tags %}
 {% load workbook_custom_tags %}
-
-
     <header class="navbar navbar-fixed-top site-header" role="header">
         <nav class="container">
             <div class="row">
@@ -27,7 +26,7 @@
                             <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>
                         {% else %}
                             <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
-                            <li class="navbar-link navbar-item"><a href="{% url 'help' %}" target="_blank">Help</a></li>
+                            <li class="navbar-link navbar-item"><a href="" data-target="#help-modal" data-toggle="modal">Help</a></li>
                         {% endif %}
                     </ul>
                 </div>

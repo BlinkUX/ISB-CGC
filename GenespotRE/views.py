@@ -50,6 +50,8 @@ from accounts.models import NIH_User, Usage
 
 from allauth.socialaccount.models import SocialAccount
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.http import HttpResponse
+from google.appengine.api.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -426,3 +428,26 @@ def dashboard_page(request):
         context['max_usage_string'] = get_storage_string(request.user.usage.usage_bytes_max)
         context['usage_percentage'] = (float(request.user.usage.usage_bytes) / float(request.user.usage.usage_bytes_max)) * 100.0
     return render(request, 'GenespotRE/dashboard.html', context)
+
+@login_required
+def help_submit(request):
+    result = {
+        "status" : ""
+    }
+
+    if request.POST['email'] and request.POST['description']:
+        send_mail(sender=settings.DEFAULT_FROM_EMAIL,
+            to=settings.HELP_EMAIL,
+            subject="A user submitted a question",
+            body='''
+The user %s has a question. Here is their message:
+
+%s
+    ''' % (request.POST['email'], request.POST['description']))
+
+        result["status"] = "success"
+    else :
+        result["status"] = "question not submitted"
+        result["error"] = "parameter are incorrect"
+
+    return HttpResponse(json.dumps(result), content_type="application/json")

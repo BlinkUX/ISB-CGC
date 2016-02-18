@@ -148,11 +148,10 @@
             var warnAfter = {{ request|warn_after|unlocalize }};
             var expireAfter = {{ request|expire_after|unlocalize }};
             var confirmFormDiscard = "{% trans 'You have unsaved changes in a form of this page.' %}";
-
         </script>
         {% endlocalize %}
     {% endif %}
+    {% include "share/help_modal.html" %}
     <script data-main="{% block js_file %}{% endblock %}" src="{% static 'js/libs/require.js' %}"></script>
-
 </body>
 </html>

@@ -399,7 +399,9 @@ BASESPACE_API_DOMAIN=secret_settings.get('BASESPACE_API_DOMAIN')
 BASESPACE_AUTH_URL=secret_settings.get('BASESPACE_AUTH_URL')
 BASESPACE_REDIRECT_URL=secret_settings.get('BASESPACE_REDIRECT_URL')
 
-MAX_VCF_SIZE=secret_settings.get('MAX_VCF_SIZE')
+DEFAULT_FROM_EMAIL=secret_settings.get('DEFAULT_FROM_EMAIL')
+HELP_EMAIL=secret_settings.get('HELP_EMAIL')
+
 
 
 
