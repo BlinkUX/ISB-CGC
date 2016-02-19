@@ -146,7 +146,10 @@ SETTINGS = {
     'BASESPACE_API_DOMAIN'      : os.environ.get('BASESPACE_API_DOMAIN', False),
     'BASESPACE_AUTH_URL'        : os.environ.get('BASESPACE_AUTH_URL', False),
     'BASESPACE_REDIRECT_URL'    : os.environ.get('BASESPACE_REDIRECT_URL', False),
-    'MAX_VCF_SIZE' : os.environ.get('MAX_VCF_SIZE', False)
+
+    'DEFAULT_FROM_EMAIL'        : os.environ.get('DEFAULT_FROM_EMAIL', False),
+    'HELP_EMAIL'                : os.environ.get('HELP_EMAIL', False),
+
 }
 
 if os.environ.has_key('DB_SSL_CERT'):

@@ -41,7 +41,7 @@ automatic_scaling:
 
 handlers:
 - url: /favicon.ico
-  static_files: static/img/favicon.ico
+  static_files: static/img/lsdf/favicon.ico
   upload: static/imgfavicon.ico
   secure: always
 - url: /static

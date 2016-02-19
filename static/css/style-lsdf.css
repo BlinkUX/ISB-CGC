@@ -2522,14 +2522,13 @@ a.skip-nav {
     background-color: #003F72; }
 
 .marketing-template .sign-up {
-  display: none;
   margin-right: 5px; }
   .marketing-template .sign-up.active {
     display: inline-block; }
 
 #overview {
   background: #fff;
-  padding-top: 150px; }
+  padding-top: 100px; }
 
 #section2 {
   background: #fff; }
@@ -2537,7 +2536,7 @@ a.skip-nav {
     margin-top: 50px; }
 
 #features {
-  background: transparent;
+  background: rgba(56,100,136,0.6);
   color: #fff; }
   #features:before {
     content: '';

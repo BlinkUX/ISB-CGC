@@ -50,6 +50,12 @@ from accounts.models import NIH_User, Usage
 
 from allauth.socialaccount.models import SocialAccount
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.http import HttpResponse
+from google.appengine.api.mail import send_mail
+from datetime import timedelta
+import pytz
+
+utc=pytz.UTC
 
 logger = logging.getLogger(__name__)
 
@@ -378,13 +384,13 @@ def about_page(request):
 
 def get_storage_string(size):
     if size > 1000000000 :
-        string = str(size / 1000000000) + " GB"
+        string = str(int(size) / 1000000000) + " GB"
     elif size > 1000000 :
-        string = str(size / 1000000) + " MB"
+        string = str(int(size) / 1000000) + " MB"
     elif size > 1000 :
-        string = str(size / 1000) + " kB"
+        string = str(int(size) / 1000) + " kB"
     else :
-        string = str(size) + " b"
+        string = str(int(size)) + " b"
     return string
 
 @login_required
@@ -413,8 +419,18 @@ def dashboard_page(request):
     workbooks = userWorkbooks | sharedWorkbooks
     workbooks = workbooks.distinct().order_by('-last_date_saved')
 
+    # used for google tag manager, will only exist if a new user
+    now = datetime.now()
+    now = datetime(now.year, now.month, now.day, now.hour, now.minute).replace(tzinfo=utc)
+    now = now - timedelta(minutes = 2)
+    joined = request.user.date_joined.replace(tzinfo=utc)
+    first_access = False
+    if now < joined :
+        first_access = True
+
     context = {
         'usage_monitoring_enabled' : settings.ENFORCE_USER_STORAGE_SIZE,
+        'first_access' : first_access,
         'request'  : request,
         'cohorts'  : cohorts,
         'projects' : projects,
@@ -426,3 +442,26 @@ def dashboard_page(request):
         context['max_usage_string'] = get_storage_string(request.user.usage.usage_bytes_max)
         context['usage_percentage'] = (float(request.user.usage.usage_bytes) / float(request.user.usage.usage_bytes_max)) * 100.0
     return render(request, 'GenespotRE/dashboard.html', context)
+
+@login_required
+def help_submit(request):
+    result = {
+        "status" : ""
+    }
+
+    if request.POST['email'] and request.POST['description']:
+        send_mail(sender=settings.DEFAULT_FROM_EMAIL,
+            to=settings.HELP_EMAIL,
+            subject="A user submitted a question",
+            body='''
+The user %s has a question. Here is their message:
+
+%s
+    ''' % (request.POST['email'], request.POST['description']))
+
+        result["status"] = "success"
+    else :
+        result["status"] = "question not submitted"
+        result["error"] = "parameter are incorrect"
+
+    return HttpResponse(json.dumps(result), content_type="application/json")

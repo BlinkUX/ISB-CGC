@@ -25,9 +25,9 @@
 {% block content %}
 <div class="container">
     <section class="panel panel-default">
-        {% if user.last_login == user.date_joined %}
+        {% if first_access %}
             <!-- used for google tag manager -->
-            <button id="gtm-new-user-button" style="height:0px"></button>
+            <button id="gtm-new-user-button" style="display : none;"></button>
         {% endif %}
         <div class="panel-heading">
             <a role="button" data-target="#analysis-body" data-toggle="collapse" aria-expanded="true" aria-controls="analysis-body">

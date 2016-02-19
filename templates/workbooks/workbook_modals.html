@@ -89,7 +89,7 @@
             <form id="copy-workbook-{{ workbook.id }}" method="POST" action="{% url 'workbook_copy' workbook.id %}">
                 {% csrf_token %}
                 <div class="modal-footer">
-                    <input type="submit" value="Duplicate" class="btn btn-primary" />
+                    <input type="submit" id="gtm-workbook-duplicate-button" value="Duplicate" class="btn btn-primary" />
                     <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
                 </div>
             </form>
@@ -145,7 +145,7 @@
                         <textarea class="form-control" name="share_users"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" value="Send" class="btn btn-primary" />
+                        <input id="gtm-share-button" type="submit" value="Send" class="btn btn-primary" />
                         <button type="button" class="btn btn-link" data-dismiss="modal">Cancel</button>
                     </div>
                 </form>

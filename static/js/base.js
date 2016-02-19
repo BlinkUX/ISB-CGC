@@ -8,7 +8,7 @@ require.config({
         underscore: 'libs/underscore-min',
         assetscore: 'libs/assets.core',
         assetsresponsive: 'libs/assets.responsive',
-
+        help: 'help'
     },
     shim: {
         'bootstrap': ['jquery'],
@@ -27,7 +27,8 @@ require([
     'session_security',
     'underscore',
     'assetscore',
-    'assetsresponsive'
+    'assetsresponsive',
+    'help'
 ], function($, jqueryui, bootstrap, session_security, _) {
     'use strict';
 

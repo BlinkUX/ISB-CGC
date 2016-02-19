@@ -160,7 +160,8 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
                   has_mrna BOOLEAN,
                   has_mirna BOOLEAN,
                   has_protein BOOLEAN,
-                  has_meth BOOLEAN
+                  has_meth BOOLEAN,
+                  has_maf BOOLEAN
             """
             feature_table_args = [user.id, study.id]
 
@@ -215,9 +216,9 @@ def complete_download(request, file_descriptor_list):
             "BIGQUERY_DATASET": request.user.googleproject.big_query_dataset,
             "FILES": [],
             "USER_METADATA_TABLES": {
-                "METADATA_DATA" : "user_metadata_" + str(request.user.id) + "_" + str(study.id),
-                "METADATA_SAMPLES" : "not generated",
-                "FEATURE_DEFS": User_Feature_Definitions._meta.db_table
+                "METADATA_DATA"     : "user_metadata_" + str(request.user.id) + "_" + str(study.id),
+                "METADATA_SAMPLES"  : "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id),
+                "FEATURE_DEFS"      : User_Feature_Definitions._meta.db_table
             }
         }
 
@@ -238,7 +239,7 @@ def complete_download(request, file_descriptor_list):
                 "COLUMNS": []
             }
 
-            if file_obj['datatype'] == "user_gen":
+            if file_obj['datatype'] == "user_gen" or file_obj['datatype'] == "vcf_file":
                 for column in file_obj['descriptor']['columns']:
                     if column['ignored']:
                         continue
@@ -273,11 +274,11 @@ def complete_download(request, file_descriptor_list):
             config['FILES'].append(fileJSON)
 
         #list the metadata_sample_table that will be generated if needed
-        if request.POST['data-type'] != 'low':
-            config["USER_METADATA_TABLES"]["METADATA_SAMPLES"] = "user_metadata_samples_" + str(request.user.id) + "_" + str(study.id)
+        if request.POST['data-type'] == 'low':
+            config["USER_METADATA_TABLES"]["METADATA_SAMPLES"] = "not generated"
 
         #Skip *_samples table for low level data or vcf data
-        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low' or len(all_columns) == 0)
+        create_metadata_tables(request.user, study, all_columns, request.POST['data-type'] == 'low')
 
         dataset = request.user.user_data_tables_set.create(
             study=study,
@@ -288,7 +289,7 @@ def complete_download(request, file_descriptor_list):
             google_bucket=request.user.bucket_set.all()[0]
         )
 
-        #print >> sys.stderr, " configuration file : " + json.dumps(config)
+        print >> sys.stderr, " configuration file : " + json.dumps(config)
         if settings.PROCESSING_ENABLED:
             files = {'config.json': ('config.json', json.dumps(config))}
             post_args = {
@@ -472,6 +473,28 @@ basespace_auth_uri      = settings.BASESPACE_AUTH_URL
 basespace_redirect_url  = settings.BASESPACE_REDIRECT_URL
 
 #
+# parse type based on string format
+#
+integer_pattern = re.compile("^[0-9]+$")
+float_pattern = re.compile("^[0-9]*\.?[0-9]+$")
+url_pattern = re.compile("^(http|gs|ftp)s?:\/\/", re.IGNORECASE)
+
+def find_type(str):
+    type = ""
+    if integer_pattern.match(str):
+        type = "integer"
+    elif float_pattern.match(str):
+        type = "float"
+    elif url_pattern.match(str):
+        type = "url"
+    elif len(str)  <= 200 :
+        type = "text"
+    else :
+        type = "long text"
+
+    return type
+
+#
 # acquire a basespace access token
 #
 def get_basespace_access_token(app_id, app_secret, redirect_url, auth_code):
@@ -501,6 +524,20 @@ def import_files(request):
     template = 'projects/project_select.html'
     context = {}
     if request.method == "GET" :
+        #check to validate the user has a google project set
+        if not hasattr(request.user, 'googleproject'):
+            if settings.FORCE_SINGLE_GOOGLE_ACCOUNT:
+                proj = GoogleProject(user=request.user,
+                                     project_name=settings.PROJECT_NAME,
+                                     project_id=settings.PROJECT_ID,
+                                     big_query_dataset=settings.BQ_PROJECT_ID)
+                proj.save()
+
+                buck = Bucket(user = request.user,
+                              bucket_name=settings.GCLOUD_BUCKET)
+                buck.save()
+
+
         appsession_uri       = request.GET['appsessionuri']
         authorization_code   = request.GET['authorization_code']
 
@@ -588,10 +625,52 @@ def upload_basespace_files(request):
             wf = urllib.urlopen( file_fetch_uri )
 
             #TODO the wf filehandle does not have a chunking mechanism to lower memory consumption
-            importedFile = ContentFile(wf.read(), file_name)
+            tempFile = ContentFile(wf.read(), "tmp")
             wf.close()
 
+            #Contentfiles are streams so reading clears the buffer, so we need to push the content to another file
+            contents = tempFile.readlines()
+            raw = ""
+            for line in contents :
+                raw += line
+            importedFile = ContentFile(raw,  file_name)
+
             columns = []
+            count = 0
+            for line in contents :
+                if line.startswith('##') : #meta header
+                    None
+                elif line.startswith('#') : #column definition
+                    line = line[1:] #remove the #
+                    rawColumns = line.split("\t")
+                    index = 0
+                    for rawCol in rawColumns :
+                        col = {}
+                        col['ignored'] = False
+                        #col['controlled'] = False
+                        col['type']  = None
+                        col['index'] = index
+                        col['name']  = filter_column_name(rawCol)
+                        columns.append(col)
+                        index += 1
+                    break
+                else : # data line
+                    None
+                count += 1
+
+            for line in range(count+1,count+10):
+                if line < len(contents) :
+                    cols = contents[line].split("\t")
+                    if len(cols) == len(columns):
+                        i = 0
+                        for col in cols :
+                            type = find_type(col)
+                            if columns[i]['type'] is None:
+                                columns[i]['type'] = type
+                            elif columns[i]['type'] != type:
+                                columns[i]['type'] = "text"
+                            i += 1
+
             descriptor = {'pipeline' : "vcf_pipeline", 'platform' : 'vcf_platform', 'columns' : columns}
             datatype   = 'vcf_file'
             file_descriptor_list.append({'file' : importedFile, 'descriptor' : descriptor, 'datatype' : datatype, 'size' : file['size']})

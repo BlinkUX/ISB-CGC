@@ -1,10 +1,9 @@
 {% load staticfiles %}
+{% load static %}
 {% load cohort_filters %}
 {% load custom_tags %}
 {% load project_custom_tags %}
 {% load workbook_custom_tags %}
-
-
     <header class="navbar navbar-fixed-top site-header" role="header">
         <nav class="container">
             <div class="row">
@@ -24,16 +23,22 @@
                             <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
                             <li class="navbar-link navbar-item"><a href="#how-it-work" data-ride="paranav">How It Works</a></li>
                             <li class="navbar-link navbar-item"><a href="#getting-started" data-ride="paranav">Getting Started</a></li>
-                            <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>
+{#                            <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>#}
                         {% else %}
                             <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
-                            <li class="navbar-link navbar-item"><a href="{% url 'help' %}" target="_blank">Help</a></li>
+                            <li class="navbar-link navbar-item"><a href="" data-target="#help-modal" data-toggle="modal">Help</a></li>
                         {% endif %}
                     </ul>
                 </div>
 
                 <div class="nav navbar-right">
                     {% if user.is_authenticated %}
+                        {% url 'about_page' as about_url %}
+                        {% if about_url == request.path %}
+                            <div class="cta-container" style="display:inline-block; margin:0px">
+                                <a href="{% url 'dashboard' %}" class="btn btn-default mod-info">Your Dashboard</a>
+                            </div>
+                        {% endif %}
                         <div id="user-login" class="navbar-item">
                             <a class="avatar-link" href="{% url 'user_detail' user.id %}">
                                 <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" width="32" height="32" alt="Avatar Link to User Details">
@@ -61,7 +66,7 @@
                         </div>
                         <div class="inline-block sign-in">
                             <!-- same thing as /accounts/login-->
-                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
+                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Log In"></i> Sign In</a>
                         </div>
                     {% endif %}
                 </div>
