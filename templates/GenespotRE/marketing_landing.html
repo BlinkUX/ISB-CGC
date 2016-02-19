@@ -10,7 +10,8 @@
 {% block page_name %}marketing{% endblock %}
 
 {% block full_width_content %}
-<section class="page-section" id="overview">
+<div id="overview">
+<section class="page-section">
     <div class="container">
         <div class="row">
             <div class="col-sm-6">
@@ -72,6 +73,7 @@
         </div>
     </div>
 </section>
+</div>
 <section class="page-section" id="features">
     <div class="container">
         <div class="row">
@@ -237,13 +239,13 @@
                     Avance is a powerful, web-based application that enables biologists to easily analyze and visualize large data sets in a collaborative environment.
                 </p>
                 <ul class="footer-links">
-                    <li class="link"><a href="">Technical Specifications</a></li>
+{#                    <li class="link"><a href="">Technical Specifications</a></li>#}
                     <li class="link"><a href="" data-target="#help-modal" data-toggle="modal">Submit Feedback</a></li>
                 </ul>
             </div>
             <div class="col-sm-6">
                 <h3 class="sr-only">Institute for Systems Biology</h3>
-                <a href="https://www.systemsbiology.org/">
+                <a target="_blank" href="https://www.systemsbiology.org/">
                     <img class="align-right" src="{% static 'img/lsdf/isb-logo-white.png' %}" alt="Institute for Systems Biology" width="140px">
                 </a>
             </div>

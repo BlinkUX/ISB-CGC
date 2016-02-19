@@ -23,7 +23,7 @@
                             <li class="navbar-link navbar-item"><a href="#features" data-ride="paranav">Features</a></li>
                             <li class="navbar-link navbar-item"><a href="#how-it-work" data-ride="paranav">How It Works</a></li>
                             <li class="navbar-link navbar-item"><a href="#getting-started" data-ride="paranav">Getting Started</a></li>
-                            <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>
+{#                            <li class="navbar-link navbar-item"><a href="">Technical Specifications</a></li>#}
                         {% else %}
                             <li class="navbar-link navbar-item"><a href="{% url 'about_page' %}">About</a></li>
                             <li class="navbar-link navbar-item"><a href="" data-target="#help-modal" data-toggle="modal">Help</a></li>
@@ -33,6 +33,9 @@
 
                 <div class="nav navbar-right">
                     {% if user.is_authenticated %}
+                        <div class="cta-container" style="display:inline-block; margin:0px">
+                            <a href="{% url 'dashboard' %}" class="btn btn-default mod-info">Go To Dashboard</a>
+                        </div>
                         <div id="user-login" class="navbar-item">
                             <a class="avatar-link" href="{% url 'user_detail' user.id %}">
                                 <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" width="32" height="32" alt="Avatar Link to User Details">
@@ -60,7 +63,7 @@
                         </div>
                         <div class="inline-block sign-in">
                             <!-- same thing as /accounts/login-->
-                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Sign In"></i> Sign In</a>
+                            <a class="btn btn-default mod-gray" href="{% url 'account_login' %}" title="Log In"></i> Sign In</a>
                         </div>
                     {% endif %}
                 </div>

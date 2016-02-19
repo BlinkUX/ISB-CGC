@@ -16,7 +16,7 @@
     <h1 class="page-header pull-left">Saved Workbooks</h1>
     <form id="create-workbook" method="POST" action="{% url 'workbook_create' %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary pull-right" ><i class="fa fa-plus"></i>Create Workbook</button>
+        <button type="submit" id="gtm-create-workbook-button" class="btn btn-primary pull-right" ><i class="fa fa-plus"></i>Create Workbook</button>
     </form>
 </div>
 {% endblock %}

@@ -99,11 +99,10 @@ require([
     };
     Paranav.prototype._checkTargetInViewPort = function ($target) {
         var targetrect = $target[0].getBoundingClientRect();
-        var viewPortHeight = window.innerHeight || document.documentElement.clientHeight;
+        var viewCenter = (window.innerHeight || document.documentElement.clientHeight) * 0.5;
 
-        // check target element's top is above the center of the view port
-        // or its bottom is bellow the center of the view port
-        return (targetrect.top >= 0 && targetrect.top <= viewPortHeight/2) || (targetrect.bottom <= viewPortHeight && targetrect.bottom > viewPortHeight/2);
+        // return true if the horizontal center of the screen intersects with the target element
+        return viewCenter > targetrect.top && viewCenter < targetrect.bottom;
     };
 
     // Paranav plugin definition
@@ -155,7 +154,6 @@ require([
                 TweenMax.to(selector, 1, animationDown)
             }
         }
-        //if not
     }
 
     var lastScroll = 0;
@@ -168,12 +166,6 @@ require([
         var animationOpacityDown = {opacity: '0.6', y:0, delay: delay, ease: Power2.easeOut};
         var animationOpacityUp = {opacity: "+=0.1", y: "-=3px", delay: delay, ease: ease}
 
-        var overViewRect = document.getElementById('overview').getBoundingClientRect();
-        if(overViewRect.bottom < 55){
-            $('.sign-up').addClass('active');
-        }else{
-            $('.sign-up').removeClass('active');
-        }
         scrollanimation($('#overview .image-0'), {y: "-=4px", delay: delay, ease: ease}, animationTransformYDown, direction);
         scrollanimation($('#overview .fixed-image-1'), {y: "-=16px", delay: delay, ease: ease}, animationTransformYDown, direction);
         scrollanimation($('#overview .fixed-image-2'), {y: "-=8px", delay: delay, ease: ease}, animationTransformYDown, direction);

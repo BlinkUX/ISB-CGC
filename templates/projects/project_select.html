@@ -54,20 +54,26 @@
 
     <div class="panel">
         <div class="panel-heading">
-            <label>Select project to import files</label>
+            {% if projects %}
+                <label>Select project to import files</label>
+            {% else %}
+                <label>Create a project to import files</label>
+            {%  endif %}
         </div>
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="#existing-projects-list" aria-controls="existing-projects-list" role="tab" data-toggle="tab">Existing Project</a>
-            </li>
-            <li role="presentation">
+            {% if projects %}
+                <li role="presentation" class="active">
+                    <a href="#existing-projects-list" aria-controls="existing-projects-list" role="tab" data-toggle="tab">Existing Project</a>
+                </li>
+            {% endif %}
+            <li role="presentation" {% if not projects %} class="active" {% endif %}>
                 <a href="#new-project" aria-controls="new-projects-list" role="tab" data-toggle="tab">New Project</a>
             </li>
         </ul>
         <div class="tab-content" style="padding : 0px 10px 5px 10px">
-            <div role="tabpanel" class="tab-pane active" id="existing-projects-list">
-                <div class="panel-body">
-                    {% if projects %}
+            {% if projects %}
+                <div role="tabpanel" class="tab-pane active" id="existing-projects-list">
+                    <div class="panel-body">
                         <table class="table tablesorter">
                             <thead>
                                 <th class="control-col"></th>
@@ -98,13 +104,10 @@
                                 <i class="fa fa-cog fa-spin"></i><span>Importing</span>
                             </button>
                         </div>
-                    {% else %}
-                        <p class="center space-top-10">You don't have any saved projects yet</p>
-                        <p class="center"><a href="{% url 'project_upload' %}" class="btn btn-default"><i class="fa fa-cloud-upload"></i>Upload Project Data</a></p>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="new-project">
+            {% endif %}
+            <div role="tabpanel" class="tab-pane {% if not projects %} active {% endif %}" id="new-project">
                 <input type="hidden" id="project-tab" value="new">
                 <div style="height: 35px;">
                     <div id="validate-warning" class="message message-error alert" style="margin:0px -10px 10px -10px; display : none">Project name is required</div>

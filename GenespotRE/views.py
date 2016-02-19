@@ -52,6 +52,10 @@ from allauth.socialaccount.models import SocialAccount
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.http import HttpResponse
 from google.appengine.api.mail import send_mail
+from datetime import timedelta
+import pytz
+
+utc=pytz.UTC
 
 logger = logging.getLogger(__name__)
 
@@ -380,13 +384,13 @@ def about_page(request):
 
 def get_storage_string(size):
     if size > 1000000000 :
-        string = str(size / 1000000000) + " GB"
+        string = str(int(size) / 1000000000) + " GB"
     elif size > 1000000 :
-        string = str(size / 1000000) + " MB"
+        string = str(int(size) / 1000000) + " MB"
     elif size > 1000 :
-        string = str(size / 1000) + " kB"
+        string = str(int(size) / 1000) + " kB"
     else :
-        string = str(size) + " b"
+        string = str(int(size)) + " b"
     return string
 
 @login_required
@@ -415,8 +419,18 @@ def dashboard_page(request):
     workbooks = userWorkbooks | sharedWorkbooks
     workbooks = workbooks.distinct().order_by('-last_date_saved')
 
+    # used for google tag manager, will only exist if a new user
+    now = datetime.now()
+    now = datetime(now.year, now.month, now.day, now.hour, now.minute).replace(tzinfo=utc)
+    now = now - timedelta(minutes = 2)
+    joined = request.user.date_joined.replace(tzinfo=utc)
+    first_access = False
+    if now < joined :
+        first_access = True
+
     context = {
         'usage_monitoring_enabled' : settings.ENFORCE_USER_STORAGE_SIZE,
+        'first_access' : first_access,
         'request'  : request,
         'cohorts'  : cohorts,
         'projects' : projects,
