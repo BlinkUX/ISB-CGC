@@ -21,5 +21,16 @@
 {% block title %}Server error{% endblock %}
 
 {% block content %}
-There was an error while handling your request.
+<div style="margin-top : 100px">
+    <div class="error-page-image">
+         <img src="{% static 'img/lsdf/500@2x.png' %}">
+    </div>
+    <div class="error-page-content">
+        <h2 class="error-page-text">There was an error while handling your request.</h2>
+    </div>
+    <div>
+        <center><a href="{% url "dashboard" %}" class="btn btn-primary">Your Dashboard</a></center>
+    </div>
+</div>
+
 {% endblock %}

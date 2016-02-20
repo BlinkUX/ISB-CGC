@@ -255,7 +255,7 @@ body {
   font-family: "Open Sans", Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857;
-  color: #3b3b3b;
+  color: #5D5D5D;
   background-color: #F8F8F8; }
 
 input,
@@ -3543,7 +3543,7 @@ a.badge:hover, a.badge:focus {
     margin-right: auto; }
   .thumbnail .caption {
     padding: 9px;
-    color: ##3b3b3b; }
+    color: #5D5D5D; }
 
 a.thumbnail:hover,
 a.thumbnail:focus,

@@ -13,6 +13,39 @@ html, body, ul, ol {
 ul, ol {
   list-style: none; }
 
+.error-page-content {
+  margin-left: auto;
+  margin-top: 100px;
+  margin-right: auto;
+  width: 400px;
+}
+
+.error-page-image {
+  width: 400px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.error-page-image img {
+  width: 400px;
+}
+
+.error-page-text{
+  color: #F7991B;
+  text-align: center;
+}
+.error-page-text:after {
+    content: '';
+    display: block;
+    background-color: #C9DD03;
+    height: 8px;
+    width: 75px;
+    left: 160px;
+    position: relative;
+    top: -115px;
+    margin-bottom: 50px;
+}
+
 @keyframes blink {
     0% {
            background-color: rgba(42,83,122,1)
@@ -2492,7 +2525,7 @@ a.skip-nav {
   width: 100%;
   height: 150px; }
 
-.hero-svg-title, text, .hero-title {
+.hero-svg-title, .hero-text, .hero-title {
   font-size: 44px;
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
@@ -2705,7 +2738,7 @@ a.skip-nav {
     margin: 0; }
   .hero-svg {
     height: 100px; }
-  .hero-svg-title, text {
+  .hero-svg-title, .hero-text {
     font-size: 35px; }
   #overview .fixed-image-holder {
     -webkit-transform: translate3d(0, -20px, 0);

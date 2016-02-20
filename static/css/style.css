@@ -1934,10 +1934,19 @@ a.skip-nav {
 .worksheet-panel-body .grid path {
   stroke-width: 0; }
 
-.worksheet-panel-body .plot-div .extent {
-  fill: #000;
-  fill-opacity: .1;
-  stroke: #fff; }
+.worksheet-panel-body .plot-div {
+  overflow: hidden; }
+  .worksheet-panel-body .plot-div .extent {
+    fill: #000;
+    fill-opacity: .1;
+    stroke: #fff; }
+  .worksheet-panel-body .plot-div .expected_fill.selected {
+    stroke: #01307F;
+    stroke-width: 5px; }
+  .worksheet-panel-body .plot-div .bar {
+    fill: rgba(0, 0, 0, 0.5); }
+    .worksheet-panel-body .plot-div .bar:hover, .worksheet-panel-body .plot-div .bar.selected {
+      fill: rgba(0, 0, 225, 0.5); }
 
 .worksheet-panel-body .plot-div .expected_fill.selected {
   stroke: #01307F;
@@ -1955,7 +1964,8 @@ a.skip-nav {
   background-color: rgba(1, 48, 127, 0.8);
   border-radius: 3px;
   color: #fff;
-  padding: 5px; }
+  padding: 5px;
+  width: 210px; }
 
 .worksheet-panel-body .pairwise-result .table th.logp, .worksheet-panel-body .pairwise-result .table th.n, .worksheet-panel-body .pairwise-result .table th.na, .worksheet-panel-body .pairwise-result .table th.nb, .worksheet-panel-body .pairwise-result .table th.pa, .worksheet-panel-body .pairwise-result .table th.pb {
   width: 60px; }

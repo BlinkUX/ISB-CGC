@@ -21,10 +21,15 @@
 {% block title %}Forbidden{% endblock %}
 
 {% block content %}
-    <div style="width : 660px; margin-left:auto; margin-right:auto; margin-top:50px">
-        <label style="color:#4273DF;  font-size: 20px;">Oops! The Basespace access token for importing files has expired.</label>
-        <br>
-        <br>
+    <div style="margin-top : 100px">
+    <div class="error-page-image">
+         <img src="{% static 'img/lsdf/403@2x.png' %}">
+    </div>
+    <div class="error-page-content">
+        <h2 class="error-page-text">Oops! The Basespace access token for importing files has expired.</h2>
+    </div>
+    <div>
         <label>Please hit back in your browser and try importing again </label>
     </div>
+</div>
 {% endblock %}

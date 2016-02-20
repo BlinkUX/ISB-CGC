@@ -21,5 +21,15 @@
 {% block title %}Forbidden{% endblock %}
 
 {% block content %}
-You do not have permission to access this page.
+<div style="margin-top : 100px">
+    <div class="error-page-image">
+         <img src="{% static 'img/lsdf/403@2x.png' %}">
+    </div>
+    <div class="error-page-content">
+        <h2 class="error-page-text">You do not have permission to access this page.</h2>
+    </div>
+    <div>
+        <center><a href="{% url "dashboard" %}" class="btn btn-primary">Your Dashboard</a></center>
+    </div>
+</div>
 {% endblock %}

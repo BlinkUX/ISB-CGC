@@ -21,5 +21,15 @@
 {% block title %}Page not found{% endblock %}
 
 {% block content %}
-The page you requested could not be found.
+<div style="margin-top : 100px">
+    <div class="error-page-image">
+         <img src="{% static 'img/lsdf/404@2x.png' %}">
+    </div>
+    <div class="error-page-content">
+        <h2 class="error-page-text">The page you are looking for does not exist</h2>
+    </div>
+    <div>
+        <center><a href="{% url "dashboard" %}" class="btn btn-primary">Your Dashboard</a></center>
+    </div>
+</div>
 {% endblock %}
