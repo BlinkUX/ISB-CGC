@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% comment %}
 
    Copyright 2015, Institute for Systems Biology
@@ -25,10 +26,8 @@
     <div class="error-page-image">
          <img src="{% static 'img/lsdf/403@2x.png' %}">
     </div>
-    <div class="error-page-content">
+    <div class="error-page-content" style="width : 700px; text-align:center">
         <h2 class="error-page-text">Oops! The Basespace access token for importing files has expired.</h2>
-    </div>
-    <div>
         <label>Please hit back in your browser and try importing again </label>
     </div>
 </div>

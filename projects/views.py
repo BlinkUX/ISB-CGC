@@ -547,8 +547,9 @@ def import_files(request):
         else :
             redirect_url = "http://" + redirect_url
 
+        print >> sys.stderr, "url used for token : " + redirect_url;
         access_token = get_basespace_access_token(basespace_app_id, basespace_app_secret, redirect_url, authorization_code)
-
+        print >> sys.stderr, "access token : " + str(access_token);
         if access_token :
             # b) fetch appsession info (JSON object), including list of files
             session_uri = basespace_api_uri + appsession_uri + '?access_token=' + access_token

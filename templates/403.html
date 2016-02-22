@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
+
 {% comment %}
 
    Copyright 2015, Institute for Systems Biology
@@ -27,9 +29,9 @@
     </div>
     <div class="error-page-content">
         <h2 class="error-page-text">You do not have permission to access this page.</h2>
-    </div>
-    <div>
-        <center><a href="{% url "dashboard" %}" class="btn btn-primary">Your Dashboard</a></center>
+        <div>
+            <center><a href="{% url "dashboard" %}" class="btn btn-primary">Your Dashboard</a></center>
+        </div>
     </div>
 </div>
 {% endblock %}
