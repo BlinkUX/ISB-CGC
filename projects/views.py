@@ -542,12 +542,14 @@ def import_files(request):
         authorization_code   = request.GET['authorization_code']
 
         redirect_url         = request.get_host() + reverse('accept_external_files')
-        if request.is_secure():
-            redirect_url = "https://" + redirect_url
-        else :
-            redirect_url = "http://" + redirect_url
+        # if request.is_secure():
+        #     redirect_url = "https://" + redirect_url
+        # else :
+        #     redirect_url = "http://" + redirect_url
+        redirect_url = "http://" + redirect_url
 
         print >> sys.stderr, "url used for token : " + redirect_url;
+
         access_token = get_basespace_access_token(basespace_app_id, basespace_app_secret, redirect_url, authorization_code)
         print >> sys.stderr, "access token : " + str(access_token);
         if access_token :
