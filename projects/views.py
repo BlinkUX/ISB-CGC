@@ -542,11 +542,12 @@ def import_files(request):
         authorization_code   = request.GET['authorization_code']
 
         redirect_url         = request.get_host() + reverse('accept_external_files')
-        # if request.is_secure():
-        #     redirect_url = "https://" + redirect_url
-        # else :
-        #     redirect_url = "http://" + redirect_url
-        redirect_url = "http://" + redirect_url
+
+        #request.is_secure should work here but Basespace as a bug where it only calls via http
+        if "localhost" not in request.get_host() and "localhost" not in request.get_host():
+            redirect_url = "https://" + redirect_url
+        else :
+            redirect_url = "http://" + redirect_url
 
         print >> sys.stderr, "url used for token : " + redirect_url;
 
