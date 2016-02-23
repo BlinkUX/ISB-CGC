@@ -77,9 +77,6 @@ def extended_logout_view(request):
 
     response = account_views.logout(request)
     return response
-    #redirect to landing page
-    #redirect_url = reverse('landing_page')
-    #return redirect(redirect_url)
 
 @login_required
 def unlink_accounts(request):
