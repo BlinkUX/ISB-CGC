@@ -42,6 +42,8 @@ debug = settings.DEBUG
 from google_helpers.genomics_service import get_genomics_resource
 from google_helpers.directory_service import get_directory_resource
 from googleapiclient.errors import HttpError
+from django.shortcuts import render, redirect
+from django.core.urlresolvers import reverse
 from visualizations.models import SavedViz, Viz_Perms
 from cohorts.models import Cohort, Cohort_Perms
 from projects.models import Project
@@ -126,8 +128,16 @@ def landing_page(request):
         except:
             print >> sys.stderr,"Printing os.getenv('BACKEND_ID') Failed"
 
-    return render(request, 'GenespotRE/marketing_landing.html',
-                  {'request': request, 'full_width': 'true'})
+    if request.user :
+        if request.user.id :
+            redirect_url = reverse('dashboard')
+            return redirect(redirect_url)
+        else :
+            return render(request, 'GenespotRE/marketing_landing.html',
+                      {'request': request, 'full_width': 'true'})
+    else :
+        return render(request, 'GenespotRE/marketing_landing.html',
+                      {'request': request, 'full_width': 'true'})
 
 '''
 Returns css_test page used to test css for general ui elements

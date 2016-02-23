@@ -697,9 +697,17 @@ def write_response_to_basespace(result, access_token, session_uri):
     status_params_enc = urllib.urlencode(status_params)
 
     session_uri.split( "/" )
-    h = httplib.HTTPSConnection(basespace_api_domain)
+    h = httplib.HTTPSConnection(basespace_api_domain, 443)
     headers = {"x-access-token" : access_token, "Accept": "text/plain"}
-    h.request('POST', session_uri, status_params_enc, headers)
-    r = h.getresponse()
 
-    return r
+    # causing error on staging
+    # for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+    # gaierror: [Errno -2] Name or service not known
+    result = ""
+    try :
+        h.request('POST', session_uri, status_params_enc, headers)
+        result = h.getresponse()
+    except Exception as e :
+        print >> sys.stderr, "error on request post back to basespace " + e.message
+
+    return result

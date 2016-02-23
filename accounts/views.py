@@ -19,7 +19,7 @@ limitations under the License.
 import logging
 from googleapiclient.errors import HttpError
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -47,28 +47,39 @@ def extended_logout_view(request):
             logger.warn("Error %s on logout: more than one NIH User with user id %d" % (str(e), request.user.id))
 
     # remove from CONTROLLED_ACL_GOOGLE_GROUP if exists
-    directory_service, http_auth = get_directory_resource()
     user_email = User.objects.get(id=request.user.id).email
+    delete_success = False
     try:
+        directory_service, http_auth = get_directory_resource()
         directory_service.members().delete(groupKey=CONTROLLED_ACL_GOOGLE_GROUP, memberKey=str(user_email)).execute(http=http_auth)
         logger.info("Attempting to delete user {} from group {}. "
                     "If an error message doesn't follow, they were successfully deleted"
                     .format(str(user_email), CONTROLLED_ACL_GOOGLE_GROUP))
+        delete_success = True
     except HttpError, e:
+        logger.info(e)
+
+    except IOError, e :
         logger.info(e)
 
     # add user to OPEN_ACL_GOOGLE_GROUP if they are not yet on it
-    try:
-        body = {"email": user_email, "role": "MEMBER"}
-        directory_service.members().insert(groupKey=OPEN_ACL_GOOGLE_GROUP, body=body).execute(http=http_auth)
-        logger.info("Attempting to insert user {} into group {}. "
-                    "If an error message doesn't follow, they were successfully added."
-                    .format(str(user_email), OPEN_ACL_GOOGLE_GROUP))
-    except HttpError, e:
-        logger.info(e)
+    if delete_success :
+        try:
+            body = {"email": user_email, "role": "MEMBER"}
+            directory_service.members().insert(groupKey=OPEN_ACL_GOOGLE_GROUP, body=body).execute(http=http_auth)
+            logger.info("Attempting to insert user {} into group {}. "
+                        "If an error message doesn't follow, they were successfully added."
+                        .format(str(user_email), OPEN_ACL_GOOGLE_GROUP))
+        except HttpError, e:
+            logger.info(e)
+        except IOError, e :
+            logger.info(e)
 
     response = account_views.logout(request)
     return response
+    #redirect to landing page
+    #redirect_url = reverse('landing_page')
+    #return redirect(redirect_url)
 
 @login_required
 def unlink_accounts(request):
