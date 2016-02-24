@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name='active',
             field=models.BooleanField(default=True),
             preserve_default=True,
-        )
+        ),
         migrations.AddField(
             model_name='worksheet_plot',
             name='worksheet',
