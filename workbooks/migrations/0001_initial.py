@@ -124,6 +124,7 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('plot',   models.ForeignKey(related_name='worksheet_plot', blank=True, to='workbooks.Worksheet_plot', null=True)),
+                ('active', models.BooleanField(default=True)),
                 ('cohort', models.ForeignKey(related_name='worksheet_plot.cohort', blank=True, to='workbooks.Worksheet_cohort', null=True)),
             ],
             options={
