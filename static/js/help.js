@@ -1,10 +1,9 @@
 require.config({
-    baseUrl: '/static/js/',
     paths: {
-        jquery: 'libs/jquery-1.11.1.min',
-        bootstrap: 'libs/bootstrap.min',
-        jqueryui: 'libs/jquery-ui.min',
-        text: 'libs/require-text',
+        jquery: '/static/js/libs/jquery-1.11.1.min',
+        bootstrap: '/static/js/libs/bootstrap.min',
+        jqueryui: '/static/js/libs/jquery-ui.min',
+        text: '/static/js/libs/require-text',
     },
     shim: {
         'bootstrap': ['jquery'],

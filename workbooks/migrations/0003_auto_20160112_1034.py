@@ -24,13 +24,7 @@ class Migration(migrations.Migration):
             name='active',
             field=models.BooleanField(default=True),
             preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='worksheet_plot',
-            name='cohort',
-            field=models.ForeignKey(related_name='worksheet_plot.cohort', blank=True, to='workbooks.Worksheet_cohort', null=True),
-            preserve_default=True,
-        ),
+        )
         migrations.AddField(
             model_name='worksheet_plot',
             name='worksheet',
