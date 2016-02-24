@@ -118,6 +118,19 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='Worksheet_plot_cohort',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True)),
+                ('date_created', models.DateTimeField(auto_now_add=True)),
+                ('modified_date', models.DateTimeField(auto_now=True)),
+                ('plot',   models.ForeignKey(related_name='worksheet_plot', blank=True, to='workbooks.Worksheet_plot', null=True)),
+                ('cohort', models.ForeignKey(related_name='worksheet_plot.cohort', blank=True, to='workbooks.Worksheet_cohort', null=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Worksheet_variable',
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True)),
