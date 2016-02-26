@@ -118,6 +118,7 @@
                             {% endfor %}
                         </div>
                     </div>
+                    <button {% if workbook.owner.id != user.id %} style="display:none" {% endif %} id="gtm-update-plot-button" class="update-plot btn btn-primary" worksheet_id="{{ worksheet.id }}" plot_id="{{ plot.id }}">Update Plot</button>
                 </div>
             </div>
         </div>
