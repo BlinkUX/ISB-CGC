@@ -134,7 +134,7 @@ def project_upload(request):
     return render(request, template, context)
 
 def filter_column_name(original):
-    return re.sub(r"[^a-zA-Z]+", "_", original.lower())
+    return re.sub(r"[^a-zA-Z0-9]+", "_", original.lower())
 
 def create_metadata_tables(user, study, columns, skipSamples=False):
     with connection.cursor() as cursor:
@@ -227,7 +227,19 @@ def complete_download(request, file_descriptor_list):
         for file_obj in file_descriptor_list:
             file = file_obj['file']
             file_upload = UserUploadedFile(upload=upload, file=file, bucket=config['BUCKET'])
-            file_upload.save()
+            try :
+                file_upload.save()
+            except Exception :
+                study.delete()
+                proj.delete()
+                upload.delete()
+
+                resp = {
+                    'status': "error",
+                    'error' : "bad_file",
+                    'message': "There is a problem with the format of your file. Check for empty lines at the end of your file"
+                }
+                return JsonResponse(resp)
 
             fileJSON = {
                 "FILENAME": file_upload.file.name,

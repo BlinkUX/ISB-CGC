@@ -182,6 +182,23 @@ class Worksheet(models.Model):
                              name=worksheet.name + " copy",
                              description=worksheet.description)
         worksheet_copy.save()
+
+        worksheet_cohorts = worksheet.worksheet_cohort_set.all()
+        for wc in worksheet_cohorts:
+            worksheet_copy.add_cohort(wc.cohort)
+
+        worksheet_variables = worksheet.worksheet_variable_set.all()
+        for wv in worksheet_variables:
+            wv.pk = None
+            wv.worksheet = worksheet_copy
+            wv.save()
+
+        worksheet_genes = worksheet.worksheet_gene_set.all()
+        for wg in worksheet_genes:
+            wg.pk = None
+            wg.worksheet = worksheet_copy
+            wg.save()
+
         return worksheet_copy
 
     @classmethod
@@ -211,7 +228,13 @@ class Worksheet(models.Model):
         return self.worksheet_cohort_set.filter(worksheet=self)
 
     def add_cohort(self, cohort):
-        Worksheet_cohort.create(self.id, cohort)
+        existing_w_cohorts = self.worksheet_cohort_set.all()
+        existing_cohort_ids = []
+        for wc in existing_w_cohorts :
+            existing_cohort_ids.append(wc.cohort_id)
+
+        if cohort.id not in existing_cohort_ids :
+            Worksheet_cohort.create(self.id, cohort)
 
     def remove_cohort(self, cohort):
         self.worksheet_cohort_set.get(cohort=cohort).destroy()
@@ -551,7 +574,7 @@ class Worksheet_plot_cohort(models.Model):
 
 @admin.register(Workbook)
 class WorkbookAdmin(admin.ModelAdmin):
-    list_display = ('id','name','description','date_created','last_date_saved')
+    list_display = ('id','name','description','date_created','last_date_saved', 'is_public')
     exclude = ('shared',)
 
 @admin.register(Worksheet)
