@@ -166,7 +166,9 @@ def create_metadata_tables(user, study, columns, skipSamples=False):
             feature_table_args = [user.id, study.id]
 
             for column in columns:
-                feature_table_sql += ", " + "content_" + filter_column_name(column['name']) + " " + column['type']
+                #TODO fix the duplicate column name problem
+                #feature_table_sql += ", " + "content_" + filter_column_name(column['name']) + " " + column['type']
+                feature_table_sql += ", " + filter_column_name(column['name']) + " " + column['type']
 
             feature_table_sql += ")"
 
