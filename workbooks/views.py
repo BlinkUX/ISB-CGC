@@ -10,6 +10,7 @@ from django.http import StreamingHttpResponse
 from django.http import HttpResponse, JsonResponse
 from models import Cohort, Workbook, Worksheet, Worksheet_comment, Worksheet_variable, Worksheet_gene, Worksheet_cohort, Worksheet_plot, Worksheet_plot_cohort
 from variables.models import VariableFavorite, Variable
+from variables import views as variable_views
 from genes.models import GeneFavorite
 from analysis.models import Analysis
 from projects.models import Project
@@ -167,10 +168,11 @@ def workbook(request, workbook_id=0):
 
                 plot_types = Analysis.get_types()
 
-                return render(request, template, {'workbook'    : workbook_model,
-                                                  'is_shareable': is_shareable,
-                                                  'shared'      : shared,
-                                                  'plot_types'  : plot_types})
+                return render(request, template, {'workbook'        : workbook_model,
+                                                  'datatype_list'   : variable_views.Get_Datatype_List(),
+                                                  'is_shareable'    : is_shareable,
+                                                  'shared'          : shared,
+                                                  'plot_types'      : plot_types})
             except ObjectDoesNotExist:
                 redirect_url = reverse('workbooks')
                 return redirect(redirect_url)

@@ -78,6 +78,14 @@ require([
             });
     });
 
+    /*
+        Quick sketch changes
+     */
+    $('#x-axis-select').change(function(){
+        console.log("asdfasdf");
+        $('#data-type-accordion').show()
+    })
+
     $('#clin-accordion').on('show.bs.collapse', function (e) {
         $(e.target).siblings('a').find('i.fa-caret-down').show();
         $(e.target).siblings('a').find('i.fa-caret-right').hide();

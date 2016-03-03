@@ -302,6 +302,32 @@ def initialize_variable_selection_page(request,
 
     return render(request, template, context)
 
+def Get_Datatype_List():
+
+    # This is a list of specific data classifications which require additional filtering in order to
+    # Gather categorical or numercial variables for use in the plot
+    # Filter Options
+    datatype_labels = {'GEXP' : 'Gene Expression',
+                       'MIRN' : 'miRNA',
+                       'METH' : 'Methylation',
+                       'CNVR' : 'Copy Number',
+                       'RPPA' : 'Protein',
+                       'GNAB' : 'Mutation'}
+
+    datatype_list = SearchableFieldHelper.get_fields_for_all_datatypes()
+    for type in datatype_list:
+        if type['datatype'] is not 'CLIN':
+            type['label'] = datatype_labels[type['datatype']]
+
+            #remove gene in fields
+            if debug: print >> sys.stderr, ' attrs ' + json.dumps(type['fields'])
+            for index, field in enumerate(type['fields']):
+                if field['label'] == "Gene":
+                    del type['fields'][index]
+
+    return datatype_list
+
+
 @login_required
 def variable_fav_delete(request, variable_fav_id):
     redirect_url = reverse('variables')
