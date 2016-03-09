@@ -36,23 +36,5 @@ class Migration(migrations.Migration):
             name='type',
             field=models.CharField(max_length=1024, null=True, blank=True),
             preserve_default=True,
-        ),
-        migrations.RemoveField(
-            model_name='worksheet_plot',
-            name='color_by',
-        ),
-        migrations.RemoveField(
-            model_name='worksheet_plot',
-            name='x_axis',
-        ),
-        migrations.RemoveField(
-            model_name='worksheet_plot',
-            name='y_axis',
-        ),
-        migrations.AddField(
-            model_name='worksheet_plot',
-            name='settings_json',
-            field=models.TextField(null=True, blank=True),
-            preserve_default=True,
-        ),
+        )
     ]
