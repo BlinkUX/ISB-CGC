@@ -36,5 +36,11 @@ class Migration(migrations.Migration):
             name='type',
             field=models.CharField(max_length=1024, null=True, blank=True),
             preserve_default=True,
-        )
+        ),
+        migrations.AddField(
+            model_name='worksheet_plot',
+            name='settings_json',
+            field=models.TextField(null=True, blank=True),
+            preserve_default=True,
+        ),
     ]
