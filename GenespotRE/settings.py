@@ -362,6 +362,16 @@ SITE_GOOGLE_ANALYTICS   = os.environ.get('SITE_GOOGLE_ANALYTICS_ID', False)
 #   End django-finalware   #
 ############################
 
+CONN_MAX_AGE = 60
+
+############################
+#   CUSTOM TEMPLATE CONTEXT
+############################
+
+############################
+#   Enable data upload
+############################
+USER_DATA_ON=True
 
 ###########################################
 #   LSDF SPECIFIC ENVIRONMENT SETTINGS

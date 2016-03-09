@@ -13,6 +13,7 @@ from django.utils import formats
 from django.core import serializers
 import sys
 import json
+import ast
 
 # Create your models here.
 class WorkbookManager(models.Manager):
@@ -207,10 +208,6 @@ class Worksheet(models.Model):
                              description=worksheet.description)
         worksheet_copy.save()
 
-        worksheet_cohorts = worksheet.worksheet_cohort_set.all()
-        for wc in worksheet_cohorts:
-            worksheet_copy.add_cohort(wc.cohort)
-
         worksheet_variables = worksheet.worksheet_variable_set.all()
         for wv in worksheet_variables:
             wv.pk = None
@@ -222,6 +219,25 @@ class Worksheet(models.Model):
             wg.pk = None
             wg.worksheet = worksheet_copy
             wg.save()
+
+        worksheet_cohorts = worksheet.worksheet_cohort_set.all()
+        for wc in worksheet_cohorts:
+            wc.pk = None
+            wc.worksheet = worksheet_copy
+            wc.save()
+
+        worksheet_plots = worksheet.worksheet_plot_set.all()
+        for wp in worksheet_plots:
+            worksheet_plot_cohorts = Worksheet_plot_cohort.objects.filter(plot=wp)
+            wp.pk = None
+            wp.worksheet = worksheet_copy
+            wp.save()
+
+            for wpc in worksheet_plot_cohorts: #should be the pre-existing plot cohorts
+                wpc.pk = None
+                wpc.plot = wp
+                wpc.cohort = Worksheet_cohort.objects.filter(worksheet_id=worksheet_copy.id).filter(cohort_id=wpc.cohort.cohort_id).first()
+                wpc.save()
 
         return worksheet_copy
 
@@ -430,7 +446,7 @@ class Worksheet_variable(models.Model):
     name            = models.CharField(max_length=2024, blank=False)
     type            = models.CharField(max_length=1024, blank=True, null=True)
     url_code        = models.CharField(max_length=2024, blank=False)
-    feature         = models.ForeignKey(User_Feature_Definitions, null=True, blank=True)
+    feature         = models.ForeignKey(User_Feature_Definitions, null=True, blank=True) #only used for user generated variable
     objects         = Worksheet_Variable_Manager()
 
     @classmethod
@@ -545,9 +561,8 @@ class Worksheet_plot(models.Model):
     type            = models.CharField(max_length=1024, null=True)
     worksheet       = models.ForeignKey(Worksheet, blank=False, null=True)
     active          = models.BooleanField(default=True)
-    x_axis          = models.ForeignKey(Worksheet_variable, blank=True, null=True, related_name="worksheet_plot.x_axis")
-    y_axis          = models.ForeignKey(Worksheet_variable, blank=True, null=True, related_name="worksheet_plot.y_axis")
-    color_by        = models.ForeignKey(Worksheet_variable, blank=True, null=True, related_name="worksheet_plot.color_by")
+    settings_json   = models.TextField(blank=True, null=True)
+
     objects         = Worksheet_Plot_Manager()
 
     @classmethod
@@ -564,21 +579,14 @@ class Worksheet_plot(models.Model):
         return cohorts
 
     def toJSON(self):
-        j = {'id'        : self.id,
-             'type'      : self.type,
-             'worksheet' : self.worksheet_id,
-             'active'    : self.active,
-             }
-        if self.x_axis :
-            j['x_axis']  = self.x_axis.toJSON()
-
-        if self.y_axis :
-            j['y_axis']  = self.y_axis.toJSON()
-
-        if self.color_by :
-            j['color_by']  = self.color_by.toJSON()
-
-        j['cohort'] = []
+        j = {}
+        if self.settings_json :
+            j = ast.literal_eval(self.settings_json)
+        j['id']         = self.id,
+        j['type']       = self.type,
+        j['worksheet']  = self.worksheet_id,
+        j['active']     = self.active,
+        j['cohort']     = []
         cohorts = Worksheet_plot_cohort.objects.filter(plot=self)
         for c in cohorts :
             j['cohort'].append(c.toJSON())
@@ -594,7 +602,7 @@ class Worksheet_plot_cohort(models.Model):
     modified_date   = models.DateTimeField(auto_now=True)
     plot            = models.ForeignKey(Worksheet_plot, blank=True, null=True, related_name="worksheet_plot")
     cohort          = models.ForeignKey(Worksheet_cohort, blank=True, null=True, related_name="worksheet_plot.cohort")
-    objects         = Worksheet_Plot_Manager()
+    objects         = Worksheet_Plot_Cohort_Manager()
 
     def toJSON(self):
         j = {'id'        : self.id,
