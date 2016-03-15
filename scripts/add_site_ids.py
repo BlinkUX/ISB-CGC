@@ -33,7 +33,11 @@ delete_str = 'DELETE FROM django_site WHERE id in (2, 3, 4);'
 insert_str = 'INSERT INTO django_site (id, domain, name) VALUES (%s, %s, %s), (%s, %s, %s), (%s, %s, %s);'
 insert_tuple = ('2', 'localhost:8000', 'localhost:8000')
 insert_tuple += ('3', 'localhost:8080', 'localhost:8080')
-insert_tuple += ('4', 'mvm-dot-isb-cgc.appspot.com', 'mvm-dot-isb-cgc.appspot.com')
+
+#these should be moved to the env file
+insert_tuple += ('4', 'mvm-dot-lsdf-cgc.appspot.com', 'mvm-dot-lsdf-cgc.appspot.com')
+insert_tuple += ('5', 'avance.bio', 'avance.bio')
+
 
 cursor = db.cursor()
 cursor.execute(delete_str)
