@@ -1,5 +1,5 @@
 dispatch:
   # Default module serves simple hostname request.
   # TODO Abstract url from repo and use settings file
-  - url: "avance.bio/"
+  - url: "avance.bio/*"
     module: prod
