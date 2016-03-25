@@ -39,6 +39,7 @@ automatic_scaling:
   cpu_utilization:
     target_utilization: 0.5
 
+#  login: admin #force admin login in the site
 handlers:
 - url: /favicon.ico
   static_files: static/img/lsdf/favicon.ico
@@ -61,7 +62,6 @@ handlers:
 - url: /.*
   script: main.application
   secure: always
-  login: admin #force admin login in the site
 - url: /static/admin
   static_dir: static/admin
   expiration: 0
