@@ -26,7 +26,7 @@ import logging
 import sys
 import pytz
 
-#import pysftp
+import pysftp
 
 import pexpect  # comment this out when running in gae
 import datetime
@@ -105,6 +105,8 @@ def scrub_nih_users(dbGaP_authorized_list):
         for member in members:
             email = member['email']
             logger.info("Checking user {} on ACL_GOOGLE_GROUP list".format(email))
+            if email.endswith('@developer.gserviceaccount.com'):
+                continue  # ignore emails that are actually service accounts
 
             try:
                 # get user id from email

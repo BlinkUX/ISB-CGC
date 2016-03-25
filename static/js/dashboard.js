@@ -47,5 +47,9 @@ require([
         $('a[data-target="#more-analysis"]').text('Show Less');
     }).on('hide.bs.collapse', function(){
         $('a[data-target="#more-analysis"]').text('Show More');
-    })
+    });
+
+    $('#create-workbook').on('submit', function() {
+        $(this).find('button[type="submit"]').attr('disabled', 'disabled');
+    });
 });

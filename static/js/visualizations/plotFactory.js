@@ -29,6 +29,7 @@ define([
     'violin_plot',
     'histogram_plot',
     'bar_plot',
+    'seqpeek_view/seqpeek_view',
     'select2',
     'assetscore',
     'assetsresponsive'
@@ -241,6 +242,28 @@ define([
         return  {plot : plot, svg : svg}
     }
 
+    function generate_seqpeek_plot(plot_selector, legend_selector, view_data) {
+        var plot_data = view_data['plot_data'];
+        var hugo_symbol = view_data['hugo_symbol'];
+
+        var element = $(plot_selector)[0];
+
+        if (plot_data.hasOwnProperty('tracks')) {
+            seqpeek_view.render_seqpeek_legend(legend_selector);
+
+            // Render a HTML table for the visualization. Each track will be in a separate <tr> element.
+            var seqpeek_el = seqpeek_view.render_seqpeek_template(element, hugo_symbol, plot_data['tracks']);
+            var table_selector = seqpeek_el.table;
+            var gene_element = seqpeek_el.gene_element;
+
+            seqpeek_view.render_seqpeek(table_selector, gene_element, view_data);
+        }
+        else {
+            // No data was found for the gene and cohorts
+            seqpeek_view.render_no_data_message(plot_selector, hugo_symbol);
+        }
+    }
+
     /*
         Generate url for gathering data
      */
@@ -256,14 +279,30 @@ define([
         var api_url = base_api_url + '/_ah/api/feature_data_api/v1/feature_data_plot?' + cohort_str;
 
         api_url += '&x_id=' + x_attr;
-        if(color_by != ""){
+        if(color_by && color_by != ''){
             api_url += '&c_id=' + color_by;
-        } else {
-            api_url += '&c_id=' + x_attr;
         }
         if (y_attr && y_attr != '') {
             api_url += '&y_id=' + y_attr
         }
+        return api_url;
+    }
+
+    /*
+     Generate url for gathering data for a SeqPeek plot
+     */
+    function get_seqpeek_data_url(base_api_url, cohorts, gene_label){
+        var cohort_str = '';
+        for (var i = 0; i < cohorts.length; i++) {
+            if (i == 0) {
+                cohort_str += 'cohort_id=' + cohorts[i];
+            } else {
+                cohort_str += '&cohort_id=' + cohorts[i];
+            }
+        }
+        var api_url = base_api_url + '/_ah/api/seqpeek_data_api/v1/view_data?' + cohort_str;
+        api_url += "&hugo_symbol=" + gene_label;
+
         return api_url;
     }
 
@@ -302,6 +341,8 @@ define([
         if (data.hasOwnProperty('pairwise_result')) {
             configure_pairwise_display(args.pairwise_element, data);
         }
+        // The response form the SeqPeek data endpoint has a different schema. This is case is handled in
+        // another branch below.
         if (data.hasOwnProperty('items')) {
 
             var cohort_set = data['cohort_set'];
@@ -347,9 +388,13 @@ define([
             //establish resize call to data
             d3.select(window).on('resize', visualization.plot.resize);
 
-        } else {
+        }
+        else if (args.type == "SeqPeek") {
+            visualization = generate_seqpeek_plot(args.plot_selector, args.legend_selector, data);
+        }
+        else {
             // No samples provided TODO abstract view information
-            d3.select(plot_selector)
+            d3.select(args.plot_selector)
                 .append('svg')
                 .attr('width', width)
                 .attr('height', height)
@@ -362,21 +407,52 @@ define([
         }
     };
 
-    /* Parameters
-        plot_selector    : jquery selector for the plot container
-        legend_selector  : jquery selector for the legend container
-        pairwise_element : html element for the pairwise element
-        type             : required
-        x                : require
-        y                : not required
-        color_by         : not required
-        cohorts          : required
-        cohorts_override : boolean on whether to override the color_by parameter
-     */
+    function get_plot_settings(plot_type){
+        var settings = {
+            axis : []
+        };
+        switch (plot_type){
+            case "Bar Chart" : //x_type == 'STRING' && y_type == 'none'
+                settings.axis.push({name : 'x_axis', type : 'CATEGORICAL'});
+                break;
+            case "Histogram" : //((x_type == 'INTEGER' || x_type == 'FLOAT') && y_type == 'none') {
+                settings.axis.push({name : 'x_axis', type : 'NUMERICAL'});
+                break;
+            case 'Scatter Plot': //((x_type == 'INTEGER' || x_type == 'FLOAT') && (y_type == 'INTEGER'|| y_type == 'FLOAT')) {
+                settings.axis.push({name : 'x_axis', type : 'NUMERICAL'});
+                settings.axis.push({name : 'y_axis', type : 'NUMERICAL'});
+                break;
+            case "Violin Plot": //(x_type == 'STRING' && (y_type == 'INTEGER'|| y_type == 'FLOAT')) {
+                settings.axis.push({name : 'x_axis', type : 'CATEGORICAL'});
+                settings.axis.push({name : 'y_axis', type : 'NUMERICAL'});
+                break;
+            case 'Violin Plot with axis swap'://(y_type == 'STRING' && (x_type == 'INTEGER'|| x_type == 'FLOAT')) {
+                settings.axis.push({name : 'x_axis', type : 'NUMERICAL'});
+                settings.axis.push({name : 'y_axis', type : 'CATEGORICAL'});
+                break;
+            case 'Cubby Hole Plot' : //(x_type == 'STRING' && y_type == 'STRING') {
+                settings.axis.push({name : 'x_axis', type : 'CATEGORICAL'});
+                settings.axis.push({name : 'y_axis', type : 'CATEGORICAL'});
+                break;
+            default :
+                break;
+        };
+
+        return settings;
+    }
+
     function generate_plot(args, callback){ //plot_selector, legend_selector, pairwise_element, type, x_attr, y_attr, color_by, cohorts, cohort_override, callback) {
+        var plot_data_url;
+        if (args.type == "SeqPeek") {
+            plot_data_url = get_seqpeek_data_url(base_api_url, args.cohorts, args.gene_label);
+        }
+        else {
+            plot_data_url = get_data_url(base_api_url, args.cohorts, args.x, args.y, args.color_by);
+        }
+
         $.ajax({
             type: 'GET',
-            url: get_data_url(base_api_url, args.cohorts, args.x, args.y, args.color_by),
+            url: plot_data_url,
             success: function(data, status, xhr) {
                 select_plot({plot_selector    : args.plot_selector,
                              legend_selector  : args.legend_selector,
@@ -410,24 +486,9 @@ define([
         });
     };
 
-    // Update Plot
-    //function updatePlot() {
-    //    var plot = $(this).parents('.plot');
-    //    var x_attr = plot.find('.x-selector').attr('value');
-    //    var y_attr = plot.find('.y-selector').attr('value');
-    //    var color_by = plot.find('.color-selector').attr('value');
-    //    var cohort_override = false;
-    //    if (plot.find('.color-by-cohort').is(':checked')) {
-    //        cohort_override = true;
-    //    }
-    //    var cohorts = $.map(plot.find('.cohort-listing div'), function (d) {
-    //        return $(d).attr('value');
-    //    });
-    //    generate_plot(plot, x_attr, y_attr, color_by, cohorts, cohort_override);
-    //};
-
     return {
-        generate_plot : generate_plot
+        generate_plot     : generate_plot,
+        get_plot_settings : get_plot_settings
     };
 });
 /**

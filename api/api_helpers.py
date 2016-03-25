@@ -110,7 +110,6 @@ def sql_age_by_ranges(value):
         elif str(value) == 'None':
             result += ' age_at_initial_pathologic_diagnosis is null'
 
-    # print '\n\nresult is ' + result
     return result
 
 def gql_age_by_ranges(q, key, value):
@@ -193,7 +192,7 @@ def applyFilter(field, dict):
 
     return where_clause
 
-def build_where_clause(dict, alt_key_map=False):
+def build_where_clause(filters, alt_key_map=False):
 # this one gets called a lot
 #    if debug: print >> sys.stderr,'Called '+sys._getframe().f_code.co_name
     first = True
@@ -201,7 +200,12 @@ def build_where_clause(dict, alt_key_map=False):
     big_query_str = ''  # todo: make this work for non-string values -- use {}.format
     value_tuple = ()
     key_order = []
-    for key, value in dict.items():
+    for key, value in filters.items():
+        if isinstance(value, dict) and 'values' in value:
+            value = value['values']
+
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
         # Check if we need to map to a different column name for a given key
         if alt_key_map and key in alt_key_map:
             key = alt_key_map[key]

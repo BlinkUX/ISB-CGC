@@ -13,7 +13,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
 """
 
 # from django import template
@@ -22,7 +21,6 @@ import string
 from django.template.defaulttags import register
 import json
 import re
-
 
 # register = template.Library()
 
@@ -56,6 +54,13 @@ def get_readable_name(csv_name, attr=None):
             '50': 'Cell Lines',
             '60': 'Primary Xenograft Tissue',
             '61': 'Cell Line Derived Xenograft Tissue'
+        },
+        'prior_dx': {
+            'Yes': 'Yes',
+            'No': 'No',
+            'Yes, History of Prior Malignancy': 'Yes, History of Prior Malignancy',
+            'Yes, History of Synchronous and or Bilateral Malignancy': 'Yes, History of Synchronous and or Bilateral Malignancy',
+            'Yes, History of Synchronous/Bilateral Malignancy': 'Yes, History of Synchronous/Bilateral Malignancy'
         }
     }
 
@@ -90,7 +95,7 @@ def get_readable_name(csv_name, attr=None):
         'icd_10': 'ICD-10',
         'icd_o_3_histology': 'ICD-O-3 Histology',
         'icd_o_3_site': 'ICD-O-3 Site',
-        'SampleTypeCode': 'Sample Type Code',
+        'SampleTypeCode': 'Sample Type',
         'Project': 'Public Projects',
         'Study': 'Public Studies',
         'user_projects': 'Your Projects',
@@ -100,6 +105,8 @@ def get_readable_name(csv_name, attr=None):
 
     if attr in attr_specific_translation.keys():
         return attr_specific_translation[attr][csv_name]
+    elif attr == 'Project' or attr == 'Study':
+        return csv_name.upper()
     elif translation_dictionary.get(csv_name):
         return translation_dictionary.get(csv_name)
     else:

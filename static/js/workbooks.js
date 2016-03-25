@@ -40,7 +40,9 @@ require.config({
         scatter_plot : 'visualizations/createScatterPlot',
         cubby_plot : 'visualizations/createCubbyPlot',
         violin_plot : 'visualizations/createViolinPlot',
-        bar_plot : 'visualizations/createBarGraph'
+        bar_plot : 'visualizations/createBarGraph',
+        seqpeek_view: 'seqpeek_view',
+        seqpeek: 'seqpeek_view/seqpeek'
     },
     shim: {
         'bootstrap': ['jquery'],
@@ -86,6 +88,10 @@ require([
     $('#clin-accordion').on('hide.bs.collapse', function (e) {
         $(e.target).siblings('a').find('i.fa-caret-right').show();
         $(e.target).siblings('a').find('i.fa-caret-down').hide()
+    });
+
+    $('#copy-workbook, #delete-workbook').on('submit', function() {
+        $(this).find('input[type="submit"]').attr('disabled', 'disabled');
     });
 
     $('.show-more').on('click', function () {
@@ -138,11 +144,6 @@ require([
     $('.hide-settings-flyout').on('click', function () {
         hide_plot_settings();
     });
-
-    //What is this for?
-    $('.dropdown-menu').find("[data-toggle='modal']").click(function () {
-        //$(this.getAttribute("data-target")).modal();
-    })
 
     ////Model communications
     $('.add_worksheet_comment_form').on('submit', function (event) {
@@ -230,7 +231,7 @@ require([
     }
 
     /*
-     * gather the options and selections on a variable
+     * gather the options and selections on a variable in the plot settings
      */
     function get_values(selection){
         var result;
@@ -267,16 +268,44 @@ require([
         return result;
     }
 
+    function disable_invalid_variable_options(element){
+        var plot_data     = get_plot_info_on_page($(element).parentsUntil(".worksheet-body").find('.update-plot').parent());
+        var plot_settings = plot_factory.get_plot_settings(plot_data.attrs.type);
+        if(plot_settings) {
+            for (var axis_index in plot_settings.axis) {
+                var name = plot_settings.axis[axis_index].name;
+                var options;
+                if (name == 'x_axis') {
+                    options = $(element).find('#x-axis-select option');
+                } else if (name == 'y_axis') {
+                    options = $(element).find('#y-axis-select option');
+                }
+
+                options.each(function (i, element) {
+                    var option = $(element);
+                    option.removeAttr('disabled');
+                    if ((option.attr('var_type') == 'C' && plot_settings.axis[axis_index].type == 'NUMERICAL') ||
+                        (option.attr('var_type') == 'N' && plot_settings.axis[axis_index].type == 'CATEGORICAL')) {
+                        option.attr('disabled','disabled');
+                    }
+                });
+            }
+        }
+    }
+
     /*
-     * apply data values to the variable_element
+     * add data values to the variable_element representing a plot axis,
+     * This is called on loading plot data from model and swapping axis
      */
-    function apply_values(variable_element, data){
+    function apply_axis_values(variable_element, data, axis_settings){
         if(data.type == "common"){
             if(data.options){
                 for(var i in data.options){
-                    variable_element.append('<option value="' + data.options[i].value + '"> '+ data.options[i].text + '</option>');
+                    variable_element.append('<option var_type="'+ data.options[i].type +'" value="' + data.options[i].value + '"> ' + data.options[i].text + '</option>');
                 }
             }
+
+            disable_invalid_variable_options(variable_element);
             variable_element.val(data.variable);
             axis_select_change(variable_element);
         } else if(data.type == "gene") {
@@ -289,7 +318,7 @@ require([
 
             var keys = Object.keys(data);
             parent.find('.'+ data.specification).find('.field-options').each(function(i, ele){
-                if($.inArray(ele.id, keys)){
+                if($.inArray(ele.id, keys) != -1){
                     if($(ele).hasClass('select2')){
                         $(ele).parent().find('.select2-selection__rendered').empty();
                         $(ele).parent().find('.select2-selection__rendered').append('<option value="' + data[ele.id].options[0].value + '"> '+ data[ele.id].options[0].text + '</option>');
@@ -318,8 +347,8 @@ require([
     $('.swap').click(function(){
         var x = get_values($(this).parent().find('#x-axis-select').find(":selected"));
         var y = get_values($(this).parent().find('#y-axis-select').find(":selected"));
-        apply_values($(this).parent().find('#y-axis-select'), x);
-        apply_values($(this).parent().find('#x-axis-select'), y);
+        apply_axis_values($(this).parent().find('#y-axis-select'), x);
+        apply_axis_values($(this).parent().find('#x-axis-select'), y);
     });
 
     /*
@@ -423,7 +452,6 @@ require([
     /*
      * Gene attribute selection
      */
-    //$('.x-edit-field, .y-edit-field, .color-edit-field').on('click', function() { vizhelpers.show_field_search_panel(this); });
     $('.datatype-selector').on('change', function() { vizhelpers.get_datatype_search_interfaces(this, this.value)});
     $('.feature-search').on('change',    function() { vizhelpers.field_search_change_callback(this); });
     $('.select-field').on('click',       function() { vizhelpers.select_field_callback(this); });
@@ -459,7 +487,53 @@ require([
         });
     });
 
-    //generate plot based on user change
+    // Hide/Show settings as appropriate for plot:
+    var hide_show_widgets = function(plot_type, settings_flyout) {
+        var x_widgets = settings_flyout.find('div[variable="x-axis-select"]');
+        var y_widgets = settings_flyout.find('div[variable="y-axis-select"]');
+        var c_widgets = settings_flyout.find('div.form-group.color-by-group');
+        var swap = settings_flyout.find('button.swap');
+        var sp_genes = settings_flyout.find('.seqpeek-genes');
+        x_widgets.show();
+        y_widgets.show();
+        c_widgets.show();
+        swap.show();
+        sp_genes.hide();
+        switch (plot_type){
+            case "Bar Chart" : //x_type == 'STRING' && y_type == 'none'
+                y_widgets.hide();
+                c_widgets.hide();
+                swap.hide();
+                break;
+            case "Histogram" : //((x_type == 'INTEGER' || x_type == 'FLOAT') && y_type == 'none') {
+                y_widgets.hide();
+                c_widgets.hide();
+                swap.hide();
+                break;
+            case 'Scatter Plot': //((x_type == 'INTEGER' || x_type == 'FLOAT') && (y_type == 'INTEGER'|| y_type == 'FLOAT')) {
+                break;
+            case "Violin Plot": //(x_type == 'STRING' && (y_type == 'INTEGER'|| y_type == 'FLOAT')) {
+                break;
+            case 'Violin Plot with axis swap'://(y_type == 'STRING' && (x_type == 'INTEGER'|| x_type == 'FLOAT')) {
+                break;
+            case 'Cubby Hole Plot': //(x_type == 'STRING' && y_type == 'STRING') {
+                c_widgets.hide();
+                break;
+            case 'SeqPeek':
+                sp_genes.show();
+                x_widgets.hide();
+                y_widgets.hide();
+                c_widgets.hide();
+                swap.hide();
+                break;
+            default :
+                break;
+        }
+    };
+
+    /*
+     * generate plot upon user click
+     */
     $('.update-plot').on('click', function(event){
         if(valid_plot_settings($(this).parent())) {
             var data = get_plot_info_on_page($(this).parent());
@@ -469,6 +543,7 @@ require([
                                 x            : data.attrs.x_axis.url_code,
                                 y            : data.attrs.y_axis.url_code,
                                 color_by     : data.attrs.color_by.url_code,
+                                gene_label   : data.attrs.gene_label,
                                 cohorts      : data.attrs.cohorts});
                 hide_plot_settings();
             });
@@ -479,14 +554,17 @@ require([
      * Gather plot information on the page
      */
     function get_plot_info_on_page(worksheet){
-        var parent       = $(worksheet).find('.update-plot').parent();
+        var parent = $(worksheet).find('.update-plot').parent();
 
         function variable_values(label){
             var result;
             if(parent.find('#'+label).find(":selected").attr("type") == "gene"){
-                result = {  url_code : parent.find('[variable="'+ label + '"]').find("#search-term-select").find(":selected").val()};
+                result = {  url_code : parent.find('[variable="'+ label + '"] #search-term-select').find(":selected").val()};
             } else {
                 result = {  url_code: parent.find('#'+label).find(":selected").val()}
+            }
+            if (result.url_code == "-- select a variable--"){
+                result.url_code = "";
             }
             return result;
         }
@@ -498,6 +576,7 @@ require([
                 x_axis   : get_values($(worksheet).find('#x-axis-select').find(":selected")),
                 y_axis   : get_values($(worksheet).find('#y-axis-select').find(":selected")),
                 color_by : get_simple_values(parent.find('#color_by')),
+                gene_label: get_simple_values(parent.find('#gene_label'))
             },
             attrs : {
                 type    : parent.parentsUntil(".worksheet-body").find(".plot_selection").find(":selected").text(),
@@ -506,13 +585,11 @@ require([
                 color_by: {url_code: parent.find('#color_by').find(":selected").val()},
                 cohorts: parent.find('[name="cohort-checkbox"]:checked').map(function () {
                     return {id: this.value, cohort_id: $(this).attr("cohort-id")};
-                }).get()
+                }).get(),
+                gene_label: parent.find('#gene_label').find(":selected").text()
             }
         }
 
-        if (result.attrs.color_by.url_code == "-- select a variable--"){
-            result.attrs.color_by.url_code = "";
-        }
         return result;
     }
 
@@ -525,7 +602,7 @@ require([
                     console.log("Display error");
                     callback(false);
                 } else {
-                    load_plot(worksheet_id, data, function (success) {
+                    load_plot(worksheet_id, data, plot_factory.get_plot_settings(plot_type), function (success) {
                         callback(true);
                     });
                 }
@@ -534,25 +611,40 @@ require([
             callback(false);
         }
     }
-    //get plot model when selection changes
+
+    /*
+     * Get plot model when plot selection changes
+     */
     $(".plot_selection").on("change", function(event){
-        $(this).find(":disabled :selected").remove()
+        var self = this;
+        $(this).find(":disabled :selected").remove();
+        var plot_type = $(this).val();
+        var flyout = $(this).closest('.worksheet-body').find('.settings-flyout');
+        hide_show_widgets(plot_type, flyout);
         get_plot_info(this, function(success){
+            disable_invalid_variable_options($(self).parentsUntil(".worksheet-body").find('.update-plot').parent());
             show_plot_settings();
         })
     });
 
-    ////initialize all plots at the beginning
+    /*
+     * initialize all plots at the beginning
+     */
     $(".plot_selection").each(function(){
         var self = this;
+
         get_plot_info(this, function(success){
             if(success) {
+                var flyout = $(self).parentsUntil(".worksheet-body").find('.settings-flyout');
+                var data = get_plot_info_on_page($(self).parentsUntil(".worksheet-body").find('.update-plot').parent());
+                disable_invalid_variable_options($(self).parentsUntil(".worksheet-body").find('.update-plot').parent());
+                hide_show_widgets(data.attrs.type, flyout);
                 if (valid_plot_settings($(self).parentsUntil(".worksheet-body").find('.update-plot').parent())) {
-                    var data = get_plot_info_on_page($(self).parentsUntil(".worksheet-body").find('.update-plot').parent());
                     generate_plot({ worksheet_id : data.worksheet_id,
                                     type         : data.attrs.type,
                                     x            : data.attrs.x_axis.url_code,
                                     y            : data.attrs.y_axis.url_code,
+                                    gene_label   : data.attrs.gene_label,
                                     color_by     : data.attrs.color_by.url_code,
                                     cohorts      : data.attrs.cohorts});
                 }
@@ -606,8 +698,10 @@ require([
                                     x                : args.x,
                                     y                : args.y,
                                     color_by         : args.color_by,
+                                    gene_label       : args.gene_label,
                                     cohorts          : cohort_ids,
                                     color_override   : false}, function(){
+
             plot_loader.fadeOut();
         });
     }
@@ -615,7 +709,7 @@ require([
     /*
      * loads the plot data into the ui inputs for adjustment
      */
-    function load_plot(worksheet_id, plot_data, callback){
+    function load_plot(worksheet_id, plot_data, plot_settings, callback){
         var plot_element = $("[worksheet_id='"+worksheet_id+"']").parent().parent().find(".plot");
 
         plot_element.find('.update-plot').attr('plot_id', plot_data.id).change();
@@ -623,13 +717,16 @@ require([
 
         //apply values
         if(plot_data.x_axis) {
-            apply_values(plot_element.find('#x-axis-select'), plot_data.x_axis);
+            apply_axis_values(plot_element.find('#x-axis-select'), plot_data.x_axis);
         }
         if(plot_data.y_axis) {
-            apply_values(plot_element.find('#y-axis-select'), plot_data.y_axis);
+            apply_axis_values(plot_element.find('#y-axis-select'), plot_data.y_axis);
         }
         if(plot_data.color_by) {
-            apply_values(plot_element.find('#color_by'), plot_data.color_by);
+            apply_axis_values(plot_element.find('#color_by'), plot_data.color_by);
+        }
+        if(plot_data.gene_label) {
+            plot_element.find("#gene_label").val(plot_data.gene_label.variable);
         }
 
         if(plot_data.cohort) {
@@ -685,7 +782,9 @@ require([
         });
     }
 
-    // Ajax submitting forms
+    /*
+     * Ajax submitting forms
+     */
     $('.ajax-form-modal').find('form').on('submit', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -723,6 +822,7 @@ require([
     $('form[action="/cohorts/save_cohort_from_plot/"]').on('submit', function(event) {
         event.preventDefault();
         var form = this;
+        $(this).find('input[type="submit"]').attr('disabled', 'disabled');
         $.ajax({
             type: 'POST',
             url: base_url + '/cohorts/save_cohort_from_plot/',
@@ -743,6 +843,7 @@ require([
                 $('.toggle-selection').click();
                 $('.modal').modal('hide');
                 form.reset();
+                $(form).find('input[type="submit"]').removeAttr('disabled');
                 $("html, body").animate({
                     scrollTop: 0
                 }, 600);
