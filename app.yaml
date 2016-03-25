@@ -61,6 +61,7 @@ handlers:
 - url: /.*
   script: main.application
   secure: always
+  login: admin #force admin login in the site
 - url: /static/admin
   static_dir: static/admin
   expiration: 0
