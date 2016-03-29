@@ -84,10 +84,10 @@
                     <div class="tabpanel" role="tabpanel">
                         <ul class="nav nav-tabs" role="tablist">
                             {% if USER_DATA_ON %}
-                            <li role="presentation" class="active"><a href="#uploaded"  aria-controls="Uploaded" role="tab" data-toggle="tab">User Projects</a></li>
+                            <li role="presentation" style="width:32%" class="active"><a href="#uploaded"  aria-controls="Uploaded" role="tab" data-toggle="tab">YOUR DATA</a></li>
                             {% endif %}
-                            <li role="presentation"><a href="#favorites" aria-controls="favorites" role="tab" data-toggle="tab">Favorites ({{ favorite_list | length }})</a></li>
-                            <li role="presentation"><a href="#common"    aria-controls="common" role="tab" data-toggle="tab">TCGA</a></li>
+                            <li role="presentation" style="width:32%"><a href="#favorites" aria-controls="favorites" role="tab" data-toggle="tab">FAVORITES ({{ favorite_list | length }})</a></li>
+                            <li role="presentation" style="width:32%"><a href="#common"    aria-controls="common" role="tab" data-toggle="tab">PUBLIC DATA</a></li>
 {# TODO                     <li role="presentation"><a href="#search"    aria-controls="search" role="tab" data-toggle="tab">Search</a></li>#}
                         </ul>
 
