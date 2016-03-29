@@ -25,7 +25,7 @@
 {% block content %}
 <div class="container">
 
-    {% if USER_DATA_ON %}
+    <!-- public examples -->
     <section class="panel panel-default">
         {% if first_access %}
             <!-- used for google tag manager -->
@@ -40,36 +40,38 @@
         <div class="panel-body collapse in" id="analysis-body">
             <ul>
                 <div class="clearfix">
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/barchart.png' %}">
-                        <p>Bar Chart</p>
-                        <div class="image-holder">
-                            <img class="img-fluid" src="{% static 'img/lsdf/Networks@2x.jpg' %}">
-                        </div>
-                        <p>Network</p>
-                    </li>
-                    <li class="item">
-                        <div class="image-holder">
-                           <img class="img-fluid" src="{% static 'img/lsdf/Violin@2x.jpg' %}">
-                        </div>
-                        <p>Violin Plot</p>
-                    </li>
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/scatterplot.png' %}">
-                        <p>Scatter Plot</p>
-                        <div class="image-holder">
-                            <img class="img-fluid" src="{% static 'img/lsdf/Circular@2x.jpg' %}">
-                        </div>
-                        <p>Circular Ideogram</p>
-                    </li>
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/violinplot.png' %}">
-                        <p>Violin Plot</p>
-                        <div class="image-holder">
-                           <img class="img-fluid" src="{% static 'img/lsdf/Scatter@2x.jpg' %}">
-                        </div>
-                        <p>Scatter Plot</p>
-                    </li>
+                    {% for workbook in public_workbooks %}
+                        <li class="item">
+                            <img class="img-fluid" src="{% static 'img/barchart.png' %}">
+                            <p>Bar Chart</p>
+                            <div class="image-holder">
+                                <img class="img-fluid" src="{% static 'img/lsdf/Networks@2x.jpg' %}">
+                            </div>
+                            <p>Network</p>
+                        </li>
+                        <li class="item">
+                            <div class="image-holder">
+                               <img class="img-fluid" src="{% static 'img/lsdf/Violin@2x.jpg' %}">
+                            </div>
+                            <p>Violin Plot</p>
+                        </li>
+                        <li class="item">
+                            <img class="img-fluid" src="{% static 'img/scatterplot.png' %}">
+                            <p>Scatter Plot</p>
+                            <div class="image-holder">
+                                <img class="img-fluid" src="{% static 'img/lsdf/Circular@2x.jpg' %}">
+                            </div>
+                            <p>Circular Ideogram</p>
+                        </li>
+                        <li class="item">
+                            <img class="img-fluid" src="{% static 'img/violinplot.png' %}">
+                            <p>Violin Plot</p>
+                            <div class="image-holder">
+                               <img class="img-fluid" src="{% static 'img/lsdf/Scatter@2x.jpg' %}">
+                            </div>
+                            <p>Scatter Plot</p>
+                        </li>
+                    {% endfor %}
                 </div>
 
 
@@ -91,7 +93,6 @@
             </ul>
         </div>
     </section>
-    {% endif %}
 
     <section class="panel panel-default">
         <div class="panel-heading">

@@ -111,6 +111,7 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(max_length=100)),
+                ('active', models.BooleanField(default=True)),
                 ('type', models.CharField(max_length=1024, null=True)),
             ],
             options={
@@ -124,7 +125,6 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('plot',   models.ForeignKey(related_name='worksheet_plot', blank=True, to='workbooks.Worksheet_plot', null=True)),
-                ('active', models.BooleanField(default=True)),
                 ('cohort', models.ForeignKey(related_name='worksheet_plot.cohort', blank=True, to='workbooks.Worksheet_cohort', null=True)),
             ],
             options={
@@ -147,18 +147,6 @@ class Migration(migrations.Migration):
             options={
             },
             bases=(models.Model,),
-        ),
-        migrations.AddField(
-            model_name='worksheet_plot',
-            name='x_axis',
-            field=models.ForeignKey(related_name='worksheet_plot.x_axis', blank=True, to='workbooks.Worksheet_variable', null=True),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='worksheet_plot',
-            name='y_axis',
-            field=models.ForeignKey(related_name='worksheet_plot.y_axis', blank=True, to='workbooks.Worksheet_variable', null=True),
-            preserve_default=True,
         ),
         migrations.AddField(
             model_name='worksheet',

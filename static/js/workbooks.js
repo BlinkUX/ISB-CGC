@@ -599,7 +599,6 @@ require([
         if(plot_type != "-- select an analysis --") {
             get_plot_model(workbook_id, worksheet_id, plot_type, function (data) {
                 if (data.error) {
-                    console.log("Display error");
                     callback(false);
                 } else {
                     load_plot(worksheet_id, data, plot_factory.get_plot_settings(plot_type), function (success) {
