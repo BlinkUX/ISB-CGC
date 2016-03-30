@@ -32,65 +32,33 @@
             <button id="gtm-new-user-button" style="display : none;"></button>
         {% endif %}
         <div class="panel-heading">
-            <a role="button" data-target="#analysis-body" data-toggle="collapse" aria-expanded="true" aria-controls="analysis-body">
-                <i class="fa fa-caret-down" style="display: inline-block;"></i>
-            </a>
-            <a href="{% url 'sample_analyses' %}">Sample Analyses</a> can be customized with the specific data you want to analyze. Start a new workbook with an analysis below.
+            <h3 class="panel-title">
+                <a href="{% url 'sample_analyses' %}">Sample Workbooks</a>
+            </h3>
         </div>
-        <div class="panel-body collapse in" id="analysis-body">
-            <ul>
-                <div class="clearfix">
-                    {% for workbook in public_workbooks %}
-                        <li class="item">
-                            <img class="img-fluid" src="{% static 'img/barchart.png' %}">
-                            <p>Bar Chart</p>
-                            <div class="image-holder">
-                                <img class="img-fluid" src="{% static 'img/lsdf/Networks@2x.jpg' %}">
+        <div class="panel-body">
+            <p>Sample workbooks can be duplicated with the specific data you want to analyze.</p>
+            <div class="collapse row" id="analysis-body">
+                 {% for workbook in public_workbooks %}
+                    <div class="col-md-3">
+                        <div class="analysis panel panel-default">
+                            <div class="panel-body">
+                                <img class="img-fluid" src="{% static workbook.plot_type_url %}" alt="">
+                                <h5>{{ workbook.name | safe }}</h5>
+                                <p>{{ workbook.description | safe }}</p>
                             </div>
-                            <p>Network</p>
-                        </li>
-                        <li class="item">
-                            <div class="image-holder">
-                               <img class="img-fluid" src="{% static 'img/lsdf/Violin@2x.jpg' %}">
+                            <div class="panel-footer">
+                                <a href="/workbooks/{{ workbook.id }}/">View this workbook</a>
                             </div>
-                            <p>Violin Plot</p>
-                        </li>
-                        <li class="item">
-                            <img class="img-fluid" src="{% static 'img/scatterplot.png' %}">
-                            <p>Scatter Plot</p>
-                            <div class="image-holder">
-                                <img class="img-fluid" src="{% static 'img/lsdf/Circular@2x.jpg' %}">
-                            </div>
-                            <p>Circular Ideogram</p>
-                        </li>
-                        <li class="item">
-                            <img class="img-fluid" src="{% static 'img/violinplot.png' %}">
-                            <p>Violin Plot</p>
-                            <div class="image-holder">
-                               <img class="img-fluid" src="{% static 'img/lsdf/Scatter@2x.jpg' %}">
-                            </div>
-                            <p>Scatter Plot</p>
-                        </li>
-                    {% endfor %}
-                </div>
-
-
-                <div class="collapse clearfix" id="more-analysis">
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/violinplot.png' %}">
-                        <p>Violin Plot 2</p>
-                    </li>
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/cubbyhole.png' %}">
-                        <p>Cubby Hole</p>
-                    </li>
-                    <li class="item">
-                        <img class="img-fluid" src="{% static 'img/seqpeak.png' %}" alt="">
-                        <p>SeqPeak</p>
-                    </li>
-                </div>
-                <p class="center"><a class="btn btn-link" data-target="#more-analysis" data-toggle="collapse">Show More</a></p>
-            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div>
+                <a role="button" data-target="#analysis-body" data-toggle="collapse" aria-expanded="true" aria-controls="analysis-body">
+                    <i class="fa fa-caret-down" style="display: inline-block;"></i> <span>See Public Workbooks</span>
+                </a>
+            </div>
         </div>
     </section>
 

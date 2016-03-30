@@ -406,6 +406,23 @@ def get_storage_string(size):
         string = str(int(size)) + " b"
     return string
 
+def get_image_url(type):
+    if type == "Bar Chart" :
+        return "img/barchart.png"
+    elif type == "Histogram" :
+        return "img/histogram.png"
+    elif type == "Scatter Plot" :
+        return "img/scatterplot.png"
+    elif type == "Violin Plot" :
+        return "img/violinplot.png"
+    elif type == "Violin Plot with axis swap" :
+        return "img/lsdf/Violin@2x.jpg"
+    elif type == "Cubby Hole Plot" :
+        return "img/cubbyhole.png"
+    elif type == "SeqPeek" :
+        return "img/seqpeak.png"
+
+
 @login_required
 def dashboard_page(request):
     # TODO Temporary Solution : This shouldn't be hit on every login, Eventually add to sign up sequence
@@ -432,6 +449,12 @@ def dashboard_page(request):
     workbooks = userWorkbooks | sharedWorkbooks
     workbooks = workbooks.distinct().order_by('-last_date_saved')
 
+    # public workbooks
+    public_workbooks = request.user.workbook_set.all().filter(is_public=True)
+    for workbook in public_workbooks :
+        workbook.plot_type = workbook.get_deep_worksheets()[0].active_plot.type
+        workbook.plot_type_url = get_image_url(workbook.plot_type)
+
     # used for google tag manager, will only exist if a new user
     now = datetime.now()
     now = datetime(now.year, now.month, now.day, now.hour, now.minute).replace(tzinfo=utc)
@@ -447,7 +470,8 @@ def dashboard_page(request):
         'request'  : request,
         'cohorts'  : cohorts,
         'projects' : projects,
-        'workbooks': workbooks
+        'workbooks': workbooks,
+        'public_workbooks' : public_workbooks
     }
 
     if settings.ENFORCE_USER_STORAGE_SIZE :
