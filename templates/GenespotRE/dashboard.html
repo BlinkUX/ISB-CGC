@@ -230,12 +230,36 @@
             <section class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <a href="{% url 'public_projects' %}">Public Data ({% public_project_count %})</a></h3>
+                        <a href="{% url 'public_projects' %}">Public Data (2)</a></h3>
                 </div>
                 <div class="panel-body">
-                    <p>Browse publicly-available studies and data</p>
+                    <ul class="table-list">
+                        <li>
+                           <a href="{% url 'project_detail' 'TCGA' %}">
+                               <p class="list-title">TCGA</p>
+                               {% if project.description %}
+                                <p>{{ project.description|slice:':65' }}TCGA Project description under 65 characters</p>
+                               {% endif %}
+                           </a>
+                        </li>
+                        <li>
+                           <a href="{% url 'project_detail' 'CCLE' %}">
+                               <p class="list-title">CCLE</p>
+                               <p>{{ project.description|slice:':65' }} CCLE Project description under 65 characters</p>
+                           </a>
+                        </li>
+                    </ul>
                 </div>
             </section>
+{#            <section class="panel panel-default">#}
+{#                <div class="panel-heading">#}
+{#                    <h3 class="panel-title">#}
+{#                        <a href="{% url 'public_projects' %}">Public Data ({% public_project_count %})</a></h3>#}
+{#                </div>#}
+{#                <div class="panel-body">#}
+{#                    <p>Browse publicly-available studies and data</p>#}
+{#                </div>#}
+{#            </section>#}
         </div>
     </div>
     {% endif %}
