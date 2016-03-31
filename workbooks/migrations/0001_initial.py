@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=2024)),
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('last_date_saved', models.DateTimeField(auto_now_add=True)),
+                ('active', models.BooleanField(default=True)),
                 ('is_public', models.BooleanField(default=False)),
             ],
             options={

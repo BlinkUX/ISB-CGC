@@ -28,7 +28,6 @@ class Workbook(models.Model):
     objects = WorkbookManager()
     is_public = models.BooleanField(default=False)
     owner = models.ForeignKey(User)
-    active = models.BooleanField(default=True)
     shared = models.ManyToManyField(Shared_Resource)
     is_public = models.BooleanField(default=False)
 
