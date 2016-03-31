@@ -18,11 +18,13 @@
     <p class="project-description">{{ project.description }}</p>
     <ul class="page-action-group">
         <li role="menuitem">
-            <form action="{% url 'worksheet_create_with_projects' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="project_id" value="{{ project.id }}">
-                <button type="submit" class="btn btn-default" >New Workbook</button>
-            </form>
+            {% if not project.is_public %}
+                <form action="{% url 'worksheet_create_with_projects' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="project_id" value="{{ project.id }}">
+                    <button type="submit" class="btn btn-default" >New Workbook</button>
+                </form>
+            {% endif %}
         </li>
         <li class="separator"></li>
         {% if project.owner.id == user.id %}

@@ -23,7 +23,6 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from projects.models import Study, User_Feature_Definitions
 
-
 class CohortManager(models.Manager):
     def search(self, search_terms):
         terms = [term.strip() for term in search_terms.split()]
