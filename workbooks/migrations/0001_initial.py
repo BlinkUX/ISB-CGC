@@ -111,6 +111,7 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('title', models.CharField(max_length=100)),
+                ('active', models.BooleanField(default=True)),
                 ('type', models.CharField(max_length=1024, null=True)),
             ],
             options={
