@@ -159,6 +159,7 @@ require([
         var $this      = $(this),
             name       = $this.data('text-label'),
             code       = $this.val(),
+            var_type   = $this.attr("var_type"),
             feature_id = $this.data('feature-id');
         if ($this.is(':checked') && $('.selected-filters span[data-code="' + code + '"]').length == 0) { // Checkbox checked and not already in list
             add_variable_pill(name, code, feature_id, var_type);

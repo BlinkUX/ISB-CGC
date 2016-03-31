@@ -99,7 +99,7 @@ def get_readable_name(csv_name, attr=None):
         'Project': 'Public Projects',
         'Study': 'Public Studies',
         'user_projects': 'Your Projects',
-        'user_studys': 'Your Studies'
+        'user_studies': 'Your Studies'
 
     }
 

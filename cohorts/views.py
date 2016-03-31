@@ -208,9 +208,12 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
     shared_with_users = []
 
     # service = build('meta', 'v1', discoveryServiceUrl=META_DISCOVERY_URL)
-    clin_attr = [
+    project_attr = [
         'Project',
-        'Study',
+        'Study'
+    ]
+
+    clin_attr = [
         'vital_status',
         # 'survival_time',
         'gender',
@@ -272,6 +275,9 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
 
     results = urlfetch.fetch(data_url, deadline=60)
     results = json.loads(results.content)
+
+    ## TODO : if error occurs here, this is due to the above call having an invalid access token, the user needs to log out
+    ## TODO : in order to fix
     totals = results['total']
 
     if USER_DATA_ON:
@@ -321,6 +327,18 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
             'values': user_studies
         })
 
+        ## Hack to separate the user studies, results['count'] for user studies is still requires
+        ## inspect the new_cohort.html on why results['count'] for user studies is required
+        user_attrs = []
+        user_attrs.append({
+            'name': 'user_projects',
+            'values': user_projects
+        })
+        user_attrs.append({
+            'name': 'user_studies',
+            'values': user_studies
+        })
+
     # Get and sort counts
     attr_details = {
         'RNA_sequencing': [],
@@ -329,7 +347,6 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
     }
     keys = []
     for item in results['count']:
-        #print item
         key = item['name']
         values = item['values']
 
@@ -339,8 +356,8 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
             keys.append(item['name'])
             item['values'] = sorted(values, key=lambda k: int(k['count']), reverse=True)
 
-            if item['name'].startswith('user_'):
-                clin_attr_dsp += (item['name'],)
+            # if item['name'].startswith('user_'):
+            #     clin_attr_dsp += (item['name'],)
 
     for key, value in attr_details.items():
         results['count'].append({
@@ -353,9 +370,11 @@ def cohort_detail(request, cohort_id=0, workbook_id=0, worksheet_id=0, create_wo
         'request': request,
         'users': users,
         'attr_list': keys,
+        'user_attrs' : user_attrs,
         'attr_list_count': results['count'],
         'total_samples': int(totals),
         'clin_attr': clin_attr_dsp,
+        'project_attr' : project_attr,
         'data_attr': data_attr,
         'molec_attr': molec_attr,
         'base_url': settings.BASE_URL,
