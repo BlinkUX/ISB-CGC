@@ -28,12 +28,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='workbook',
-            name='active',
-            field=models.BooleanField(default=True),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='workbook',
             name='owner',
             field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL),
             preserve_default=False,
