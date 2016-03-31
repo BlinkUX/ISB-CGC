@@ -561,7 +561,6 @@ class Worksheet_plot(models.Model):
     modified_date   = models.DateTimeField(auto_now=True)
     type            = models.CharField(max_length=1024, null=True)
     worksheet       = models.ForeignKey(Worksheet, blank=False, null=True)
-    active          = models.BooleanField(default=True)
     settings_json   = models.TextField(blank=True, null=True)
 
     objects         = Worksheet_Plot_Manager()
