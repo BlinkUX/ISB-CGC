@@ -135,36 +135,41 @@
                         {% for project in public_projects %}
                         <tr class="row-{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" data-project-id="{{ project.id }}">
                             <td class="control-col">
-                                <div class="dropdown">
-                                    <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-arrow"><i class="fa fa-caret-down"></i></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="">New Workbook</a></li>
-                                    </ul>
-                                    <span class="row-expand-button"></span>
-                                </div>
+{#                                <div class="dropdown">#}
+{#                                    <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-arrow"><i class="fa fa-caret-down"></i></a>#}
+{#                                    <ul class="dropdown-menu">#}
+{#                                        <li><a href="">New Workbook</a></li>#}
+{#                                    </ul>#}
+{#                                    <span class="row-expand-button"></span>#}
+{#                                </div>#}
                             </td>
-                            <td class="name-col"><a href="{% url 'project_detail' project.id %}">{{ project.name }}</a></td>
-                            <td>{{ project.study_set.count }}</td>
+                            {% if project.name == "TCGA" %}
+                                <td class="name-col"><a href="{% url 'project_detail_tcga' %}">{{ project.name }}</a></td>
+                            {% elif project.name == "CCLE" %}
+                                <td class="name-col"><a href="{% url 'project_detail_ccle' %}">{{ project.name }}</a></td>
+                            {% endif %}
+                            <td>0</td>
                             <td>ISB</td>
-                            <td>{{ project.last_date_saved|date:"SHORT_DATETIME_FORMAT" }}</td>
-                        {% for study in project.study_set.all %}
-                        </tr>
-                        <tr class="study hidden" data-project-id="{{ project.id }}">
-                            <td class="control-col">
-                            </td>
-                            <td class="name-col">
-                                <div class="dropdown">
-                                    <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-caret-down"></i></a>
-                                    {{ study.name }}
-                                    <ul class="dropdown-menu">
-                                        <li><a href="">New Workbook</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td>{{ study.last_date_saved|date:"SHORT_DATETIME_FORMAT" }}</td>
-                        {% endfor %}
+                            <td>03/31/2016 1:57 p.m.</td>
+
+{#                            {% for study in project.study_set.all %}#}
+{#                            </tr>#}
+{#                            <tr class="study hidden" data-project-id="{{ project.id }}">#}
+{#                                <td class="control-col">#}
+{#                                </td>#}
+{#                                <td class="name-col">#}
+{#                                    <div class="dropdown">#}
+{#                                        <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-caret-down"></i></a>#}
+{#                                        {{ study.name }}#}
+{#                                        <ul class="dropdown-menu">#}
+{#                                            <li><a href="">New Workbook</a></li>#}
+{#                                        </ul>#}
+{#                                    </div>#}
+{#                                </td>#}
+{#                                <td></td>#}
+{#                                <td></td>#}
+{#                                <td>{{ study.last_date_saved|date:"SHORT_DATETIME_FORMAT" }}</td>#}
+{#                            {% endfor %}#}
                         </tr>
                         {% endfor %}
                     </tbody>

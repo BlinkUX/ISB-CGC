@@ -17,11 +17,17 @@ from accounts.models import GoogleProject,Bucket
 from sharing.service import create_share
 from google.appengine.api.mail import send_mail
 
+#for public projects hack
+from google.appengine.api import urlfetch
+from allauth.socialaccount.models import SocialToken
+METADATA_API = settings.BASE_API_URL + '/_ah/api/meta_api/'
+
 import sys
 import json
 import requests
 import urllib
 import httplib
+
 
 @login_required
 def public_project_list(request):
@@ -37,10 +43,75 @@ def project_list(request, is_public=False):
     projects = ownedProjects | sharedProjects
     projects = projects.distinct()
 
+    public_projects = [{"id"                 : 8080808080,
+                       "name"               : "TCGA",
+                       "description"        : "This is a description",
+                       "active"             : True,
+                       "is_public"          : True},
+                        {"id"                 : 8080808080,
+                       "name"               : "CCLE",
+                       "description"        : "This is a description",
+                       "active"             : True,
+                       "is_public"          : True}]
     context = {
         'projects' : projects,
-        'public_projects' : Project.objects.all().filter(is_public=True,active=True),
+        'public_projects' : public_projects, #Project.objects.all().filter(is_public=True,active=True),
         'is_public' : is_public
+    }
+    return render(request, template, context)
+
+
+## not used as there is no way of distinquishing what public study goes with what public project
+def find_public_project_studies(user):
+    ##use sample counts to find tcga studies
+    token    = SocialToken.objects.filter(account__user=user, account__provider='Google')[0].token
+    data_url = METADATA_API + ('v2/metadata_counts?token=%s' % (token,))
+    results  = urlfetch.fetch(data_url, deadline=60)
+    results  = json.loads(results.content)
+
+    projects = []
+    for item in results['count']:
+        if item['name'] == "Project":
+            values  = item['values']
+            projects = sorted(values, key=lambda k: int(k['count']), reverse=True)
+            for project in projects :
+                project['name'] = project['value']
+        elif item['name'] == "Study" :
+            values  = item['values']
+            studies = sorted(values, key=lambda k: int(k['count']), reverse=True)
+            for study in studies :
+                study['name'] = study['value']
+
+    return studies
+
+@login_required
+def project_detail_TCGA(request):
+    template = 'projects/project_detail.html'
+    project = {"id"                 : 8080808080,
+               "name"               : "TCGA",
+               "description"        : "This is a description",
+               "active"             : True,
+               "is_public"          : True}
+
+    context = {
+        'project': project,
+        'studies': [],
+        'shared': []
+    }
+    return render(request, template, context)
+
+@login_required
+def project_detail_CCLE(request):
+    template = 'projects/project_detail.html'
+    project = {"id"                 : 8080808080,
+               "name"               : "CCLE",
+               "description"        : "This is a description",
+               "active"             : True,
+               "is_public"          : True}
+    context = {
+        'project': project,
+        'studies': [],
+        'shared': []
     }
     return render(request, template, context)
 
