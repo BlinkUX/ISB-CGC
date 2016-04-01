@@ -28,6 +28,7 @@ class Workbook(models.Model):
     objects = WorkbookManager()
     is_public = models.BooleanField(default=False)
     owner = models.ForeignKey(User)
+    active = models.BooleanField(default=True)
     shared = models.ManyToManyField(Shared_Resource)
     is_public = models.BooleanField(default=False)
 
@@ -562,6 +563,7 @@ class Worksheet_plot(models.Model):
     type            = models.CharField(max_length=1024, null=True)
     worksheet       = models.ForeignKey(Worksheet, blank=False, null=True)
     settings_json   = models.TextField(blank=True, null=True)
+    active          = models.BooleanField(default=True)
     objects         = Worksheet_Plot_Manager()
 
     @classmethod
