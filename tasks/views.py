@@ -26,7 +26,7 @@ import logging
 import sys
 import pytz
 
-import pysftp
+#import pysftp
 
 import pexpect  # comment this out when running in gae
 import datetime
