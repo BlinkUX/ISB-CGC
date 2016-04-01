@@ -159,15 +159,18 @@ require([
             data: $(this).serialize(),
             success: function (data) {
                 data = JSON.parse(data);
-                $('.comment-flyout .flyout-body').append('<h5 class="comment-username">' + data['first_name'] + ' ' + data['last_name'] + '</h5>');
-                $('.comment-flyout .flyout-body').append('<p class="comment-content">' + data['content'] + '</p>')
-                $('.comment-flyout .flyout-body').append('<p class="comment-date">' + data['date_created'] + '</p>');
+                var flyout_body = $(form).parents('.comment-flyout').find('.flyout-body');
+                $(flyout_body).append('<h5 class="comment-username">' + data['first_name'] + ' ' + data['last_name'] + '</h5>');
+                $(flyout_body).append('<p class="comment-content">' + data['content'] + '</p>');
+                $(flyout_body).append('<p class="comment-date">' + data['date_created'] + '</p>');
 
                 form.reset();
+                var comment_count = parseInt($(form).parents('.worksheet').find('.comment-count').html());
+                $(form).parents('.worksheet').find('.comment-count').html(comment_count + 1);
+
             },
             error: function () {
-                console.log('Failed to save comment.');
-                $('.comment-flyout .flyout-body').append('<p class="comment-content error">Fail to save comment. Please try back later.</p>')
+                $('.comment-flyout .flyout-body').append('<p class="comment-content error">Fail to save comment. Please try back later.</p>');
                 form.reset()
             }
         });
@@ -180,7 +183,7 @@ require([
         $(this).parent().toggleClass('open');
         $(this).toggleClass('open');
         $(this).parent().prev('.worksheet-nav').toggleClass('closed');
-    })
+    });
 
     // tabs interaction on dropdown selected
     var tabsList = $('#worksheets-tabs a[data-toggle="tab"]');
@@ -193,7 +196,7 @@ require([
             openTabsfromDropdown(targetTab);
         }
         e.preventDefault();
-    })
+    });
 
     function openTabsfromDropdown(target) {
         var lastTabNum = 3;
@@ -550,6 +553,10 @@ require([
         }
     });
 
+    $('.resubmit-button').on("click", function(){
+        $(this).parentsUntil(".worksheet-body").find('.update-plot').click();
+    });
+
     /*
      * Gather plot information on the page
      */
@@ -690,6 +697,7 @@ require([
         var legend_selector = '#' + plot_element.prop('id') + ' .legend';
 
         plot_loader.fadeIn();
+        $('.resubmit-button').hide();
         plotFactory.generate_plot({ plot_selector    : plot_selector,
                                     legend_selector  : legend_selector,
                                     pairwise_element : pair_wise,
@@ -699,7 +707,10 @@ require([
                                     color_by         : args.color_by,
                                     gene_label       : args.gene_label,
                                     cohorts          : cohort_ids,
-                                    color_override   : false}, function(){
+                                    color_override   : false}, function(result){
+            if(result.error){
+                $('.resubmit-button').show();
+            }
 
             plot_loader.fadeOut();
         });
@@ -743,7 +754,7 @@ require([
 
     //the server side call made here will also change the active entry for the worksheet
     function get_plot_model(workbook_id, worksheet_id, type, callback){
-        var csrftoken = get_cookie('csrftoken');
+        var csrftoken = $.getCookie('csrftoken');
         $.ajax({
             type        : 'GET',
             url         : base_url + '/workbooks/' + workbook_id + '/worksheets/' + worksheet_id + "/plots/",
@@ -765,7 +776,7 @@ require([
     }
 
     function update_plot_model(workbook_id, worksheet_id, plot_id, attrs, selections, callback){
-        var csrftoken = get_cookie('csrftoken');
+        var csrftoken = $.getCookie('csrftoken');
         $.ajax({
             type        :'POST',
             dataType    :'json',
@@ -852,6 +863,33 @@ require([
             }
         });
         return false;
+    });
+
+    /*
+        Remove shared user
+     */
+    $('.remove-shared-user').on('click', function() {
+        var shared_id = $(this).attr('data-shared-id');
+        var url = base_url + '/share/' + shared_id + '/remove';
+        var csrftoken = $.getCookie('csrftoken');
+        var button = $(this);
+        $.ajax({
+            type        :'POST',
+            url         : url,
+            dataType    :'json',
+            data        : {owner: true},
+            beforeSend  : function(xhr){xhr.setRequestHeader("X-CSRFToken", csrftoken);},
+            success : function (data) {
+                button.parents('tr').remove();
+                var count = parseInt($($('.share-count')[0]).html());
+                $('.share-count').each(function() {
+                   $(this).html(count-1);
+                });
+            },
+            error: function () {
+                console.log('Failed to remove user');
+            }
+        })
     });
 
     /*

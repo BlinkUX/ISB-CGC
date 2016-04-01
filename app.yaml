@@ -27,7 +27,6 @@ resources:
   memory_gb: 2.2
 
 builtins:
-#- django_wsgi: on
 - remote_api: on
 - appstats: on
 - deferred: on
@@ -59,6 +58,10 @@ handlers:
   script: google.appengine.ext.deferred.deferred.application
   login: admin
   secure: always
+- url: /tasks/.*
+  script: main.application
+  secure: always
+  login: admin
 - url: /.*
   script: main.application
   secure: always
