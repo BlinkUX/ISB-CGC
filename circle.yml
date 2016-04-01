@@ -20,7 +20,7 @@ deployment:
       - sudo -E /bin/sh ./shell/gcloud_authenticate.sh
       - sudo -E /bin/sh ./shell/gcloud-pull-staging-files.sh
       - sudo -E ./google-cloud-sdk/bin/gcloud config set app/use_cloud_build 0
-      - sudo -E ./google-cloud-sdk/bin/gcloud preview app deploy app.yaml dispatch.yaml cron.yaml queue.yaml --promote 
+      - sudo -E ./google-cloud-sdk/bin/gcloud preview app deploy app.yaml dispatch.yaml cron.yaml queue.yaml --promote
   production:
     branch: [prod]
     commands:
