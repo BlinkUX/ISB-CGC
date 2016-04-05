@@ -20,7 +20,7 @@ mysql -u$MYSQL_ROOT_USER -p$MYSQL_ROOT_PASSWORD -e "GRANT SELECT, INSERT, UPDATE
 # This is legacy code until these tables can be refactored out of the system
 if [ ! -f ${HOMEROOT}/scripts/prod_main_metadata_feature_defs_031516.sql ]; then
 echo "Downloading SQL Table File..."
-wget -q https://storage.googleapis.com/sql-table-dumps/prod_main_metadata_feature_defs_031516.sql -O ${HOMEROOT}/scripts/prod_main_metadata_feature_defs_031516.sql
+wget -q https://storage.googleapis.com/sql-table-dumps/prod_main_metadata_feature_defs_031516.sql -O ${HOMEROOT}/scripts/metadata_featdef_tables.sql
 fi
 echo "Applying SQL Table File... (may take a while)"
 mysql -u$MYSQL_ROOT_USER -p$MYSQL_ROOT_PASSWORD -D$DATABASE_NAME < ${HOMEROOT}/scripts/metadata_featdef_tables.sql
