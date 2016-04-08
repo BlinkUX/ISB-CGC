@@ -26,7 +26,6 @@ deployment:
       - sudo -E rm -rf ./lib
       - sudo -E /bin/sh ./shell/gcloud_authenticate.sh
       - sudo -E /bin/sh ./shell/gcloud-pull-prod-files.sh
-      - sudo -E ./google-cloud-sdk/bin/gcloud config set app/use_cloud_build 0
-      - sudo -E ./google-cloud-sdk/bin/gcloud config set use_cloud_build true
+      - sudo -E ./google-cloud-sdk/bin/gcloud config set app/use_cloud_build true
       - sudo -E ./google-cloud-sdk/bin/gcloud config list
       - sudo -E ./google-cloud-sdk/bin/gcloud preview app deploy --verbosity debug app.yaml dispatch.yaml cron.yaml queue.yaml --promote
