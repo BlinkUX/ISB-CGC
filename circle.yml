@@ -30,4 +30,4 @@ deployment:
       - sudo -E ./google-cloud-sdk/bin/gcloud config set app/cloud_build_timeout 1200
       - sudo -E ./google-cloud-sdk/bin/gcloud config list
       - sudo -E ./google-cloud-sdk/bin/gcloud preview app gen-repo-info-file
-      - sudo -E ./google-cloud-sdk/bin/gcloud preview app deploy app.yaml dispatch.yaml cron.yaml queue.yaml --promote
+      - sudo -E ./google-cloud-sdk/bin/gcloud preview app deploy --verbosity debug app.yaml dispatch.yaml cron.yaml queue.yaml --promote
